@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { useUIStore } from './store/uiStore';
+import Layout from './components/Layout';
 
 // We'll import pages as we build them.
 import Splash from './pages/Splash';
@@ -19,8 +20,6 @@ import FollowUp from './pages/FollowUp';
 import Settings from './pages/Settings';
 import Auth from './pages/Auth';
 
-// import BottomNav from './components/BottomNav';
-
 function App() {
   const fetchSettings = useUIStore(state => state.fetchSettings);
 
@@ -29,7 +28,7 @@ function App() {
   }, [fetchSettings]);
 
   return (
-    <div className="app-container">
+    <Layout>
       <Routes>
         <Route path="/" element={<Splash />} />
         <Route path="/auth" element={<Auth />} />
@@ -48,7 +47,7 @@ function App() {
         <Route path="/settings" element={<Settings />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
-    </div>
+    </Layout>
   );
 }
 

@@ -1,164 +1,144 @@
-import { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { ArrowLeft, Edit2, Phone, CheckCircle2, Navigation } from 'lucide-react';
 import { useVehicleStore } from '../store/vehicleStore';
-import { formatCurrency, formatRelativeDate } from '../utils/formatters';
 
-export default function CardDetail() {
+const CardDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { t } = useTranslation();
-  const { getVehicleById, selectedVehicle: vehicle, isLoading } = useVehicleStore();
-  const [showDoneConfirm, setShowDoneConfirm] = useState(false);
+  const { selectedVehicle, getVehicleById, isLoading, markAsDone } = useVehicleStore();
 
   useEffect(() => {
-    if (id) getVehicleById(id);
+    if (id) {
+      getVehicleById(id);
+    }
   }, [id, getVehicleById]);
 
-  if (isLoading || !vehicle) {
-    return (
-      <div className="min-h-screen bg-[var(--app-bg)] flex items-center justify-center">
-        <div className="w-8 h-8 rounded-full border-4 border-gray-800 border-t-primary-500 animate-spin"></div>
-      </div>
-    );
+  if (isLoading || !selectedVehicle) {
+    return <div className="screen active" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>Loading...</div>;
   }
 
-  const isDone = vehicle.status === 'done' || vehicle.status === 'paid';
+  const v = selectedVehicle;
+  const isDone = v.status === 'done' || v.status === 'paid';
+  const isPaid = v.status === 'paid' || v.total_paid >= (v.estimate || 0);
+
+  const handleMarkDone = async () => {
+    if (id) {
+      await markAsDone(id);
+      navigate('/wa-sent');
+    }
+  };
 
   return (
-    <div className="min-h-screen bg-[var(--app-bg)] pb-24 relative overflow-hidden">
-      {/* Dynamic Background Glow */}
-      <div className={`absolute top-0 right-0 w-64 h-64 rounded-full mix-blend-screen filter blur-[100px] opacity-10 pointer-events-none transition-colors duration-1000 ${
-        isDone ? 'bg-green-500' : 'bg-primary-500'
-      }`}></div>
-
-      {/* Header */}
-      <header className="flex items-center justify-between p-4 border-b border-gray-900 sticky top-0 bg-[var(--app-bg)]/90 backdrop-blur-md z-20">
-        <button onClick={() => navigate(-1)} className="p-2 -ml-2 text-gray-400 hover:text-white">
-          <ArrowLeft size={24} />
+    <div className="screen active" id="s-detail">
+      <div className="sbar"><span className="t" style={{ color: 'var(--dk)' }}>9:41</span></div>
+      <div className="hdr">
+        <button className="bk" onClick={() => navigate('/dashboard')}>
+          <svg width="18" height="18" viewBox="0 0 24 24">
+            <path d="M19 12H5M12 19l-7-7 7-7" stroke="#0F172A" strokeWidth="2" strokeLinecap="round" fill="none" />
+          </svg>
         </button>
-        <div className={`badge ${isDone ? 'badge-done' : 'badge-repair'} text-sm px-3 py-1.5`}>
-          {isDone ? <><CheckCircle2 size={16}/> {t('dashboard.done_today', 'DONE')}</> : t('dashboard.in_repair', 'IN REPAIR')}
-        </div>
-      </header>
-
-      <div className="p-4 space-y-6 animate-fade-in relative z-10">
-        
-        {/* Main Number Plate Header */}
-        <div className="text-center">
-          <div className="inline-block bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0IiBoZWlnaHQ9IjQiPgo8cmVjdCB3aWR0aD0iNCIgaGVpZ2h0PSI0IiBmaWxsPSIjZmZmIiBmaWxsLW9wYWNpdHk9IjAuMDUiLz4KPC9zdmc+')] px-6 py-4 rounded-xl border-2 border-dashed border-gray-800 shadow-card">
-             <h1 className="text-4xl font-display tracking-widest text-white text-shadow-sm uppercase">
-               {vehicle.number_plate}
-             </h1>
-          </div>
-          <p className="font-sans text-gray-400 mt-2 font-bold tracking-wide">
-             {vehicle.vehicle_type} • {formatRelativeDate(vehicle.created_at)}
-          </p>
-        </div>
-
-        {/* Info Rows */}
-        <div className="card divide-y divide-gray-800 border border-gray-800 mb-6 shadow-card overflow-hidden">
-          
-          <div className="p-4 flex items-center justify-between hover:bg-gray-800/50 transition-colors">
-            <div>
-              <p className="text-xs text-gray-500 font-sans tracking-widest uppercase mb-1">{t('intake.customer_name', 'Customer')}</p>
-              <p className="text-lg font-bold text-white">{vehicle.customer_name}</p>
-              <p className="text-sm font-mono text-gray-400 mt-1 flex items-center gap-1">
-                <Phone size={12}/> {vehicle.customer_whatsapp}
-              </p>
-            </div>
-            <a href={`tel:${vehicle.customer_whatsapp}`} className="bg-gray-800 p-3 rounded-full text-primary-500 hover:bg-gray-700 active:scale-95 transition-transform"><Phone size={20}/></a>
-          </div>
-
-          {vehicle.owner_name && (
-            <div className="p-4 flex items-center justify-between hover:bg-gray-800/50 transition-colors bg-gray-900/40">
-              <div>
-                <p className="text-xs text-gray-500 font-sans tracking-widest uppercase mb-1">{t('intake.owner_name', 'Owner')}</p>
-                <p className="text-lg font-bold text-white">{vehicle.owner_name}</p>
-                <p className="text-sm font-mono text-gray-400 mt-1 flex items-center gap-1">
-                  <Phone size={12}/> {vehicle.owner_whatsapp}
-                </p>
-              </div>
-              <a href={`tel:${vehicle.owner_whatsapp}`} className="bg-gray-800 p-3 rounded-full text-gray-400 hover:bg-gray-700 active:scale-95 transition-transform"><Phone size={20}/></a>
-            </div>
-          )}
-
-          <div className="p-4 bg-gray-900/20">
-            <p className="text-xs text-gray-500 font-sans tracking-widest uppercase mb-2">{t('intake.problem', 'Problem')}</p>
-            <p className="text-base text-gray-300 font-mono bg-gray-950 p-3 rounded-lg border border-gray-800/50">
-              {vehicle.problem}
-            </p>
-          </div>
-
-          <div className="p-4 flex items-center justify-between">
-            <p className="text-xs text-gray-500 font-sans tracking-widest uppercase">{t('intake.estimate', 'Estimate')}</p>
-            <p className={`text-2xl font-mono font-bold ${isDone ? 'text-green-500' : 'text-primary-500'}`}>
-              {formatCurrency(vehicle.estimate)}
-            </p>
-          </div>
-
-          {isDone && (
-            <div className={`p-4 flex items-center justify-between ${vehicle.remaining > 0 ? 'bg-red-500/10' : 'bg-green-500/10'}`}>
-              <p className={`text-xs font-sans tracking-widest uppercase font-bold ${vehicle.remaining > 0 ? 'text-red-500' : 'text-green-500'}`}>
-                {t('payment.remaining', 'Remaining')}
-              </p>
-              <p className={`text-xl font-mono font-bold ${vehicle.remaining > 0 ? 'text-red-500' : 'text-green-500'}`}>
-                {formatCurrency(vehicle.remaining)}
-              </p>
-            </div>
-          )}
-        </div>
-
+        <div className="hdr-t">{t('detail.title')}</div>
+        <button className="sm bo" onClick={() => navigate(`/vehicle/${v.id}/edit`)}>
+          <span>{t('btn.edit')}</span>
+        </button>
       </div>
 
-      {/* Sticky Bottom Actions */}
-      <div className="fixed bottom-0 left-0 right-0 max-w-md mx-auto p-4 bg-gray-950/90 backdrop-blur border-t border-gray-900 z-30 flex gap-3">
+      <div className="cnt">
+        <div style={{ padding: '20px 16px', background: 'var(--of)', borderBottom: '1px solid var(--lg)' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+            <div style={{ width: '52px', height: '52px', borderRadius: '12px', background: '#fff', border: '1.5px solid var(--lg)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '24px' }}>
+              {v.vehicle_type === 'Bike' ? '🏍️' : '🛵'}
+            </div>
+            <div>
+              <div style={{ fontSize: '18px', fontWeight: 700, color: 'var(--dk)', fontFamily: "'Share Tech Mono',monospace", letterSpacing: '1px' }}>{v.number_plate}</div>
+              <div style={{ fontSize: '12px', fontWeight: 600, color: 'var(--or)', textTransform: 'uppercase' }}>{v.vehicle_type}</div>
+            </div>
+          </div>
+        </div>
+
+        <div className="ir">
+          <div className="il">{t('lbl.customer')}</div>
+          <div className="iv">
+            <div style={{ fontWeight: 700 }}>{v.customer_name}</div>
+            <div style={{ fontSize: '12px', color: 'var(--sl)', marginTop: '2px' }}>+91 {v.customer_whatsapp}</div>
+          </div>
+        </div>
+
+        {v.owner_name && v.owner_name !== v.customer_name && (
+          <div className="ir">
+            <div className="il">{t('lbl.owner')}</div>
+            <div className="iv">
+              <div style={{ fontWeight: 700 }}>{v.owner_name}</div>
+              <div style={{ fontSize: '12px', color: 'var(--sl)', marginTop: '2px' }}>+91 {v.owner_whatsapp}</div>
+            </div>
+          </div>
+        )}
+
+        <div className="ir hi">
+          <div className="il">{t('lbl.problem')}</div>
+          <div className="iv">{v.problem}</div>
+        </div>
+
+        <div className="ir">
+          <div className="il">{t('lbl.estimate')}</div>
+          <div className="iv" style={{ fontWeight: 800, fontSize: '16px', color: 'var(--dk)' }}>₹{v.estimate}</div>
+        </div>
+
+        <div className="ir">
+          <div className="il">{t('lbl.delivery')}</div>
+          <div className="iv">{v.delivery_by}</div>
+        </div>
+
+        <div style={{ padding: '24px 16px' }}>
+          <div className="wam wam-o">
+            <div className="waf waf-o">{t('wa.sent')}</div>
+            <div className="wab">
+              Vehicle Registered: {v.number_plate}<br/>
+              Problem: {v.problem}<br/>
+              Est cost: ₹{v.estimate}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div style={{ position: 'absolute', bottom: '80px', left: 0, right: 0, padding: '16px', background: '#fff', borderTop: '1px solid var(--lg)', display: 'flex', gap: '10px' }}>
         {!isDone ? (
-          <>
-            <button 
-              onClick={() => navigate(`/vehicle/${vehicle.id}/edit`)} 
-              className="btn-secondary flex-1 shadow-card"
-            >
-              <Edit2 size={20} /> <span className="hidden sm:inline">{t('common.edit', 'EDIT')}</span>
-            </button>
-            <button 
-              onClick={() => setShowDoneConfirm(true)} 
-              className="btn-primary flex-[2] bg-green-600 hover:bg-green-500 shadow-[0_0_15px_rgba(43,138,62,0.4)]"
-            >
-              <CheckCircle2 size={24} /> {t('detail.mark_done', 'MARK DONE')}
-            </button>
-          </>
+          <button className="btn bo" style={{ flex: 1 }} onClick={handleMarkDone}>
+            <span>{t('btn.markdone')}</span>
+          </button>
+        ) : !isPaid ? (
+          <button className="btn bo" style={{ flex: 1, background: '#25D366' }} onClick={() => navigate(`/vehicle/${v.id}/payment`)}>
+            <span>{t('btn.payment')}</span>
+          </button>
         ) : (
-           <button 
-              onClick={() => navigate(`/vehicle/${vehicle.id}/payment`)} 
-              className="btn-primary w-full"
-            >
-              <Navigation size={20} /> {t('common.payment', 'RECEIVE PAYMENT')}
-            </button>
+          <button className="btn bw" style={{ flex: 1, opacity: 0.5 }}>
+            <span>{t('btn.success')}</span>
+          </button>
         )}
       </div>
 
-      {/* Placeholder for Bottom Sheet component which will be added in Phase 2 */}
-      {showDoneConfirm && (
-        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-end justify-center">
-             <div className="bg-gray-900 w-full max-w-md rounded-t-3xl border-t border-gray-800 p-6 animate-slide-up">
-                 <h2 className="text-2xl font-display text-white tracking-widest mb-4 border-b border-gray-800 pb-4">Confirm Mark Done?</h2>
-                 <p className="text-gray-400 font-sans mb-6 text-xl">
-                   This will open WhatsApp and send messages to the Custom and Owner. Are you sure the vehicle {vehicle.number_plate} is ready?
-                 </p>
-                 <div className="flex gap-3">
-                   <button onClick={() => setShowDoneConfirm(false)} className="btn-secondary flex-1">Cancel</button>
-                   <button 
-                     onClick={async () => {
-                        await useVehicleStore.getState().markAsDone(vehicle.id);
-                        navigate('/wa-sent', { state: { vehicle } });
-                     }} 
-                     className="btn-primary flex-1 bg-green-600 hover:bg-green-500">Confirm</button>
-                 </div>
-             </div>
-        </div>
-      )}
+      <div className="bnav">
+        <button className="ni" onClick={() => navigate('/intake')}>
+          <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" /></svg>
+          <span>{t('nav.intake')}</span>
+        </button>
+        <button className="ni on" onClick={() => navigate('/dashboard')}>
+           <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" /><rect x="14" y="3" width="7" height="7" /><rect x="14" y="14" width="7" height="7" /><rect x="3" y="14" width="7" height="7" /></svg>
+          <span>{t('nav.jobs')}</span>
+        </button>
+        <button className="ni" onClick={() => navigate('/report')}>
+          <svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12" /></svg>
+          <span>{t('nav.report')}</span>
+        </button>
+        <button className="ni" onClick={() => navigate('/follow-up')}>
+          <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" /><line x1="9" y1="10" x2="15" y2="10" /><line x1="9" y1="14" x2="13" y2="14" /></svg>
+          <span>{t('nav.followup')}</span>
+        </button>
+      </div>
     </div>
   );
-}
+};
+
+export default CardDetail;

@@ -24,17 +24,20 @@ export interface VehicleWithPayment extends Vehicle {
   total_paid: number;
   remaining: number;
   payment_status: 'unpaid' | 'paid_full' | 'paid_partial';
+  payments?: Payment[];
 }
 
 export interface Payment {
   id: string;
   vehicle_id: string;
   amount_paid: number;
+  amount?: number; // For UI compatibility
   total_amount: number;
   payment_type: PaymentType;
   payment_method: PaymentMethod;
   note: string | null;
   paid_at: string;
+  created_at?: string; // For UI compatibility
 }
 
 export interface GarageSettings {

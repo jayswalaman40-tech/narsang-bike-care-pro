@@ -1,110 +1,86 @@
-import { useEffect } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { Send, CheckCircle2 } from 'lucide-react';
-import type { VehicleWithPayment } from '../types';
-import { formatCurrency } from '../utils/formatters';
-import { generateWALink } from '../utils/formatters';
-import { useUIStore } from '../store/uiStore';
-import { whatsappService } from '../services/api';
+import { useVehicleStore } from '../store/vehicleStore';
 
-export default function PaidSuccess() {
-  const location = useLocation();
+const PaidSuccess: React.FC = () => {
   const navigate = useNavigate();
   const { t } = useTranslation();
-  const vehicle = location.state?.vehicle as VehicleWithPayment;
-  const amount = location.state?.amount as number;
+  const { selectedVehicle } = useVehicleStore();
 
-  const { mechanicWhatsapp, settings } = useUIStore();
-
-  useEffect(() => {
-    if (!vehicle) navigate('/dashboard', { replace: true });
-  }, [vehicle, navigate]);
-
-  if (!vehicle) return null;
-
-  // Real WhatsApp message text generation rules
-  // For the final version, this logic can be grouped into a utility function `buildWAFullMessage`
-  
-  const mechanicName = settings?.mechanic_name || 'Aman Bhai';
-
-  const sendWA = async (type: 'customer' | 'owner' | 'mechanic') => {
-     let phone = '';
-     let text = '';
-     
-     // Base generic messages based on translations
-     if (type === 'customer') {
-       phone = vehicle.customer_whatsapp;
-       text = `${t('wa.hello')} ${vehicle.customer_name},\n${t('wa.full_payment_customer', { amount, number_plate: vehicle.number_plate })}\n${t('wa.thank_you')}`;
-     } else if (type === 'owner') {
-       phone = vehicle.owner_whatsapp || vehicle.customer_whatsapp;
-       text = `${t('wa.hello')} ${vehicle.owner_name || vehicle.customer_name},\n${t('wa.full_payment_customer', { amount, number_plate: vehicle.number_plate })}\n${t('wa.thank_you')}`;
-     } else {
-       phone = mechanicWhatsapp;
-       text = `💰 PAYMENT RECEIVED\nVehicle: ${vehicle.number_plate}\nType: Full Settlement\nAmount: ${amount}\nFrom: ${vehicle.customer_name}`;
-     }
-
-     window.open(generateWALink(phone, text), '_blank');
-     await whatsappService.logMessage(vehicle.id, type, phone, 'full_payment');
-  };
+  const v = selectedVehicle;
 
   return (
-    <div className="min-h-screen bg-[var(--app-bg)] flex flex-col items-center justify-center p-6 text-center">
-      
-      {/* Dynamic Background Glow */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-80 h-80 bg-green-500 rounded-full mix-blend-screen filter blur-[120px] opacity-30 pointer-events-none animate-pulse" style={{ animationDuration: '4s' }}></div>
-
-      <div className="flex gap-2 mb-8 animate-slide-up">
-        <CheckCircle2 size={48} className="text-green-500 animate-slide-up" style={{ animationDelay: '0.1s' }} />
-        <CheckCircle2 size={56} className="text-green-400 animate-slide-up shadow-glow rounded-full" style={{ animationDelay: '0.2s', marginTop: '-10px' }} />
-        <CheckCircle2 size={48} className="text-green-500 animate-slide-up" style={{ animationDelay: '0.3s' }} />
+    <div className="screen active" id="s-paidsuccess">
+      <div className="sbar"><span className="t" style={{ color: 'var(--dk)' }}>9:41</span></div>
+      <div className="hdr">
+        <button className="bk" onClick={() => navigate('/dashboard')}>
+           <svg width="18" height="18" viewBox="0 0 24 24">
+            <path d="M19 12H5M12 19l-7-7 7-7" stroke="#0F172A" strokeWidth="2" strokeLinecap="round" fill="none" />
+          </svg>
+        </button>
+        <div className="hdr-t">{t('success.title')}</div>
       </div>
 
-      <h1 className="text-4xl font-display tracking-widest text-white mb-2 animate-slide-up" style={{ animationDelay: '0.4s' }}>
-        {t('payment.full_payment', 'FULL PAYMENT SETTLED')}
-      </h1>
-      
-      <p className="font-mono text-3xl font-bold text-green-500 mb-8 animate-slide-up" style={{ animationDelay: '0.5s' }}>
-        {formatCurrency(amount)}
-      </p>
+      <div className="cnt" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '40px 32px', textAlign: 'center' }}>
+        <div style={{ width: '90px', height: '90px', borderRadius: '50%', background: 'var(--gnb)', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '24px', boxShadow: '0 8px 24px rgba(16,185,129,.2)' }}>
+          <svg width="48" height="48" viewBox="0 0 24 24" fill="none">
+            <path d="M5 13l4 4L19 7" stroke="var(--gn)" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
+        </div>
 
-      {/* WA Card Grid */}
-      <div className="w-full max-w-sm flex flex-col gap-3 mb-8 animate-slide-up" style={{ animationDelay: '0.6s' }}>
-         <button onClick={() => sendWA('customer')} className="flex items-center justify-between p-4 bg-gray-900 border border-green-500/30 rounded-xl hover:border-green-500 transition-colors">
-            <div className="text-left">
-              <span className="block text-xs text-gray-500 uppercase font-sans tracking-widest">{t('intake.customer_name', 'Customer')}</span>
-              <span className="block text-white font-bold">{vehicle.customer_name}</span>
-            </div>
-            <Send size={20} className="text-green-500" />
-         </button>
-         
-         {vehicle.owner_name && (
-           <button onClick={() => sendWA('owner')} className="flex items-center justify-between p-4 bg-gray-900 border border-green-500/30 rounded-xl hover:border-green-500 transition-colors">
-              <div className="text-left">
-                <span className="block text-xs text-gray-500 uppercase font-sans tracking-widest">{t('intake.owner_name', 'Owner')}</span>
-                <span className="block text-white font-bold">{vehicle.owner_name}</span>
-              </div>
-              <Send size={20} className="text-green-500" />
-           </button>
-         )}
+        <h2 style={{ fontSize: '24px', fontWeight: 800, color: 'var(--dk)', marginBottom: '8px' }}>{t('success.heading')}</h2>
+        <p style={{ fontSize: '14px', color: 'var(--sl)', lineHeight: 1.6, marginBottom: '32px' }}>
+          Full bill of <strong>₹{v?.estimate}</strong> for <strong>{v?.number_plate}</strong> has been cleared.
+        </p>
 
-         <button onClick={() => sendWA('mechanic')} className="flex items-center justify-between p-4 bg-gray-900 border border-green-500/30 rounded-xl hover:border-green-500 transition-colors">
-            <div className="text-left">
-              <span className="block text-xs text-gray-500 uppercase font-sans tracking-widest">Self Copy</span>
-              <span className="block text-white font-bold">{mechanicName} (Me)</span>
+        <div style={{ padding: '20px', background: 'var(--of)', borderRadius: '16px', border: '1.5px solid var(--lg)', width: '100%', marginBottom: '20px' }}>
+          <div style={{ fontSize: '11px', fontWeight: 700, color: 'var(--sl)', marginBottom: '16px', textTransform: 'uppercase', letterSpacing: '1px', borderBottom: '1px solid var(--lg)', paddingBottom: '8px' }}>
+             Notifications Sent 🚀
+          </div>
+          
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '14px', textAlign: 'left' }}>
+            <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+              <div style={{ width: '32px', height: '32px', borderRadius: '50%', background: '#E3F2FD', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '14px' }}>👤</div>
+              <div style={{ fontSize: '13px', fontWeight: 600, color: 'var(--dk2)' }}>{t('success.wa1')}</div>
             </div>
-            <Send size={20} className="text-green-500" />
-         </button>
+            <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+              <div style={{ width: '32px', height: '32px', borderRadius: '50%', background: '#F3E5F5', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '14px' }}>👷</div>
+              <div style={{ fontSize: '13px', fontWeight: 600, color: 'var(--dk2)' }}>{t('success.wa3')}</div>
+            </div>
+          </div>
+        </div>
       </div>
 
-      <button 
-        onClick={() => navigate('/dashboard', { replace: true })}
-        className="mt-2 text-gray-500 font-sans uppercase tracking-widest font-bold hover:text-white transition-colors animate-slide-up cursor-pointer"
-        style={{ animationDelay: '0.7s' }}
-      >
-        {t('nav.home', 'BACK TO HOME')}
-      </button>
+      <div style={{ padding: '24px 16px', background: '#fff', borderTop: '1px solid var(--of)' }}>
+        <button className="btn bo" style={{ background: 'var(--gn)' }} onClick={() => navigate('/dashboard')}>
+           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+            <polyline points="3 9 9 3 15 9"/><path d="M9 21V9"/>
+          </svg>
+          <span>{t('btn.backdash')}</span>
+        </button>
+      </div>
 
+      <div className="bnav">
+        <button className="ni" onClick={() => navigate('/intake')}>
+          <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" /></svg>
+          <span>{t('nav.intake')}</span>
+        </button>
+        <button className="ni on" onClick={() => navigate('/dashboard')}>
+           <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" /><rect x="14" y="3" width="7" height="7" /><rect x="14" y="14" width="7" height="7" /><rect x="3" y="14" width="7" height="7" /></svg>
+          <span>{t('nav.jobs')}</span>
+        </button>
+        <button className="ni" onClick={() => navigate('/report')}>
+          <svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12" /></svg>
+          <span>{t('nav.report')}</span>
+        </button>
+        <button className="ni" onClick={() => navigate('/follow-up')}>
+          <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" /><line x1="9" y1="10" x2="15" y2="10" /><line x1="9" y1="14" x2="13" y2="14" /></svg>
+          <span>{t('nav.followup')}</span>
+        </button>
+      </div>
     </div>
   );
-}
+};
+
+export default PaidSuccess;

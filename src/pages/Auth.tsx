@@ -1,9 +1,10 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
-import { Wrench, LogIn, Mail, Lock } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 export default function Auth() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -47,65 +48,64 @@ export default function Auth() {
   };
 
   return (
-    <div className="min-h-screen bg-[var(--app-bg)] flex flex-col items-center justify-center p-6 relative overflow-hidden">
-      
-      {/* Dynamic Background Glow */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-primary-500 rounded-full mix-blend-screen filter blur-[150px] opacity-20 pointer-events-none"></div>
+    <div className="screen active" style={{ background: '#0a0a0a', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '32px' }}>
+      {/* SHADOW GLOW */}
+      <div style={{ position: 'absolute', top: '10%', width: '300px', height: '300px', background: 'radial-gradient(circle,rgba(232,89,12,.15) 0%,transparent 70%)', pointerEvents: 'none' }}></div>
 
-      <div className="w-full max-w-sm z-10 animate-slide-up">
-        <div className="flex flex-col items-center mb-10">
-           <div className="w-20 h-20 bg-primary-500 rounded-2xl flex items-center justify-center shadow-glow mb-4 transform -rotate-6">
-             <Wrench size={40} className="text-white transform rotate-6" />
-           </div>
-           <h1 className="text-3xl font-display tracking-widest text-primary-500 uppercase">Shri Narsang</h1>
-           <h2 className="text-xl font-display tracking-wider text-white uppercase">Bike Care</h2>
+      <div style={{ width: '100%', maxWidth: '340px', zIndex: 10, textAlign: 'center' }}>
+        <div style={{ width: '72px', height: '72px', borderRadius: '18px', background: 'linear-gradient(135deg,#E8590C,#ff7c35)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 20px', fontSize: '32px', boxShadow: '0 8px 24px rgba(232,89,12,.4)' }}>
+          🛵
         </div>
-
-        <form onSubmit={handleLogin} className="flex flex-col gap-4 bg-gray-900/50 p-6 rounded-2xl border border-gray-800 backdrop-blur-md shadow-card">
-           <div>
-             <label className="input-label ml-0 mb-2 flex items-center gap-2"><Mail size={14}/> Email Address</label>
-             <input 
-               type="email" 
-               required
-               value={email}
-               onChange={(e) => setEmail(e.target.value)}
-               className="input-base bg-gray-950 border-gray-800" 
-             />
-           </div>
-           
-           <div>
-             <label className="input-label ml-0 mb-2 flex items-center gap-2"><Lock size={14}/> Password</label>
-             <input 
-               type="password" 
-               required
-               value={password}
-               onChange={(e) => setPassword(e.target.value)}
-               className="input-base bg-gray-950 border-gray-800 font-mono tracking-widest" 
-             />
-           </div>
-
-           {errorMsg && (
-             <div className="p-3 bg-red-500/10 border border-red-500/50 rounded-lg text-red-500 text-sm font-bold text-center">
-               {errorMsg}
-             </div>
-           )}
-
-           <button 
-             type="submit" 
-             disabled={loading}
-             className="btn-primary mt-2 shadow-glow"
-           >
-             {loading ? (
-               <div className="w-5 h-5 rounded-full border-2 border-white border-t-transparent animate-spin mx-auto"></div>
-             ) : (
-               <><LogIn size={20} /> LOGIN</>
-             )}
-           </button>
-        </form>
         
-        <p className="text-center text-gray-500 font-sans text-xs tracking-widest uppercase mt-8 opacity-50">
-          Internal Garage Management System
+        <h1 style={{ fontFamily: "'Bebas Neue',cursive", fontSize: '36px', color: '#fff', letterSpacing: '3px', marginBottom: '4px' }}>
+          {t('app.name')}
+        </h1>
+        <p style={{ fontSize: '13px', color: 'rgba(255,255,255,.5)', marginBottom: '32px', letterSpacing: '1px', textTransform: 'uppercase' }}>
+          Garage Management System
         </p>
+
+        <form onSubmit={handleLogin} style={{ display: 'flex', flexDirection: 'column', gap: '16px', background: 'rgba(255,255,255,.03)', padding: '24px', borderRadius: '20px', border: '1px solid rgba(255,255,255,.08)' }}>
+          <div style={{ textAlign: 'left' }}>
+            <label style={{ display: 'block', fontSize: '11px', fontWeight: 700, color: 'rgba(255,255,255,.4)', marginBottom: '6px', textTransform: 'uppercase', letterSpacing: '1px' }}>Email Address</label>
+            <input 
+              type="email" 
+              className="inp" 
+              style={{ background: 'rgba(0,0,0,.3)', border: '1.5px solid rgba(255,255,255,.1)', color: '#fff' }}
+              required
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="name@example.com"
+            />
+          </div>
+          
+          <div style={{ textAlign: 'left' }}>
+            <label style={{ display: 'block', fontSize: '11px', fontWeight: 700, color: 'rgba(255,255,255,.4)', marginBottom: '6px', textTransform: 'uppercase', letterSpacing: '1px' }}>Password</label>
+            <input 
+              type="password" 
+              className="inp" 
+              style={{ background: 'rgba(0,0,0,.3)', border: '1.5px solid rgba(255,255,255,.1)', color: '#fff', fontFamily: 'monospace' }}
+              required
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder="••••••••"
+            />
+          </div>
+
+          {errorMsg && (
+            <div style={{ padding: '10px', background: 'rgba(239,68,68,.1)', border: '1px solid rgba(239,68,68,.2)', borderRadius: '8px', color: '#ef4444', fontSize: '12px' }}>
+              {errorMsg}
+            </div>
+          )}
+
+          <button 
+            type="submit" 
+            disabled={loading}
+            className="btn bo"
+            style={{ marginTop: '8px' }}
+          >
+            {loading ? 'Authenticating...' : 'Sign In →'}
+          </button>
+        </form>
       </div>
     </div>
   );

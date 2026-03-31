@@ -1,14 +1,11 @@
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { Save, Languages, User, Lock, Store } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { useUIStore } from '../store/uiStore';
 import type { Language } from '../types';
-import Header from '../components/Header';
-import BottomNav from '../components/BottomNav';
 
-export default function Settings() {
+const Settings: React.FC = () => {
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const { settings, mechanicWhatsapp, setMechanicWhatsapp, language, setLanguage } = useUIStore();
@@ -44,8 +41,6 @@ export default function Settings() {
     setMsg({ text: '', type: '' });
 
     try {
-      // Very naive implementation for "Settings" - updating state locally for wa/lang
-      // and pushing to supabase for garage/mechanic name
       setMechanicWhatsapp(formData.mechanic_whatsapp);
       setLanguage(formData.primary_language as Language);
       i18n.changeLanguage(formData.primary_language);
@@ -77,63 +72,86 @@ export default function Settings() {
   };
 
   return (
-    <div className="min-h-screen bg-[var(--app-bg)] pb-24">
-      <Header />
-      
-      <div className="p-4 mt-4 animate-fade-in">
-         <h1 className="text-3xl font-display tracking-widest text-primary-500 mb-6 flex items-center gap-2">
-           <Store /> {t('nav.settings', 'SETTINGS')}
-         </h1>
+    <div className="screen active" id="s-settings">
+      <div className="sbar"><span className="t" style={{ color: 'var(--dk)' }}>9:41</span></div>
+      <div className="hdr">
+        <button className="bk" onClick={() => navigate(-1)}>
+          <svg width="18" height="18" viewBox="0 0 24 24">
+            <path d="M19 12H5M12 19l-7-7 7-7" stroke="#0F172A" strokeWidth="2" strokeLinecap="round" fill="none" />
+          </svg>
+        </button>
+        <div className="hdr-t">Settings</div>
+      </div>
 
-         <form onSubmit={handleSave} className="flex flex-col gap-5">
-            <div className="card p-4 flex flex-col gap-4 border-l-4 border-l-primary-500">
-               <h2 className="font-sans font-bold text-gray-400 tracking-widest uppercase text-xs mb-1">General</h2>
-               
-               <div>
-                 <label className="input-label flex items-center gap-2"><Store size={14}/> Garage Name</label>
-                 <input name="garage_name" value={formData.garage_name} onChange={handleChange} className="input-base" />
-               </div>
+      <div className="cnt">
+        <div style={{ padding: '24px 16px' }}>
+          <form onSubmit={handleSave} style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+            <div className="form-section-title">Workshop Config</div>
+            
+            <div className="ig">
+              <label>Garage Name</label>
+              <input name="garage_name" value={formData.garage_name} onChange={handleChange} className="inp" />
+            </div>
 
-               <div>
-                 <label className="input-label flex items-center gap-2"><User size={14}/> Mechanic Name</label>
-                 <input name="mechanic_name" value={formData.mechanic_name} onChange={handleChange} className="input-base" />
-               </div>
-               
-               <div>
-                 <label className="input-label flex items-center gap-2"><User size={14}/> My WhatsApp</label>
-                 <input type="tel" name="mechanic_whatsapp" value={formData.mechanic_whatsapp} onChange={handleChange} className="input-base font-mono" />
-               </div>
+            <div className="ig">
+              <label>Mechanic Name</label>
+              <input name="mechanic_name" value={formData.mechanic_name} onChange={handleChange} className="inp" />
+            </div>
 
-               <div>
-                 <label className="input-label flex items-center gap-2"><Languages size={14}/> App Language</label>
-                 <select name="primary_language" value={formData.primary_language} onChange={handleChange} className="input-base appearance-none">
-                    <option value="en">English</option>
-                    <option value="hi">हिंदी (Hindi)</option>
-                    <option value="gu">ગુજરાતી (Gujarati)</option>
-                 </select>
-               </div>
+            <div className="ig">
+              <label>My WhatsApp</label>
+              <div className="inp-prefix">
+                <span className="pfx">+91</span>
+                <input name="mechanic_whatsapp" value={formData.mechanic_whatsapp} onChange={handleChange} className="inp" type="tel" />
+              </div>
+            </div>
+
+            <div className="ig">
+              <label>Default Language</label>
+              <select name="primary_language" value={formData.primary_language} onChange={handleChange} className="inp">
+                <option value="en">English</option>
+                <option value="hi">हिंदी (Hindi)</option>
+                <option value="gu">ગુજરાતી (Gujarati)</option>
+              </select>
             </div>
 
             {msg.text && (
-              <div className={`p-3 rounded-lg text-sm text-center font-bold font-sans ${msg.type === 'error' ? 'bg-red-500/20 text-red-500 border border-red-500' : 'bg-green-500/20 text-green-500 border border-green-500'}`}>
+              <div style={{ padding: '12px', borderRadius: '8px', background: msg.type === 'error' ? 'var(--rdb)' : 'var(--gnb)', color: msg.type === 'error' ? 'var(--rdt)' : 'var(--gnt)', fontSize: '13px', textAlign: 'center', fontWeight: '700' }}>
                 {msg.text}
               </div>
             )}
 
-            <button type="submit" disabled={isLoading} className="btn-primary shadow-glow">
-               {isLoading ? (
-                 <div className="w-5 h-5 rounded-full border-2 border-white border-t-transparent animate-spin"></div>
-               ) : (
-                 <><Save size={20} /> SAVE SETTINGS</>
-               )}
+            <button type="submit" disabled={isLoading} className="btn bo">
+              {isLoading ? 'Saving...' : 'Save Settings'}
             </button>
-            <button type="button" onClick={handleLogout} className="btn-secondary mt-2 border-red-500/30 text-red-500 hover:bg-red-500 hover:text-white">
-               <Lock size={20} /> LOGOUT
+
+            <button type="button" onClick={handleLogout} className="btn bw" style={{ color: 'var(--rd)', borderColor: 'var(--rd)', opacity: 0.8 }}>
+              Logout
             </button>
-         </form>
+          </form>
+        </div>
       </div>
 
-      <BottomNav />
+      <div className="bnav">
+        <button className="ni" onClick={() => navigate('/intake')}>
+          <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" /></svg>
+          <span>{t('nav.intake')}</span>
+        </button>
+        <button className="ni" onClick={() => navigate('/dashboard')}>
+          <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" /><rect x="14" y="3" width="7" height="7" /><rect x="14" y="14" width="7" height="7" /><rect x="3" y="14" width="7" height="7" /></svg>
+          <span>{t('nav.jobs')}</span>
+        </button>
+        <button className="ni" onClick={() => navigate('/report')}>
+          <svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12" /></svg>
+          <span>{t('nav.report')}</span>
+        </button>
+        <button className="ni" onClick={() => navigate('/follow-up')}>
+          <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" /><line x1="9" y1="10" x2="15" y2="10" /><line x1="9" y1="14" x2="13" y2="14" /></svg>
+          <span>{t('nav.followup')}</span>
+        </button>
+      </div>
     </div>
   );
-}
+};
+
+export default Settings;

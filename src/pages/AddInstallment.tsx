@@ -1,157 +1,161 @@
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, CheckCircle2, IndianRupee, Banknote } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { useVehicleStore } from '../store/vehicleStore';
 import { usePaymentStore } from '../store/paymentStore';
-import { formatCurrency } from '../utils/formatters';
-import type { PaymentMethod } from '../types';
 
-export default function AddInstallment() {
+const AddInstallment: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  
-  const { getVehicleById, selectedVehicle } = useVehicleStore();
-  const { addPayment, isLoading } = usePaymentStore();
+  const { t } = useTranslation();
+  const { selectedVehicle, getVehicleById } = useVehicleStore();
+  const { addPayment } = usePaymentStore();
 
-  const [amountStr, setAmountStr] = useState('');
-  const [method, setMethod] = useState<PaymentMethod>('upi');
-  const [errorMsg, setErrorMsg] = useState('');
+  const [amount, setAmount] = useState('');
+  const [method, setMethod] = useState<'cash' | 'bank'>('cash');
+  const [error, setError] = useState('');
 
   useEffect(() => {
     if (id) getVehicleById(id);
   }, [id, getVehicleById]);
 
-  if (!selectedVehicle) {
-     return <div className="min-h-screen bg-gray-950 flex items-center justify-center text-white">Loading...</div>;
-  }
+  if (!selectedVehicle) return <div className="screen active">Loading...</div>;
 
-  const estimate = selectedVehicle.estimate;
-  const remaining = selectedVehicle.remaining;
-  
-  if (remaining <= 0) {
-    navigate(`/vehicle/${id}/tracker`, { replace: true });
-    return null;
-  }
-  
-  const amountObj = parseInt(amountStr, 10) || 0;
-  const clampedAmount = Math.min(Math.max(amountObj, 0), remaining);
-
-  const isFullPayment = clampedAmount >= remaining;
+  const v = selectedVehicle;
+  const estimate = v.estimate || 0;
+  const alreadyPaid = v.total_paid || 0;
+  const remaining = estimate - alreadyPaid;
 
   const handleSave = async () => {
-    if (clampedAmount <= 0) {
-      setErrorMsg("Please enter a valid amount");
+    const val = Number(amount);
+    if (!val || val <= 0) {
+      setError('Enter a valid amount');
       return;
     }
 
     try {
       await addPayment({
-        vehicle_id: selectedVehicle.id,
-        amount_paid: clampedAmount,
-        total_amount: estimate,
-        payment_type: isFullPayment ? 'full' : 'partial',
+        vehicle_id: v.id,
+        amount_paid: val,
         payment_method: method,
-        note: null
+        note: `Installment for ${v.number_plate}`,
+        total_amount: estimate,
+        payment_type: val >= remaining ? 'full' : 'partial'
       });
 
-      if (isFullPayment) {
-        navigate(`/wa-full`, { state: { vehicle: selectedVehicle, amount: clampedAmount } });
+      if (val >= remaining) {
+        navigate('/wa-full');
       } else {
-        navigate(`/wa-partial`, { state: { vehicle: selectedVehicle, amount: clampedAmount } });
+        navigate('/wa-partial');
       }
-    } catch (e: any) {
-      setErrorMsg(e.message || "Failed to save payment");
+    } catch (err: any) {
+      setError(err.message || 'Error saving installment');
     }
   };
 
   return (
-    <div className="min-h-screen bg-[var(--app-bg)] pb-24 flex flex-col items-center">
-      <header className="flex w-full items-center gap-4 p-4 border-b border-gray-900 sticky top-0 bg-[var(--app-bg)]/90 backdrop-blur-md z-20">
-        <button onClick={() => navigate(-1)} className="p-2 -ml-2 text-gray-400 hover:text-white">
-          <ArrowLeft size={24} />
+    <div className="screen active" id="s-installment">
+      <div className="sbar"><span className="t" style={{ color: 'var(--dk)' }}>9:41</span></div>
+      <div className="hdr">
+        <button className="bk" onClick={() => navigate(`/vehicle/${v.id}/tracker`)}>
+          <svg width="18" height="18" viewBox="0 0 24 24">
+            <path d="M19 12H5M12 19l-7-7 7-7" stroke="#0F172A" strokeWidth="2" strokeLinecap="round" fill="none" />
+          </svg>
         </button>
-        <h1 className="text-2xl font-display tracking-widest text-primary-500 m-0 leading-none">
-          ADD INSTALLMENT
-        </h1>
-      </header>
-
-      <div className="w-full max-w-md p-4 animate-fade-in flex flex-col gap-6">
-        
-        {/* Remaining Warning Label */}
-        <div className="bg-red-500/10 border border-red-500/30 rounded-lg p-4 text-center">
-            <p className="text-xs uppercase tracking-widest font-sans font-bold text-red-500 mb-1">Current Pending Balance</p>
-            <p className="text-3xl font-mono text-white text-shadow-sm font-bold">{formatCurrency(remaining)}</p>
-        </div>
-
-        {/* Amount Input */}
-        <div className="flex flex-col gap-2">
-           <label className="input-label ml-0">Paying Now (₹)</label>
-           <div className="relative">
-             <IndianRupee className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={24} />
-             <input 
-               type="number" 
-               className="input-base pl-12 text-3xl font-mono py-4 bg-gray-950 border-gray-800 focus:border-green-500 focus:ring-green-500 shadow-inner"
-               value={amountStr}
-               onChange={(e) => setAmountStr(e.target.value)}
-               placeholder="0"
-               autoFocus
-             />
-           </div>
-           
-           <div className="flex gap-2 mt-2">
-              <button 
-                onClick={() => setAmountStr(remaining.toString())}
-                className="flex-1 bg-green-900/30 hover:bg-green-900/50 text-green-500 font-sans text-sm font-bold py-3 rounded-lg border border-green-800 transition-colors tracking-widest uppercase shadow-[0_0_10px_rgba(43,138,62,0.2)]"
-              >
-                Clear Full Balance
-              </button>
-           </div>
-        </div>
-
-        {/* Payment Method */}
-        <div className="flex gap-3 mt-4">
-           <button 
-             onClick={() => setMethod('upi')}
-             className={`flex-1 flex flex-col items-center justify-center p-3 rounded-xl border transition-all ${
-               method === 'upi' ? 'bg-primary-500/20 border-primary-500 text-primary-500' : 'bg-gray-900 border-gray-800 text-gray-500'
-             }`}
-           >
-              <span className="font-display text-xl mb-1 tracking-widest">UPI</span>
-              <span className="text-xs uppercase font-sans tracking-wider">Online</span>
-           </button>
-           <button 
-             onClick={() => setMethod('cash')}
-             className={`flex-1 flex flex-col items-center justify-center p-3 rounded-xl border transition-all ${
-               method === 'cash' ? 'bg-primary-500/20 border-primary-500 text-primary-500' : 'bg-gray-900 border-gray-800 text-gray-500'
-             }`}
-           >
-              <Banknote size={24} className="mb-1" />
-              <span className="text-xs uppercase font-sans tracking-wider">Cash</span>
-           </button>
-        </div>
-
-        {errorMsg && (
-          <div className="bg-red-500/20 border border-red-500 text-red-500 p-3 rounded-lg text-sm text-center font-bold font-sans">
-            {errorMsg}
-          </div>
-        )}
+        <div className="hdr-t">{t('install.title')}</div>
       </div>
 
-      <div className="fixed bottom-0 left-0 right-0 max-w-md mx-auto p-4 bg-gray-950/90 backdrop-blur border-t border-gray-900 z-50">
-        <button 
-          onClick={handleSave} 
-          disabled={isLoading || clampedAmount <= 0}
-          className={`w-full font-display text-xl tracking-wider py-4 rounded-xl flex items-center justify-center gap-2 transition-all active:scale-[0.98] uppercase shadow-inner-glow disabled:opacity-50 disabled:cursor-not-allowed text-white ${
-            isFullPayment ? 'bg-green-600 hover:bg-green-500 shadow-[0_0_15px_rgba(43,138,62,0.4)]' : 'bg-primary-500 hover:bg-primary-600 shadow-glow'
-          }`}
-        >
-          {isLoading ? (
-            <div className="w-6 h-6 rounded-full border-2 border-white border-t-transparent animate-spin"></div>
-          ) : (
-             <><CheckCircle2 size={24} /> {isFullPayment ? 'CLEAR BALANCE' : 'SAVE INSTALLMENT'}</>
+      <div className="cnt" style={{ padding: '24px 16px' }}>
+        <div className="form-section">
+          <div className="ig">
+            <label>{t('install.method')}</label>
+            <div className="vtype-grid">
+              <button className={`vtype-btn ${method === 'cash' ? 'sel' : ''}`} onClick={() => setMethod('cash')}>
+                💵 <span>{t('install.cash')}</span>
+              </button>
+              <button className={`vtype-btn ${method === 'bank' ? 'sel' : ''}`} onClick={() => setMethod('bank')}>
+                🏦 <span>{t('install.bank')}</span>
+              </button>
+            </div>
+          </div>
+
+          <div className="ig">
+            <label>{t('pay.howmuch')}</label>
+            <div className="inp-prefix">
+              <span className="pfx">₹</span>
+              <input 
+                className="inp" 
+                placeholder={remaining.toString()}
+                type="number" 
+                value={amount}
+                onChange={(e) => setAmount(e.target.value)}
+                style={{ fontSize: '20px', fontWeight: 700 }}
+              />
+            </div>
+          </div>
+
+          <div className="ig">
+            <label>{t('install.note')}</label>
+            <input className="inp" placeholder={t('install.noteph')} />
+          </div>
+
+          <div style={{ padding: '16px', background: 'var(--of)', borderRadius: '12px', border: '1.5px solid var(--lg)', marginTop: '10px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
+              <span style={{ fontSize: '12px', color: 'var(--sl)', fontWeight: 600 }}>{t('install.prev')}</span>
+              <span style={{ fontSize: '13px', fontWeight: 700 }}>₹{v.total_paid}</span>
+            </div>
+            <div style={{ height: '1px', background: 'var(--lg)', marginBottom: '8px' }}></div>
+            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+              <span style={{ fontSize: '12px', color: 'var(--rd)', fontWeight: 700 }}>{t('install.rem')}</span>
+              <span style={{ fontSize: '14px', fontWeight: 800, color: 'var(--rd)' }}>₹{remaining - (Number(amount) || 0)}</span>
+            </div>
+          </div>
+        </div>
+
+        {error && (
+          <div style={{ margin: '16px', background: 'var(--rdb)', borderRadius: '8px', padding: '10px 12px', fontSize: '12px', color: 'var(--rdt)' }}>
+            ⚠️ <span>{error}</span>
+          </div>
+        )}
+
+        <div style={{ padding: '16px', marginTop: '10px' }}>
+          {Number(amount) >= remaining && (
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--gn)', fontSize: '13px', fontWeight: 700 }}>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                <path d="M5 13l4 4L19 7" stroke="var(--gn)" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+              {t('install.complete')}
+            </div>
           )}
+        </div>
+      </div>
+
+      <div style={{ position: 'absolute', bottom: '80px', left: 0, right: 0, padding: '16px', background: '#fff', borderTop: '1px solid var(--lg)' }}>
+        <button className="btn bo" onClick={handleSave} style={{ background: Number(amount) >= remaining ? 'var(--gn)' : 'var(--or)' }}>
+          <span>{t('install.confirm')}</span>
+        </button>
+      </div>
+
+      <div className="bnav">
+        <button className="ni" onClick={() => navigate('/intake')}>
+          <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" /></svg>
+          <span>{t('nav.intake')}</span>
+        </button>
+        <button className="ni on" onClick={() => navigate('/dashboard')}>
+           <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" /><rect x="14" y="3" width="7" height="7" /><rect x="14" y="14" width="7" height="7" /><rect x="3" y="14" width="7" height="7" /></svg>
+          <span>{t('nav.jobs')}</span>
+        </button>
+        <button className="ni" onClick={() => navigate('/report')}>
+          <svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12" /></svg>
+          <span>{t('nav.report')}</span>
+        </button>
+        <button className="ni" onClick={() => navigate('/follow-up')}>
+          <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" /><line x1="9" y1="10" x2="15" y2="10" /><line x1="9" y1="14" x2="13" y2="14" /></svg>
+          <span>{t('nav.followup')}</span>
         </button>
       </div>
     </div>
   );
-}
+};
+
+export default AddInstallment;

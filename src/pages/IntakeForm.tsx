@@ -1,189 +1,256 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { ArrowLeft, Save, Bike, User, Phone, Wrench, IndianRupee } from 'lucide-react';
 import { useVehicleStore } from '../store/vehicleStore';
-import type { VehicleType } from '../types';
 
-export default function IntakeForm() {
-  const { t } = useTranslation();
+const IntakeForm: React.FC = () => {
   const navigate = useNavigate();
-  const { addVehicle, isLoading } = useVehicleStore();
+  const { t } = useTranslation();
+  const addVehicle = useVehicleStore(state => state.addVehicle);
 
   const [formData, setFormData] = useState({
     customer_name: '',
     customer_whatsapp: '',
-    vehicle_type: 'Bike' as VehicleType,
+    vehicle_type: '' as 'Bike' | 'Scooter' | '',
     number_plate: '',
-    problem: '',
-    estimate: '',
     owner_name: '',
     owner_whatsapp: '',
+    problem: '',
+    estimate: '',
+    delivery_by: '',
   });
 
-  const [hasOwner, setHasOwner] = useState(false);
-  const [errorMsg, setErrorMsg] = useState('');
+  const [error, setError] = useState('');
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+  const updateDots = () => {
+    const fields = [
+      formData.customer_name.trim(),
+      formData.customer_whatsapp.trim(),
+      formData.vehicle_type,
+      formData.number_plate.trim(),
+      formData.owner_name.trim(),
+      formData.owner_whatsapp.trim(),
+      formData.problem.trim(),
+      formData.estimate.toString().trim(),
+      formData.delivery_by.trim(),
+    ];
+    return fields.map((v, i) => ({ id: `pd${i}`, filled: !!v }));
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setErrorMsg('');
+  const dots = updateDots();
 
-    // Basic Validation
-    if (!formData.customer_name || !formData.customer_whatsapp || !formData.number_plate || !formData.problem || !formData.estimate) {
-      setErrorMsg(t('form.required_fields', 'Please fill all required fields'));
+  const handleInputChange = (field: string, value: string) => {
+    setFormData(prev => ({ ...prev, [field]: value }));
+  };
+
+  const selVtype = (vehicle_type: 'Bike' | 'Scooter') => {
+    setFormData(prev => ({ ...prev, vehicle_type }));
+  };
+
+  const handleSubmit = async () => {
+    if (!formData.customer_name || !formData.customer_whatsapp || !formData.vehicle_type || !formData.number_plate || !formData.problem || !formData.estimate) {
+      setError(t('intake.err'));
       return;
     }
+    setError('');
 
     try {
       await addVehicle({
         customer_name: formData.customer_name,
         customer_whatsapp: formData.customer_whatsapp,
-        vehicle_type: formData.vehicle_type,
+        vehicle_type: formData.vehicle_type as 'Bike' | 'Scooter',
         number_plate: formData.number_plate.toUpperCase(),
+        owner_name: formData.owner_name || formData.customer_name,
+        owner_whatsapp: formData.owner_whatsapp || formData.customer_whatsapp,
         problem: formData.problem,
-        estimate: parseInt(formData.estimate, 10),
-        owner_name: hasOwner ? formData.owner_name : null,
-        owner_whatsapp: hasOwner ? formData.owner_whatsapp : null,
-        delivery_by: null,
+        estimate: Number(formData.estimate),
+        delivery_by: formData.delivery_by,
       });
       navigate('/dashboard');
     } catch (err: any) {
-      setErrorMsg(err.message || 'Error saving vehicle');
+      setError(err.message || 'Error saving vehicle');
     }
   };
 
   return (
-    <div className="min-h-screen bg-[var(--app-bg)] pb-24">
-      {/* Header */}
-      <header className="flex items-center gap-4 p-4 border-b border-gray-900 sticky top-0 bg-[var(--app-bg)]/90 backdrop-blur-md z-20">
-        <button onClick={() => navigate(-1)} className="p-2 -ml-2 text-gray-400 hover:text-white">
-          <ArrowLeft size={24} />
+    <div className="screen active" id="s-intake">
+      <div className="sbar"><span className="t" style={{ color: 'var(--dk)' }}>9:41</span></div>
+      <div className="hdr">
+        <button className="bk" onClick={() => navigate('/')}>
+          <svg width="18" height="18" viewBox="0 0 24 24">
+            <path d="M19 12H5M12 19l-7-7 7-7" stroke="#0F172A" strokeWidth="2" strokeLinecap="round" fill="none" />
+          </svg>
         </button>
-        <h1 className="text-2xl font-display tracking-widest text-primary-500 m-0">
-          {t('intake.title', 'NEW VEHICLE')}
-        </h1>
-      </header>
+        <div className="hdr-t">{t('intake.title')}</div>
+        <button className="sm bo" onClick={() => navigate('/dashboard')} style={{ marginLeft: 'auto' }}>
+          {t('nav.jobs')}
+        </button>
+      </div>
 
-      <form onSubmit={handleSubmit} className="p-4 flex flex-col gap-5 mt-2">
-        
-        {/* Customer Details */}
-        <div className="card p-4 flex flex-col gap-4 border-l-4 border-l-primary-500">
-          <h2 className="font-display tracking-widest text-xl text-white">{t('intake.customer_details', 'CUSTOMER')}</h2>
-          
-          <div>
-            <label className="input-label flex items-center gap-2"><User size={14}/> {t('intake.customer_name', 'Customer Name')} *</label>
-            <input name="customer_name" value={formData.customer_name} onChange={handleChange} className="input-base" placeholder="Ravi Patel" />
-          </div>
-          
-          <div>
-            <label className="input-label flex items-center gap-2"><Phone size={14}/> {t('intake.customer_wa', 'WhatsApp Number')} *</label>
-            <input type="tel" name="customer_whatsapp" value={formData.customer_whatsapp} onChange={handleChange} className="input-base font-mono" placeholder="9876543210" />
-          </div>
-        </div>
+      {/* Progress dots */}
+      <div className="form-progress">
+        {dots.map(dot => (
+          <div key={dot.id} className={`fp-dot ${dot.filled ? 'filled' : ''}`} />
+        ))}
+      </div>
 
-        {/* Advanced Owner Toggle */}
-        <div className="flex items-center justify-between p-2 pl-1">
-          <span className="text-sm font-sans font-bold text-gray-400 tracking-wider">
-            {t('intake.has_owner', 'Different Owner?')}
-          </span>
-          <div 
-            onClick={() => setHasOwner(!hasOwner)}
-            className={`w-14 h-7 rounded-full transition-colors relative cursor-pointer ${hasOwner ? 'bg-primary-500 shadow-glow' : 'bg-gray-800'}`}
-          >
-            <div className={`w-5 h-5 bg-white rounded-full absolute top-1 transition-all ${hasOwner ? 'left-8' : 'left-1'}`}></div>
-          </div>
-        </div>
-
-        {hasOwner && (
-          <div className="card p-4 flex flex-col gap-4 border-l-4 border-l-gray-500 animate-slide-up">
-             <div>
-              <label className="input-label">{t('intake.owner_name', 'Owner Name')}</label>
-              <input name="owner_name" value={formData.owner_name} onChange={handleChange} className="input-base" />
-            </div>
-            <div>
-              <label className="input-label">{t('intake.owner_wa', 'Owner WhatsApp')}</label>
-              <input type="tel" name="owner_whatsapp" value={formData.owner_whatsapp} onChange={handleChange} className="input-base font-mono" />
-            </div>
-          </div>
-        )}
-
-        {/* Vehicle Details */}
-        <div className="card p-4 flex flex-col gap-4 mt-2">
-          <h2 className="font-display tracking-widest text-xl text-white">{t('intake.vehicle_details', 'VEHICLE')}</h2>
-          
-          <div className="grid grid-cols-2 gap-3">
-             <button 
-                type="button" 
-                onClick={() => setFormData({...formData, vehicle_type: 'Bike'})}
-                className={`py-3 rounded-lg font-sans font-bold tracking-wider uppercase border transition-all ${
-                  formData.vehicle_type === 'Bike' 
-                    ? 'bg-primary-500/20 border-primary-500 text-primary-500' 
-                    : 'bg-gray-900 border-gray-800 text-gray-500'
-                }`}
-              >
-               <Bike className="mx-auto mb-1" size={20}/> BIKE
-             </button>
-             <button 
-                type="button" 
-                onClick={() => setFormData({...formData, vehicle_type: 'Scooter'})}
-                className={`py-3 rounded-lg font-sans font-bold tracking-wider uppercase border transition-all ${
-                  formData.vehicle_type === 'Scooter' 
-                    ? 'bg-primary-500/20 border-primary-500 text-primary-500' 
-                    : 'bg-gray-900 border-gray-800 text-gray-500'
-                }`}
-              >
-               <span className="block mx-auto mb-1 text-xl leading-none">🛵</span> SCOOTER
-             </button>
-          </div>
-
-          <div>
-            <label className="input-label flex items-center gap-2">{t('intake.number_plate', 'Number Plate')} *</label>
+      <div className="cnt" style={{ paddingBottom: '96px' }}>
+        {/* SECTION 1: Customer Info */}
+        <div className="form-section">
+          <div className="form-section-title">{t('intake.sec1')}</div>
+          <div className="ig">
+            <label>{t('intake.customer')}</label>
             <input 
-              name="number_plate" 
-              value={formData.number_plate} 
-              onChange={handleChange} 
-              className="input-base font-mono text-xl uppercase tracking-widest" 
-              placeholder="GJ-01-XX-1234" 
+              className="inp" 
+              placeholder="e.g. Ramesh Kumar" 
+              value={formData.customer_name}
+              onChange={(e) => handleInputChange('customer_name', e.target.value)}
             />
           </div>
-          
-          <div>
-            <label className="input-label flex items-center gap-2"><Wrench size={14}/> {t('intake.problem', 'Problem')} *</label>
-            <input name="problem" value={formData.problem} onChange={handleChange} className="input-base" placeholder="Oil change, brakes..." />
-          </div>
-
-          <div>
-            <label className="input-label flex items-center gap-2"><IndianRupee size={14}/> {t('intake.estimate', 'Estimate Amount (₹)')} *</label>
-            <input type="number" name="estimate" value={formData.estimate} onChange={handleChange} className="input-base font-mono text-xl" placeholder="1500" />
+          <div className="ig">
+            <label>{t('intake.whatsapp')}</label>
+            <div className="inp-prefix">
+              <span className="pfx">+91</span>
+              <input 
+                className="inp" 
+                placeholder="9876543210" 
+                type="tel" 
+                maxLength={10} 
+                value={formData.customer_whatsapp}
+                onChange={(e) => handleInputChange('customer_whatsapp', e.target.value)}
+              />
+            </div>
           </div>
         </div>
 
-        {errorMsg && (
-          <div className="bg-red-500/20 border border-red-500 text-red-500 p-3 rounded-lg text-sm text-center font-bold font-sans">
-            {errorMsg}
+        {/* SECTION 2: Vehicle Info */}
+        <div className="form-section" style={{ marginTop: '6px' }}>
+          <div className="form-section-title">{t('intake.sec2')}</div>
+          <div className="ig">
+            <label>{t('intake.vtype')}</label>
+            <div className="vtype-grid">
+              <button 
+                className={`vtype-btn ${formData.vehicle_type === 'Scooter' ? 'sel' : ''}`}
+                onClick={() => selVtype('Scooter')}
+              >
+                🛵 <span>{t('vtype.scooter')}</span>
+              </button>
+              <button 
+                className={`vtype-btn ${formData.vehicle_type === 'Bike' ? 'sel' : ''}`}
+                onClick={() => selVtype('Bike')}
+              >
+                🏍️ <span>{t('vtype.bike')}</span>
+              </button>
+            </div>
+          </div>
+          <div className="ig">
+            <label>{t('intake.plate')}</label>
+            <input 
+              className="inp" 
+              placeholder="e.g. GJ-01-AB-1234" 
+              style={{ textTransform: 'uppercase', fontFamily: "'Share Tech Mono',monospace", fontWeight: 600, letterSpacing: '1px' }}
+              value={formData.number_plate}
+              onChange={(e) => handleInputChange('number_plate', e.target.value.toUpperCase())}
+            />
+          </div>
+          <div className="ig">
+            <label>{t('intake.owner')}</label>
+            <input 
+              className="inp" 
+              placeholder="e.g. Suresh Bhai" 
+              value={formData.owner_name}
+              onChange={(e) => handleInputChange('owner_name', e.target.value)}
+            />
+          </div>
+          <div className="ig">
+            <label>{t('intake.ownernum')}</label>
+            <div className="inp-prefix">
+              <span className="pfx">+91</span>
+              <input 
+                className="inp" 
+                placeholder="9123456780" 
+                type="tel" 
+                maxLength={10} 
+                value={formData.owner_whatsapp}
+                onChange={(e) => handleInputChange('owner_whatsapp', e.target.value)}
+              />
+            </div>
+          </div>
+        </div>
+
+        {/* SECTION 3: Job Info */}
+        <div className="form-section" style={{ marginTop: '6px' }}>
+          <div className="form-section-title">{t('intake.sec3')}</div>
+          <div className="ig">
+            <label>{t('intake.problem')}</label>
+            <textarea 
+              className="inp" 
+              placeholder="e.g. Front brake se awaaz aati hai, engine thoda smoke karta hai..." 
+              value={formData.problem}
+              onChange={(e) => handleInputChange('problem', e.target.value)}
+            />
+          </div>
+          <div className="ig">
+            <label>{t('intake.estimate')}</label>
+            <div className="inp-prefix">
+              <span className="pfx">₹</span>
+              <input 
+                className="inp" 
+                placeholder="2500" 
+                type="number" 
+                value={formData.estimate}
+                onChange={(e) => handleInputChange('estimate', e.target.value)}
+              />
+            </div>
+          </div>
+          <div className="ig">
+            <label>{t('intake.delivery')}</label>
+            <input 
+              className="inp" 
+              placeholder="e.g. Kal tak, 2 din mein..." 
+              value={formData.delivery_by}
+              onChange={(e) => handleInputChange('delivery_by', e.target.value)}
+            />
+          </div>
+        </div>
+
+        {error && (
+          <div style={{ margin: '0 16px 10px', background: 'var(--rdb)', borderRadius: '8px', padding: '10px 12px', fontSize: '12px', color: 'var(--rdt)' }}>
+            ⚠️ <span>{error}</span>
           </div>
         )}
+      </div>
 
-      </form>
-      
-      {/* Sticky Bottom Actions */}
-      <div className="fixed bottom-0 left-0 right-0 max-w-md mx-auto p-4 bg-gray-950/90 backdrop-blur border-t border-gray-900 z-50">
-        <button 
-          onClick={handleSubmit} 
-          disabled={isLoading}
-          className="btn-primary w-full shadow-glow"
-        >
-          {isLoading ? (
-            <div className="w-6 h-6 rounded-full border-2 border-white border-t-transparent animate-spin"></div>
-          ) : (
-            <><Save size={20} /> {t('common.save', 'SAVE')}</>
-          )}
+      {/* Save Button */}
+      <div style={{ position: 'absolute', bottom: '80px', left: 0, right: 0, padding: '12px 16px', background: '#fff', borderTop: '1px solid var(--lg)' }}>
+        <button className="btn bo" onClick={handleSubmit}>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+            <path d="M5 13l4 4L19 7" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" />
+          </svg>
+          <span>{t('intake.save')}</span>
+        </button>
+      </div>
+
+      <div className="bnav">
+        <button className="ni on">
+          <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" /></svg>
+          <span>{t('nav.intake')}</span>
+        </button>
+        <button className="ni" onClick={() => navigate('/dashboard')}>
+          <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" /><rect x="14" y="3" width="7" height="7" /><rect x="14" y="14" width="7" height="7" /><rect x="3" y="14" width="7" height="7" /></svg>
+          <span>{t('nav.jobs')}</span>
+        </button>
+        <button className="ni" onClick={() => navigate('/report')}>
+          <svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12" /></svg>
+          <span>{t('nav.report')}</span>
+        </button>
+        <button className="ni" onClick={() => navigate('/follow-up')}>
+          <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" /><line x1="9" y1="10" x2="15" y2="10" /><line x1="9" y1="14" x2="13" y2="14" /></svg>
+          <span>{t('nav.followup')}</span>
         </button>
       </div>
     </div>
   );
-}
+};
+
+export default IntakeForm;

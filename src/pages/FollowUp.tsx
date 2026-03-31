@@ -1,113 +1,115 @@
-import { useEffect, useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { ArrowLeft, Send, IndianRupee, BellRing, Check } from 'lucide-react';
 import { useVehicleStore } from '../store/vehicleStore';
-import { formatCurrency, generateWALink } from '../utils/formatters';
 
-export default function FollowUp() {
-  const { t } = useTranslation();
+const FollowUp: React.FC = () => {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const { vehicles, fetchVehicles, isLoading } = useVehicleStore();
-  const [remindedIds, setRemindedIds] = useState<Set<string>>(new Set());
+  const [selectedIds, setSelectedIds] = useState<string[]>([]);
 
   useEffect(() => {
     fetchVehicles();
   }, [fetchVehicles]);
 
-  // Only show vehicles that are done/paid but still have remaining balance > 0
-  const debtors = vehicles.filter(v => v.remaining > 0);
-  const totalPending = debtors.reduce((sum, v) => sum + v.remaining, 0);
+  const pendingVehicles = vehicles.filter(v => 
+    v.status === 'done' && v.total_paid < (v.estimate || 0)
+  );
 
-  const handleRemind = (vehicle: any) => {
-    const phone = vehicle.owner_whatsapp || vehicle.customer_whatsapp;
-    const text = `Hello ${vehicle.owner_name || vehicle.customer_name},\nThis is a friendly reminder from Shri Narsang Bike Care that a balance of ${formatCurrency(vehicle.remaining)} is pending for your vehicle ${vehicle.number_plate}.\nPlease arrange for payment soon.\nThank you!`;
-    
-    window.open(generateWALink(phone, text), '_blank');
-    setRemindedIds(prev => new Set(prev).add(vehicle.id));
+  const toggleSelect = (id: string) => {
+    setSelectedIds(prev => 
+      prev.includes(id) ? prev.filter(i => i !== id) : [...prev, id]
+    );
   };
 
-  const handleRemindAll = () => {
-    if (debtors.length === 0) return;
-    alert("In a normal WhatsApp setup, bulk sending requires API.\nClicking OK will open the first one. Please use individual remind buttons for best results.");
-    handleRemind(debtors[0]);
+  const handleBulkSend = () => {
+    if (selectedIds.length === 0) return;
+    alert(`Sending bulk WhatsApp to ${selectedIds.length} customers...`);
   };
 
   return (
-    <div className="min-h-screen bg-[var(--app-bg)] pb-24">
-      <header className="flex w-full items-center gap-4 p-4 border-b border-gray-900 sticky top-0 bg-[var(--app-bg)]/90 backdrop-blur-md z-20">
-        <button onClick={() => navigate(-1)} className="p-2 -ml-2 text-gray-400 hover:text-white">
-          <ArrowLeft size={24} />
-        </button>
-        <h1 className="text-2xl font-display tracking-widest text-primary-500 m-0 leading-none">
-          {t('nav.followup', 'FOLLOW UP')}
-        </h1>
-      </header>
+    <div className="screen active" id="s-followup">
+      <div className="sbar"><span className="t" style={{ color: 'var(--dk)' }}>9:41</span></div>
+      <div className="hdr">
+        <div style={{ width: '36px', height: '36px', borderRadius: '50%', background: 'linear-gradient(135deg,#E8590C,#ff7c35)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontSize: '18px', fontWeight: 700, fontFamily: "'Bebas Neue',cursive" }}>SN</div>
+        <div className="hdr-t">{t('nav.followup')}</div>
+      </div>
 
-      <div className="p-4">
-         {/* Summary Banner */}
-         <div className="bg-red-500/10 border border-red-500/30 rounded-xl p-6 text-center mb-6 relative overflow-hidden">
-            <div className="absolute top-0 right-0 w-32 h-32 bg-red-500/20 rounded-full blur-[50px] pointer-events-none"></div>
-            <p className="text-xs text-red-500 uppercase font-sans tracking-widest font-bold mb-1 flex justify-center items-center gap-1">
-              <IndianRupee size={12}/> Total Market Pending
-            </p>
-            <p className="text-4xl font-mono font-bold text-red-500 text-shadow-sm">{formatCurrency(totalPending)}</p>
-            <p className="text-sm font-sans text-gray-400 mt-2 tracking-wide font-bold">{debtors.length} customers to remind</p>
-            
-            <button 
-              onClick={handleRemindAll}
-              disabled={debtors.length === 0}
-              className="mt-4 bg-red-500 hover:bg-red-600 active:scale-95 transition-all text-white font-sans font-bold uppercase tracking-widest text-sm py-2 px-6 rounded-lg shadow-[0_0_15px_rgba(224,49,49,0.4)] disabled:opacity-50 flex items-center justify-center gap-2 mx-auto"
-            >
-              <BellRing size={16} /> Remind All
-            </button>
-         </div>
+      <div style={{ padding: '16px', background: 'var(--orl)', borderBottom: '1px solid var(--orm)', display: 'flex', alignItems: 'center', gap: '12px' }}>
+        <div style={{ padding: '8px', background: '#fff', borderRadius: '8px', fontSize: '18px', boxShadow: '0 2px 8px rgba(0,0,0,.05)' }}>🔔</div>
+        <div>
+          <div style={{ fontSize: '13px', fontWeight: 700, color: 'var(--or)' }}>{t('followup.bulk')}</div>
+          <div style={{ fontSize: '11px', color: 'var(--sl)', fontWeight: 600 }}>{t('followup.tip')}</div>
+        </div>
+      </div>
 
-         <div className="space-y-3">
-            {isLoading ? (
-               <div className="flex justify-center p-8"><div className="w-6 h-6 rounded-full border-2 border-primary-500 border-t-transparent animate-spin"></div></div>
-            ) : debtors.length > 0 ? (
-               debtors.map(v => (
-                 <div key={v.id} className="bg-gray-900 border border-gray-800 rounded-xl p-4 flex flex-col gap-3">
-                    <div className="flex justify-between items-start">
-                       <div>
-                         <p className="font-display tracking-widest text-white text-xl">{v.number_plate}</p>
-                         <p className="text-sm font-sans text-gray-400 font-bold">{v.customer_name}</p>
-                       </div>
-                       <div className="text-right">
-                         <p className="font-mono text-lg font-bold text-red-500">{formatCurrency(v.remaining)}</p>
-                         <p className="text-[10px] text-gray-500 tracking-widest uppercase font-sans">Pending</p>
-                       </div>
-                    </div>
-                    
-                    <div className="flex justify-between items-center bg-gray-950 p-2 rounded-lg border border-gray-800/50">
-                       <p className="text-xs font-mono text-gray-500 flex items-center gap-2">
-                          <IndianRupee size={12}/> Estimate: {formatCurrency(v.estimate)}
-                       </p>
-                       <button
-                         onClick={() => handleRemind(v)}
-                         className={`flex items-center gap-1 px-4 py-1.5 rounded-md text-xs font-bold uppercase tracking-wider transition-colors ${
-                           remindedIds.has(v.id) 
-                             ? 'bg-green-500/20 text-green-500 border border-green-500/50' 
-                             : 'bg-primary-500/20 text-primary-500 border border-primary-500/50 hover:bg-primary-500 hover:text-white'
-                         }`}
-                       >
-                         {remindedIds.has(v.id) ? <><Check size={14}/> Sent</> : <><Send size={14}/> Remind</>}
-                       </button>
-                    </div>
-                 </div>
-               ))
-            ) : (
-               <div className="text-center p-8 border border-dashed border-gray-800 rounded-xl bg-gray-900/50">
-                  <div className="w-16 h-16 bg-green-500/10 rounded-full flex items-center justify-center mx-auto mb-4">
-                     <Check size={32} className="text-green-500" />
+      <div className="cnt">
+        {isLoading ? (
+          <div style={{ padding: '20px', textAlign: 'center' }}>Loading...</div>
+        ) : pendingVehicles.length === 0 ? (
+          <div style={{ padding: '80px 40px', textAlign: 'center' }}>
+            <div style={{ fontSize: '48px', marginBottom: '16px', opacity: 0.2 }}>🎉</div>
+             <div style={{ color: 'var(--sl)', fontSize: '14px', fontWeight: 600 }}>All payments cleared!</div>
+          </div>
+        ) : (
+          <div style={{ padding: '8px 0' }}>
+            {pendingVehicles.map(v => {
+              const remaining = (v.estimate || 0) - (v.total_paid || 0);
+              const isSel = selectedIds.includes(v.id);
+              
+              return (
+                <div key={v.id} style={{ padding: '16px', borderBottom: '1px solid var(--of)', display: 'flex', alignItems: 'center', gap: '14px', background: isSel ? 'var(--of)' : '#fff' }}>
+                  <div className="tgl" onClick={() => toggleSelect(v.id)}>
+                    <input type="checkbox" checked={isSel} readOnly />
+                    <span className="tgl-s"></span>
                   </div>
-                  <h3 className="text-white font-display tracking-widest text-xl mb-1">ALL CLEAR!</h3>
-                  <p className="text-gray-500 font-sans text-sm">No pending payments to collect.</p>
-               </div>
-            )}
-         </div>
+                  <div style={{ flex: 1 }}>
+                    <div style={{ fontSize: '14px', fontWeight: 700, color: 'var(--dk)', fontFamily: "'Share Tech Mono',monospace" }}>{v.number_plate}</div>
+                    <div style={{ fontSize: '11px', color: 'var(--sl)', marginTop: '2px' }}>{v.customer_name} • {v.customer_whatsapp}</div>
+                  </div>
+                  <div style={{ textAlign: 'right' }}>
+                    <div style={{ fontSize: '14px', fontWeight: 800, color: 'var(--rd)' }}>₹{remaining}</div>
+                    <div style={{ fontSize: '10px', fontWeight: 700, color: 'var(--sl)', textTransform: 'uppercase' }}>pending</div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        )}
+      </div>
+
+      {selectedIds.length > 0 && (
+        <div style={{ position: 'absolute', bottom: '80px', left: 0, right: 0, padding: '16px', background: '#fff', borderTop: '1px solid var(--lg)' }}>
+          <button className="btn wa-btn" onClick={handleBulkSend}>
+             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/>
+            </svg>
+            <span>Send WhatsApp to {selectedIds.length} Selected</span>
+          </button>
+        </div>
+      )}
+
+      <div className="bnav">
+        <button className="ni" onClick={() => navigate('/intake')}>
+          <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" /></svg>
+          <span>{t('nav.intake')}</span>
+        </button>
+        <button className="ni" onClick={() => navigate('/dashboard')}>
+           <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" /><rect x="14" y="3" width="7" height="7" /><rect x="14" y="14" width="7" height="7" /><rect x="3" y="14" width="7" height="7" /></svg>
+          <span>{t('nav.jobs')}</span>
+        </button>
+        <button className="ni" onClick={() => navigate('/report')}>
+          <svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12" /></svg>
+          <span>{t('nav.report')}</span>
+        </button>
+        <button className="ni on">
+          <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" /><line x1="9" y1="10" x2="15" y2="10" /><line x1="9" y1="14" x2="13" y2="14" /></svg>
+          <span>{t('nav.followup')}</span>
+        </button>
       </div>
     </div>
   );
-}
+};
+
+export default FollowUp;

@@ -1,100 +1,120 @@
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { Wrench, CheckCircle2, Search, Plus } from 'lucide-react';
 import { useVehicleStore } from '../store/vehicleStore';
-import Header from '../components/Header';
-import BottomNav from '../components/BottomNav';
 import VehicleCard from '../components/VehicleCard';
 
-export default function Dashboard() {
-  const { t } = useTranslation();
+const Dashboard: React.FC = () => {
   const navigate = useNavigate();
-  const { vehicles, fetchVehicles, isLoading } = useVehicleStore();
+  const { t } = useTranslation();
+  const { vehicles, fetchVehicles, isLoading, markAsDone } = useVehicleStore();
   const [activeTab, setActiveTab] = useState<'in_repair' | 'done'>('in_repair');
-  const [search, setSearch] = useState('');
 
   useEffect(() => {
     fetchVehicles();
   }, [fetchVehicles]);
 
-  const filteredVehicles = vehicles.filter(v => {
-    const matchesTab = v.status === activeTab; // Note: 'paid' vehicles usually go to 'done' or fall off
-    const matchesSearch = v.number_plate.toLowerCase().includes(search.toLowerCase()) || 
-                          v.customer_name.toLowerCase().includes(search.toLowerCase());
-    return (matchesTab || (activeTab === 'done' && v.status === 'paid')) && matchesSearch;
-  });
+  const filteredVehicles = vehicles.filter(v => 
+    activeTab === 'in_repair' ? v.status === 'in_repair' : v.status === 'done'
+  );
 
   const repairCount = vehicles.filter(v => v.status === 'in_repair').length;
-  const doneCount = vehicles.filter(v => ['done', 'paid'].includes(v.status)).length;
+  const doneCount = vehicles.filter(v => v.status === 'done').length;
+
+  const handleAction = async (e: React.MouseEvent, id: string) => {
+    e.stopPropagation();
+    const vehicle = vehicles.find(v => v.id === id);
+    if (vehicle?.status === 'in_repair') {
+      await markAsDone(id);
+      navigate('/wa-sent');
+    } else if (vehicle?.status === 'done') {
+      navigate(`/vehicle/${id}/payment`);
+    }
+  };
 
   return (
-    <div className="page-scroll">
-      <Header />
-      
-      {/* Stats Cards */}
-      <div className="grid grid-cols-2 gap-4 mt-6 mb-6">
-        <div 
+    <div className="screen active" id="s-dash">
+      <div className="sbar"><span className="t" style={{ color: 'var(--dk)' }}>9:41</span></div>
+      <div className="hdr">
+        <div style={{ width: '36px', height: '36px', borderRadius: '50%', background: 'linear-gradient(135deg,#E8590C,#ff7c35)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontSize: '18px', fontWeight: 700, fontFamily: "'Bebas Neue',cursive" }}>SN</div>
+        <div className="hdr-t">{t('dash.title')}</div>
+        <button className="sm bo" onClick={() => navigate('/intake')}>
+          <span>{t('dash.new')}</span>
+        </button>
+      </div>
+
+      <div className="stats">
+        <div className="st">
+          <div className="sv" style={{ color: 'var(--or)' }}>{repairCount}</div>
+          <div className="sl2">{t('dash.repair')}</div>
+        </div>
+        <div className="st">
+          <div className="sv" style={{ color: 'var(--gn)' }}>{doneCount}</div>
+          <div className="sl2">{t('dash.done')}</div>
+        </div>
+        <div className="st" onClick={() => navigate('/report')} style={{ cursor: 'pointer' }}>
+          <div className="sv" style={{ color: 'var(--bl)' }}>₹{vehicles.reduce((acc, v) => acc + (v.total_paid || 0), 0)}</div>
+          <div className="sl2">{t('report.earned')}</div>
+        </div>
+      </div>
+
+      <div className="tabs">
+        <button 
+          className={`tab ${activeTab === 'in_repair' ? 'on' : ''}`}
           onClick={() => setActiveTab('in_repair')}
-          className={`card p-4 flex flex-col items-center justify-center transition-all ${
-            activeTab === 'in_repair' ? 'border-primary-500 bg-gray-900 shadow-glow' : 'opacity-70'
-          }`}
         >
-          <Wrench className={activeTab === 'in_repair' ? 'text-primary-500' : 'text-gray-500'} size={28} />
-          <span className="text-3xl font-display mt-2">{repairCount}</span>
-          <span className="text-xs text-gray-400 uppercase tracking-wider">{t('dashboard.in_repair', 'IN REPAIR')}</span>
-        </div>
-        
-        <div 
+          {t('dash.tab.repair')} ({repairCount})
+        </button>
+        <button 
+          className={`tab ${activeTab === 'done' ? 'on' : ''}`}
           onClick={() => setActiveTab('done')}
-          className={`card p-4 flex flex-col items-center justify-center transition-all ${
-            activeTab === 'done' ? 'border-primary-500 bg-gray-900 shadow-glow' : 'opacity-70'
-          }`}
         >
-          <CheckCircle2 className={activeTab === 'done' ? 'text-green-500' : 'text-gray-500'} size={28} />
-          <span className="text-3xl font-display mt-2">{doneCount}</span>
-          <span className="text-xs text-gray-400 uppercase tracking-wider">{t('dashboard.done_today', 'DONE TODAY')}</span>
-        </div>
+          {t('dash.tab.done')} ({doneCount})
+        </button>
       </div>
 
-      {/* Search Bar */}
-      <div className="relative mb-6">
-        <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-500" size={20} />
-        <input 
-          type="text" 
-          placeholder={t('dashboard.search', 'Search vehicles...')} 
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          className="input-base pl-12"
-        />
-      </div>
-
-      {/* Vehicle List */}
-      <div className="flex flex-col gap-4 mb-8">
-        {isLoading && filteredVehicles.length === 0 ? (
-          <div className="flex justify-center py-10">
-            <div className="w-8 h-8 rounded-full border-4 border-gray-800 border-t-primary-500 animate-spin"></div>
+      <div className="cnt">
+        {isLoading ? (
+          <div style={{ padding: '20px', textAlign: 'center', color: 'var(--sl)' }}>Loading...</div>
+        ) : filteredVehicles.length === 0 ? (
+          <div style={{ padding: '60px 40px', textAlign: 'center' }}>
+            <div style={{ fontSize: '48px', marginBottom: '16px', opacity: 0.2 }}>🛵</div>
+            <div style={{ color: 'var(--sl)', fontSize: '14px', fontWeight: 600 }}>No vehicles found</div>
           </div>
-        ) : filteredVehicles.length > 0 ? (
-          filteredVehicles.map(vehicle => (
-            <VehicleCard key={vehicle.id} vehicle={vehicle} onClick={() => navigate(`/vehicle/${vehicle.id}`)} />
-          ))
         ) : (
-          <div className="text-center py-10 text-gray-500 font-sans">
-            {search ? 'No vehicles match your search' : 'No vehicles found in this category'}
+          <div style={{ paddingTop: '16px' }}>
+            {filteredVehicles.map(vehicle => (
+              <VehicleCard 
+                key={vehicle.id} 
+                vehicle={vehicle} 
+                onClick={(id) => navigate(`/vehicle/${id}`)}
+                onAction={handleAction}
+              />
+            ))}
           </div>
         )}
       </div>
 
-      {/* Floating Action Button */}
-      <button 
-        onClick={() => navigate('/intake')}
-        className="fixed bottom-24 right-4 w-16 h-16 bg-primary-500 text-white rounded-full flex items-center justify-center shadow-glow z-40 active:scale-95 transition-transform"
-      >
-        <Plus size={32} />
-      </button>
-
-      <BottomNav />
+      <div className="bnav">
+        <button className="ni" onClick={() => navigate('/intake')}>
+          <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" /></svg>
+          <span>{t('nav.intake')}</span>
+        </button>
+        <button className="ni on">
+          <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" /><rect x="14" y="3" width="7" height="7" /><rect x="14" y="14" width="7" height="7" /><rect x="3" y="14" width="7" height="7" /></svg>
+          <span>{t('nav.jobs')}</span>
+        </button>
+        <button className="ni" onClick={() => navigate('/report')}>
+          <svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12" /></svg>
+          <span>{t('nav.report')}</span>
+        </button>
+        <button className="ni" onClick={() => navigate('/follow-up')}>
+          <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" /><line x1="9" y1="10" x2="15" y2="10" /><line x1="9" y1="14" x2="13" y2="14" /></svg>
+          <span>{t('nav.followup')}</span>
+        </button>
+      </div>
     </div>
   );
-}
+};
+
+export default Dashboard;

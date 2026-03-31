@@ -1,160 +1,125 @@
-import { useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { ArrowLeft, Clock, Banknote, Navigation, Info, CheckCircle2 } from 'lucide-react';
 import { useVehicleStore } from '../store/vehicleStore';
-import { usePaymentStore } from '../store/paymentStore';
-import { formatCurrency, formatRelativeDate } from '../utils/formatters';
 
-export default function PartialTracker() {
+const PartialTracker: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { t } = useTranslation();
-  
-  const { getVehicleById, selectedVehicle } = useVehicleStore();
-  const { fetchPaymentsForVehicle, payments, isLoading } = usePaymentStore();
+  const { selectedVehicle, getVehicleById, isLoading } = useVehicleStore();
 
   useEffect(() => {
     if (id) {
       getVehicleById(id);
-      fetchPaymentsForVehicle(id);
     }
-  }, [id, getVehicleById, fetchPaymentsForVehicle]);
+  }, [id, getVehicleById]);
 
-  if (!selectedVehicle || isLoading) {
-    return (
-      <div className="min-h-screen bg-gray-950 flex items-center justify-center">
-        <div className="w-8 h-8 rounded-full border-4 border-gray-800 border-t-primary-500 animate-spin"></div>
-      </div>
-    );
+  if (isLoading || !selectedVehicle) {
+    return <div className="screen active" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>Loading...</div>;
   }
 
-  const estimate = selectedVehicle.estimate;
-  const remaining = selectedVehicle.remaining;
-  const totalPaid = selectedVehicle.total_paid;
-  
-  // Progress bar calculation
-  const fillPercentage = estimate > 0 ? (totalPaid / estimate) * 100 : 100;
+  const v = selectedVehicle;
+  const estimate = v.estimate || 0;
+  const totalPaid = v.total_paid || 0;
+  const remaining = estimate - totalPaid;
+  const progressPercent = estimate > 0 ? (totalPaid / estimate) * 100 : 0;
 
   return (
-    <div className="min-h-screen bg-[var(--app-bg)] pb-24">
-      <header className="flex w-full items-center gap-4 p-4 border-b border-gray-900 sticky top-0 bg-[var(--app-bg)]/90 backdrop-blur-md z-20">
-        <button onClick={() => navigate('/dashboard')} className="p-2 -ml-2 text-gray-400 hover:text-white">
-          <ArrowLeft size={24} />
+    <div className="screen active" id="s-tracker">
+      <div className="sbar"><span className="t" style={{ color: 'var(--dk)' }}>9:41</span></div>
+      <div className="hdr">
+        <button className="bk" onClick={() => navigate(`/vehicle/${v.id}`)}>
+          <svg width="18" height="18" viewBox="0 0 24 24">
+            <path d="M19 12H5M12 19l-7-7 7-7" stroke="#0F172A" strokeWidth="2" strokeLinecap="round" fill="none" />
+          </svg>
         </button>
-        <h1 className="text-2xl font-display tracking-widest text-primary-500 m-0 leading-none">
-          PAYMENT TRACKER
-        </h1>
-      </header>
+        <div className="hdr-t">{t('tracker.title')}</div>
+        <button className="sm bo" onClick={() => navigate(`/vehicle/${v.id}/add-installment`)}>
+          <span>{t('btn.addkisat')}</span>
+        </button>
+      </div>
 
-      <div className="p-4 space-y-6 animate-fade-in">
-        
-        {/* Core Vehicle Header */}
-        <div className="flex justify-between items-center bg-gray-900/50 p-4 rounded-xl border border-gray-800">
-           <div>
-             <h2 className="text-3xl font-display tracking-widest text-white">{selectedVehicle.number_plate}</h2>
-             <p className="text-gray-400 font-sans font-bold text-sm tracking-wide">{selectedVehicle.customer_name}</p>
-           </div>
-           
-           <div className="text-right">
-             <p className="font-sans text-xs tracking-widest uppercase text-gray-500 mb-1">{t('intake.estimate', 'Estimate')}</p>
-             <p className="font-mono text-2xl font-bold text-white">{formatCurrency(estimate)}</p>
-           </div>
+      <div className="cnt">
+        <div style={{ padding: '20px 16px', background: 'var(--of)', borderBottom: '1px solid var(--lg)' }}>
+          <div style={{ display: 'flex', justifySelf: 'center', flexDirection: 'column', alignItems: 'center' }}>
+            <div style={{ fontSize: '11px', fontWeight: 700, color: 'var(--sl)', textTransform: 'uppercase', marginBottom: '8px', letterSpacing: '1px' }}>{t('tracker.progress')}</div>
+            <div style={{ position: 'relative', width: '120px', height: '120px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+               <svg style={{ position: 'absolute', transform: 'rotate(-90deg)', width: '100%', height: '100%' }}>
+                <circle cx="60" cy="60" r="54" stroke="var(--lg)" strokeWidth="8" fill="none" />
+                <circle cx="60" cy="60" r="54" stroke="var(--or)" strokeWidth="8" fill="none" strokeDasharray={`${(progressPercent * 3.39).toFixed(0)} 339`} strokeLinecap="round" />
+              </svg>
+              <div style={{ textAlign: 'center' }}>
+                <div style={{ fontSize: '28px', fontFamily: "'Bebas Neue',cursive", color: 'var(--dk)', lineHeight: 1 }}>{Math.round(progressPercent)}%</div>
+                <div style={{ fontSize: '10px', fontWeight: 700, color: 'var(--sl)' }}>PAID</div>
+              </div>
+            </div>
+          </div>
+          
+          <div style={{ marginTop: '20px', display: 'flex', gap: '10px' }}>
+            <div className="st" style={{ borderLeft: '3px solid var(--gn)', background: '#fff' }}>
+              <div style={{ fontSize: '10px', color: 'var(--sl)', fontWeight: 700 }}>RECEIVED</div>
+              <div style={{ fontSize: '20px', fontFamily: "'Bebas Neue',cursive", color: 'var(--gn)' }}>₹{totalPaid}</div>
+            </div>
+            <div className="st" style={{ borderLeft: '3px solid var(--rd)', background: '#fff' }}>
+              <div style={{ fontSize: '10px', color: 'var(--sl)', fontWeight: 700 }}>REMAINING</div>
+              <div style={{ fontSize: '20px', fontFamily: "'Bebas Neue',cursive", color: 'var(--rd)' }}>₹{remaining}</div>
+            </div>
+          </div>
         </div>
 
-        {/* Big Progress Bar */}
-        <div className="card p-5 relative overflow-hidden">
-           <div className="w-full bg-gray-900 h-8 rounded-full overflow-hidden border border-gray-800 relative shadow-inner mb-4">
-               <div 
-                 className={`h-full transition-all duration-[1s] rounded-full flex items-center justify-end pr-3 bg-gradient-to-r from-primary-600 to-primary-500 shadow-glow`}
-                 style={{ width: `${Math.min(fillPercentage, 100)}%` }}
-               >
-                 {fillPercentage >= 15 && <span className="font-sans text-[10px] font-bold text-white/80">{Math.round(fillPercentage)}%</span>}
-               </div>
-               
-               {/* Marker for remaining */}
-               {remaining > 0 && (
-                 <div className="absolute top-0 right-0 h-full w-2 bg-red-500 shadow-[0_0_10px_rgba(224,49,49,0.8)] opacity-50 z-10"></div>
-               )}
-           </div>
-           
-           <div className="grid grid-cols-2 gap-4">
-              <div className="bg-gray-900 rounded-lg p-3 text-center border border-gray-800/50">
-                <p className="text-[10px] text-gray-500 font-sans tracking-widest uppercase mb-1">{t('payment.received', 'Received')}</p>
-                <p className="font-mono text-xl text-primary-500 font-bold">{formatCurrency(totalPaid)}</p>
-              </div>
-              <div className={`rounded-lg p-3 text-center border ${remaining > 0 ? 'bg-red-500/10 border-red-500/30' : 'bg-green-500/10 border-green-500/30'}`}>
-                <p className={`text-[10px] font-sans tracking-widest uppercase mb-1 ${remaining > 0 ? 'text-red-500' : 'text-green-500'}`}>{t('payment.remaining', 'Remaining')}</p>
-                <p className={`font-mono text-xl font-bold ${remaining > 0 ? 'text-red-500' : 'text-green-500'}`}>{formatCurrency(remaining)}</p>
-              </div>
-           </div>
-        </div>
+        <div style={{ padding: '16px' }}>
+          <div style={{ fontSize: '14px', fontFamily: "'Bebas Neue',cursive", color: 'var(--or)', letterSpacing: '2px', marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+            {t('tracker.history')}
+            <div style={{ flex: 1, height: '1px', background: 'linear-gradient(90deg,var(--orm),transparent)' }}></div>
+          </div>
 
-        {/* Timeline Log */}
-        <div>
-           <div className="flex items-center gap-2 mb-4">
-              <Clock size={18} className="text-gray-500" />
-              <h3 className="font-sans font-bold text-gray-400 tracking-widest uppercase text-sm">Payment History</h3>
-           </div>
-           
-           <div className="relative pl-6 space-y-6">
-              {/* Timeline line */}
-              <div className="absolute top-2 bottom-2 left-[11px] w-0.5 bg-gray-800"></div>
-              
-              {payments.map((payment, index) => {
-                 const isFirst = index === 0;
-                 return (
-                   <div key={payment.id} className="relative">
-                     {/* Timeline node */}
-                     <div className={`absolute -left-[30px] top-1 w-4 h-4 rounded-full border-2 bg-gray-950 flex items-center justify-center z-10 ${isFirst && fillPercentage >= 100 ? 'border-green-500 shadow-[0_0_10px_rgba(43,138,62,0.6)]' : 'border-primary-500 shadow-[0_0_10px_rgba(232,89,12,0.4)]'}`}>
-                       <div className={`w-1.5 h-1.5 rounded-full ${isFirst && fillPercentage >= 100 ? 'bg-green-500' : 'bg-primary-500'}`}></div>
-                     </div>
-                     
-                     <div className="card p-3 border-gray-800 bg-gray-900/40">
-                       <div className="flex justify-between items-start mb-2">
-                         <div className="flex items-center gap-2">
-                           <Banknote size={16} className={payment.payment_method === 'cash' ? 'text-green-500' : 'text-blue-400'} />
-                           <span className="font-sans text-xs tracking-wider uppercase font-bold text-gray-300">
-                             {payment.payment_method}
-                           </span>
-                         </div>
-                         <span className="text-xs text-gray-500 font-mono">
-                           {formatRelativeDate(payment.paid_at)}
-                         </span>
-                       </div>
-                       
-                       <p className="font-mono text-xl font-bold text-white">
-                         {formatCurrency(payment.amount_paid)}
-                       </p>
-                     </div>
-                   </div>
-                 );
-              })}
-              
-              {payments.length === 0 && (
-                <div className="text-center text-gray-500 font-sans p-6 italic flex flex-col items-center gap-2">
-                   <Info size={24} />
-                   No payments logged yet
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+            {(v.payments || []).map((p, idx) => (
+              <div key={p.id} className="cf" style={{ background: '#fff', padding: '12px 14px', borderRadius: '12px', border: '1.5px solid var(--lg)', display: 'block' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '4px' }}>
+                  <div style={{ fontSize: '13px', fontWeight: 700, color: 'var(--dk)' }}>Installment #{idx + 1}</div>
+                  <div style={{ fontSize: '14px', fontWeight: 800, color: 'var(--gn)' }}>₹{p.amount}</div>
                 </div>
-              )}
-           </div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '11px', color: 'var(--sl)' }}>
+                  <div>{p.created_at ? new Date(p.created_at).toLocaleDateString() : 'N/A'} • {p.payment_method}</div>
+                  <div style={{ color: 'var(--bl)', fontWeight: 700 }}>Sent 📱</div>
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
-      
-      {/* Sticky Bottom Actions */}
-      <div className="fixed bottom-0 left-0 right-0 max-w-md mx-auto p-4 bg-gray-950/90 backdrop-blur border-t border-gray-900 z-50">
-        <button 
-          onClick={() => navigate(`/vehicle/${selectedVehicle.id}/add-installment`)} 
-          disabled={remaining <= 0}
-          className={`btn-primary w-full shadow-glow ${remaining <= 0 ? 'opacity-50 grayscale cursor-not-allowed border-gray-700 bg-gray-800' : ''}`}
-        >
-          {remaining <= 0 ? (
-             <><CheckCircle2 size={24} className="text-green-500"/> FULLY PAID</>
-          ) : (
-             <><Navigation size={20} /> RECORD INSTALLMENT</>
-          )}
+
+      <div style={{ position: 'absolute', bottom: '80px', left: 0, right: 0, padding: '16px', background: '#fff', borderTop: '1px solid var(--lg)' }}>
+        <button className="btn bo" onClick={() => navigate(`/vehicle/${v.id}/add-installment`)}>
+           <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+            <path d="M12 5v14M5 12h14" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" />
+          </svg>
+          <span>{t('btn.addkisat')}</span>
+        </button>
+      </div>
+
+      <div className="bnav">
+        <button className="ni" onClick={() => navigate('/intake')}>
+          <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" /></svg>
+          <span>{t('nav.intake')}</span>
+        </button>
+        <button className="ni on" onClick={() => navigate('/dashboard')}>
+           <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" /><rect x="14" y="3" width="7" height="7" /><rect x="14" y="14" width="7" height="7" /><rect x="3" y="14" width="7" height="7" /></svg>
+          <span>{t('nav.jobs')}</span>
+        </button>
+        <button className="ni" onClick={() => navigate('/report')}>
+          <svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12" /></svg>
+          <span>{t('nav.report')}</span>
+        </button>
+        <button className="ni" onClick={() => navigate('/follow-up')}>
+          <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" /><line x1="9" y1="10" x2="15" y2="10" /><line x1="9" y1="14" x2="13" y2="14" /></svg>
+          <span>{t('nav.followup')}</span>
         </button>
       </div>
     </div>
   );
-}
+};
+
+export default PartialTracker;
