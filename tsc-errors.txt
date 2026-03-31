@@ -1,0 +1,16 @@
+src/components/Header.tsx(5,9): error TS6133: 't' is declared but its value is never read.
+src/components/Header.tsx(6,11): error TS6133: 'isDrawerOpen' is declared but its value is never read.
+src/pages/Dashboard.tsx(9,1): error TS6133: 'VehicleWithPayment' is declared but its value is never read.
+src/pages/PaidSuccess.tsx(14,14): error TS6133: 'i18n' is declared but its value is never read.
+src/pages/PaidSuccess.tsx(30,9): error TS6133: 'garageName' is declared but its value is never read.
+src/pages/Payment.tsx(4,58): error TS6133: 'CreditCard' is declared but its value is never read.
+src/pages/Report.tsx(4,10): error TS6133: 'Filter' is declared but its value is never read.
+src/pages/Settings.tsx(4,10): error TS6133: 'ArrowLeft' is declared but its value is never read.
+src/pages/Settings.tsx(13,39): error TS2339: Property 'setMechanicWhatsapp' does not exist on type 'UIState'.
+src/pages/Settings.tsx(49,19): error TS2345: Argument of type 'string' is not assignable to parameter of type 'Language'.
+src/services/api.ts(2,68): error TS6196: 'VehicleType' is declared but never used.
+src/store/paymentStore.ts(2,26): error TS6133: 'vehicleService' is declared but its value is never read.
+src/store/paymentStore.ts(3,24): error TS6196: 'PaymentType' is declared but never used.
+src/store/paymentStore.ts(3,37): error TS6196: 'PaymentMethod' is declared but never used.
+src/store/uiStore.ts(20,49): error TS6133: 'get' is declared but its value is never read.
+src/store/vehicleStore.ts(3,35): error TS6196: 'VehicleStatus' is declared but never used.
