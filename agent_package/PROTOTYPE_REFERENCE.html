@@ -1,0 +1,1537 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title id="app-name-splash" data-i18n="app.name">Shri Narsang Bike Care</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Rajdhani:wght@400;500;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+:root{
+  --or:#E8590C;--orl:#FFF4EE;--orm:#FFE0CC;
+  --dk:#0F172A;--dk2:#1E293B;--sl:#64748B;--lg:#E2E8F0;--of:#F8FAFC;
+  --wh:#FFFFFF;--gn:#10B981;--gnb:#D1FAE5;--gnt:#065F46;
+  --rd:#EF4444;--rdb:#FEE2E2;--rdt:#7F1D1D;
+  --yw:#F59E0B;--ywb:#FEF3C7;--ywt:#92400E;
+  --bl:#3B82F6;--blb:#EFF6FF;--blt:#1E40AF;
+}
+/* GARAGE STYLE FONTS */
+.garage-title{font-family:'Bebas Neue',cursive;letter-spacing:2px;line-height:1}
+.hdr-t{font-family:'Rajdhani',sans-serif;font-size:18px;font-weight:700;color:var(--dk);flex:1;letter-spacing:.5px}
+body{
+  font-family:'Rajdhani',sans-serif;
+  background:#000;
+  margin:0;padding:0;
+  display:flex;align-items:center;justify-content:center;
+  min-height:100vh;
+  overflow:hidden;
+}
+
+/* PHONE */
+.phone{
+  width:100vw;
+  height:100vh;
+  max-width:430px;
+  max-height:932px;
+  border-radius:0;
+  overflow:hidden;
+  position:relative;
+  flex-shrink:0;
+  box-shadow:none;
+}
+/* On wider screens: show as phone card centered */
+@media(min-width:500px){
+  .phone{
+    width:390px;
+    height:844px;
+    border-radius:44px;
+    box-shadow:0 0 0 8px #1c1c1c,0 0 0 11px #2a2a2a,0 32px 80px rgba(0,0,0,.9);
+  }
+}
+.phone::before{content:'';position:absolute;top:0;left:50%;transform:translateX(-50%);
+  width:120px;height:30px;background:#1c1c1c;border-radius:0 0 18px 18px;z-index:999;display:none}
+@media(min-width:500px){
+  .phone::before{display:block}
+}
+
+/* LANGUAGE DOT — fixed inside phone, always on top */
+.lang-dot{
+  position:absolute;top:9px;left:72px;z-index:998;
+  width:auto;height:26px;border-radius:20px;padding:0 9px;
+  background:rgba(232,89,12,.92);border:1.5px solid rgba(255,255,255,.2);
+  cursor:pointer;display:flex;align-items:center;justify-content:center;gap:4px;
+  font-size:10px;font-weight:800;color:#fff;letter-spacing:.4px;
+  box-shadow:0 2px 8px rgba(232,89,12,.4);transition:all .18s;
+}
+.lang-dot:hover{opacity:.88;transform:scale(1.04)}
+.lang-popup{
+  position:absolute;top:40px;left:10px;z-index:997;
+  background:#fff;border-radius:14px;padding:6px;
+  box-shadow:0 8px 32px rgba(0,0,0,.2);border:1px solid var(--lg);
+  display:none;min-width:80px;
+}
+.lang-popup.open{display:block}
+.lang-opt{
+  padding:9px 14px;border-radius:9px;font-size:12px;font-weight:700;
+  cursor:pointer;display:flex;align-items:center;gap:8px;color:var(--dk);
+  transition:background .15s;
+}
+.lang-opt:hover{background:var(--orl);color:var(--or)}
+.lang-opt.active{background:var(--or);color:#fff}
+.lang-opt .flag{font-size:16px}
+
+/* SCREEN */
+.screen{position:absolute;inset:0;display:flex;flex-direction:column;background:#fff;
+  opacity:0;pointer-events:none;transition:opacity .2s;overflow:hidden}
+.screen.active{opacity:1;pointer-events:all}
+
+/* STATUS BAR */
+.sbar{height:44px;padding:12px 20px 0;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.sbar .t{font-size:15px;font-weight:600}
+
+/* HEADER */
+.hdr{padding:10px 18px 12px;display:flex;align-items:center;gap:10px;flex-shrink:0;
+  border-bottom:1px solid var(--lg);background:#fff}
+.hdr-t{font-size:17px;font-weight:700;color:var(--dk);flex:1}
+.bk{width:36px;height:36px;border-radius:50%;background:var(--of);border:none;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;flex-shrink:0}
+
+/* BOTTOM NAV */
+.bnav{position:absolute;bottom:0;left:0;right:0;height:80px;background:#fff;
+  border-top:1px solid var(--lg);display:flex;justify-content:space-around;padding:10px 0 0;z-index:100}
+.ni{display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;padding:4px 8px;border:none;background:none}
+.ni svg{width:22px;height:22px}
+.ni span{font-size:10px;font-weight:600;color:var(--sl);font-family:'Rajdhani',sans-serif;letter-spacing:.4px}
+.ni svg path,.ni svg rect,.ni svg polyline,.ni svg line,.ni svg circle{stroke:var(--sl);stroke-width:1.8;fill:none;stroke-linecap:round;stroke-linejoin:round}
+.ni.on span{color:var(--or);font-weight:700}
+.ni.on svg path,.ni.on svg rect,.ni.on svg polyline,.ni.on svg line,.ni.on svg circle{stroke:var(--or)}
+
+/* CONTENT */
+.cnt{flex:1;overflow-y:auto;padding-bottom:88px}
+.cnt::-webkit-scrollbar{display:none}
+
+/* BUTTONS */
+.btn{width:100%;padding:14px;border-radius:12px;font-family:'Rajdhani',sans-serif;font-size:16px;font-weight:700;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;letter-spacing:.5px}
+.bo{background:var(--or);color:#fff}
+.bg{background:var(--gn);color:#fff}
+.bw{background:#fff;color:var(--dk);border:1.5px solid var(--lg)}
+.sm{padding:8px 12px;font-size:12px;font-weight:600;border-radius:8px;border:none;cursor:pointer;display:inline-flex;align-items:center;gap:5px;font-family:'Rajdhani',sans-serif;white-space:nowrap}
+.wa-btn{background:#25D366;color:#fff}
+
+/* FORM STYLES */
+.form-section{padding:14px 16px 0}
+.form-section-title{font-size:14px;font-family:'Bebas Neue',cursive;color:var(--or);letter-spacing:2px;margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.form-section-title::after{content:'';flex:1;height:1px;background:linear-gradient(90deg,var(--orm),transparent)}
+.ig{margin-bottom:14px}
+.ig label{display:block;font-size:12px;font-family:'Rajdhani',sans-serif;font-weight:700;color:var(--sl);margin-bottom:5px;text-transform:uppercase;letter-spacing:.8px}
+.inp{width:100%;padding:12px 14px;border-radius:8px;border:1.5px solid var(--lg);font-family:'Rajdhani',sans-serif;font-size:14px;color:var(--dk);outline:none;background:#fff}
+.inp:focus{border-color:var(--or);background:#fffaf8}
+textarea.inp{resize:none;height:72px;line-height:1.5}
+.vtype-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.vtype-btn{padding:10px;border-radius:8px;border:1.5px solid var(--lg);background:#fff;font-size:13px;font-weight:600;cursor:pointer;text-align:center;color:var(--sl);transition:all .15s;font-family:'Rajdhani',sans-serif}
+.vtype-btn.sel{background:var(--orl);border-color:var(--or);color:var(--or)}
+.form-progress{display:flex;gap:3px;padding:10px 16px;flex-shrink:0}
+.fp-dot{flex:1;height:3px;border-radius:2px;background:var(--lg);transition:background .3s}
+.fp-dot.filled{background:var(--or)}
+
+/* INPUTS */
+.inp-prefix{position:relative}
+.inp-prefix .pfx{position:absolute;left:12px;top:50%;transform:translateY(-50%);font-size:14px;color:var(--sl);pointer-events:none;z-index:1}
+.inp-prefix .inp{padding-left:36px}
+
+/* CARD */
+.card{background:#fff;border-radius:14px;border:1.5px solid var(--lg);margin:0 16px 12px;overflow:hidden;cursor:pointer}
+.card.rl{border-left:3px solid var(--rd)}
+.card.yl{border-left:3px solid var(--yw)}
+.card.gl{border-left:3px solid var(--gn)}
+.ch{padding:12px 16px 10px;display:flex;align-items:flex-start;justify-content:space-between;border-bottom:1px solid var(--of)}
+.vn{font-size:14px;font-weight:700;color:var(--dk);font-family:'Share Tech Mono',monospace;letter-spacing:.5px}
+.cn{font-size:11px;color:var(--sl);margin-top:2px}
+.badge{padding:3px 8px;border-radius:20px;font-size:10px;font-family:'Rajdhani',sans-serif;font-weight:700;text-transform:uppercase;letter-spacing:.8px}
+.br{background:#FFF4EE;color:var(--or)}
+.bd{background:var(--gnb);color:var(--gnt)}
+.bp{background:#F0FDF4;color:#166534}
+.by{background:var(--ywb);color:var(--ywt)}
+.cb{padding:10px 16px 12px}
+.cp{font-size:13px;color:var(--dk2);margin-bottom:7px;line-height:1.4}
+.cm{display:flex;gap:10px;flex-wrap:wrap}
+.mi{font-size:11px;color:var(--sl)}
+.ca{padding:10px 16px 12px;display:flex;gap:8px;border-top:1px solid var(--of)}
+
+/* TABS */
+.tabs{display:flex;padding:0 16px;border-bottom:1px solid var(--lg);flex-shrink:0}
+.tab{padding:11px 14px 9px;font-size:13px;font-weight:700;font-family:'Rajdhani',sans-serif;letter-spacing:.5px;color:var(--sl);border:none;background:none;cursor:pointer;border-bottom:2.5px solid transparent;margin-bottom:-1px}
+.tab.on{color:var(--or);border-bottom-color:var(--or)}
+
+/* OVERLAY / DIALOG */
+.ov{position:absolute;inset:0;background:rgba(15,23,42,.55);backdrop-filter:blur(4px);z-index:200;display:flex;align-items:flex-end;opacity:0;pointer-events:none;transition:opacity .2s}
+.ov.show{opacity:1;pointer-events:all}
+.dlg{width:100%;background:#fff;border-radius:24px 24px 0 0;padding:0 0 32px;transform:translateY(60px);transition:transform .25s cubic-bezier(.32,1.1,.44,1)}
+.ov.show .dlg{transform:translateY(0)}
+.dlg-h{width:40px;height:4px;background:var(--lg);border-radius:2px;margin:12px auto 16px}
+
+/* STATS */
+.stats{display:flex;gap:10px;padding:14px 16px 8px}
+.st{flex:1;background:var(--of);border-radius:12px;padding:12px;border:1.5px solid var(--lg)}
+.sv{font-size:24px;font-family:'Bebas Neue',cursive;letter-spacing:1px}
+.sl2{font-size:11px;color:var(--sl);margin-top:2px}
+
+/* CF TABLE */
+.cf{display:flex;justify-content:space-between;padding:9px 0;border-bottom:1px solid var(--of)}
+.cf:last-child{border-bottom:none}
+.cfl{font-size:12px;color:var(--sl);font-weight:500}
+.cfv{font-size:13px;color:var(--dk);font-weight:600;text-align:right;max-width:65%}
+
+/* WA MESSAGE */
+.wam{background:#E8F5E9;border-radius:12px;padding:12px 14px;border-left:3px solid #4CAF50;margin-bottom:10px}
+.waf{font-size:10px;font-weight:700;color:#1B5E20;margin-bottom:6px}
+.wab{font-size:12px;color:#1a1a1a;line-height:1.7;font-family:'Share Tech Mono',monospace}
+.wam-o{background:var(--orl);border-left-color:var(--or)}
+.waf-o{color:var(--or)}
+
+/* PROGRESS BAR */
+.pb{height:8px;background:var(--lg);border-radius:4px;overflow:hidden;margin:8px 0 4px}
+.pf{height:100%;border-radius:4px}
+
+/* INFO ROW */
+.ir{display:flex;align-items:flex-start;padding:12px 16px;border-bottom:1px solid var(--lg)}
+.il{font-size:11px;font-weight:700;color:var(--sl);width:110px;padding-top:2px;flex-shrink:0;text-transform:uppercase;letter-spacing:.3px}
+.iv{font-size:14px;color:var(--dk);flex:1;line-height:1.5}
+.ir.hi{background:var(--orl)}
+.ir.hi .il{color:var(--or)}
+
+/* CHAT (edit mode only) */
+.chat-wrap{padding:16px;display:flex;flex-direction:column;gap:10px}
+.bub{max-width:82%;padding:11px 14px;border-radius:16px;font-size:13.5px;line-height:1.5}
+.bb{background:var(--of);color:var(--dk);border-radius:4px 16px 16px 16px;align-self:flex-start}
+.bu{background:var(--or);color:#fff;border-radius:16px 4px 16px 16px;align-self:flex-end}
+.bt{font-size:10px;color:var(--sl);margin-top:2px}
+.bt.r{text-align:right}
+.dot{width:7px;height:7px;background:var(--sl);border-radius:50%;animation:boun 1.2s infinite;display:inline-block}
+.dot:nth-child(2){animation-delay:.2s}.dot:nth-child(3){animation-delay:.4s}
+@keyframes boun{0%,60%,100%{transform:translateY(0)}30%{transform:translateY(-6px)}}
+.chat-bar{position:absolute;bottom:80px;left:0;right:0;padding:10px 14px;background:#fff;border-top:1px solid var(--lg);display:flex;gap:8px;align-items:center}
+.cinp{flex:1;padding:10px 14px;border-radius:24px;border:1.5px solid var(--lg);font-family:'Rajdhani',sans-serif;font-size:13px;outline:none;background:var(--of)}
+.cbtn{width:40px;height:40px;border-radius:50%;background:var(--or);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.cmic{background:var(--orl)}
+
+/* TOGGLE */
+.tgl{position:relative;width:42px;height:24px;flex-shrink:0}
+.tgl input{opacity:0;width:0;height:0}
+.tgl-s{position:absolute;inset:0;background:var(--lg);border-radius:24px;cursor:pointer}
+.tgl-s::before{content:'';position:absolute;width:18px;height:18px;left:3px;bottom:3px;background:#fff;border-radius:50%;transition:transform .3s}
+input:checked+.tgl-s{background:var(--gn)}
+input:checked+.tgl-s::before{transform:translateX(18px)}
+
+/* LOADING */
+.ldbar{width:50px;height:3px;background:#1E293B;border-radius:2px;margin-top:40px;overflow:hidden;position:relative}
+.ldfill{position:absolute;left:0;top:0;height:100%;width:0;background:var(--or);border-radius:2px;transition:width 1.5s ease}
+
+</style>
+</head>
+<body>
+
+
+
+<div class="phone">
+
+<!-- ══ LANGUAGE DOT (always visible over all screens) ══ -->
+<div class="lang-dot" id="lang-dot" onclick="toggleLangMenu()">🌐 <span id="lang-label">EN</span></div>
+<div class="lang-popup" id="lang-popup">
+  <div class="lang-opt active" onclick="setLang('en')"><span class="flag">🇬🇧</span> English</div>
+  <div class="lang-opt" onclick="setLang('hi')"><span class="flag">🇮🇳</span> हिंदी</div>
+  <div class="lang-opt" onclick="setLang('gu')"><span class="flag">🇮🇳</span> ગુજરાતી</div>
+</div>
+
+<!-- ══ S01 SPLASH ══ -->
+<div class="screen active" id="s-splash" style="background:#0a0a0a;overflow:hidden">
+
+  <!-- GARAGE BACKGROUND SVG -->
+  <svg style="position:absolute;inset:0;width:100%;height:100%;opacity:.13" viewBox="0 0 375 812" xmlns="http://www.w3.org/2000/svg">
+    <!-- gear top-right -->
+    <g transform="translate(310,80)" stroke="#E8590C" stroke-width="6" fill="none">
+      <circle cx="0" cy="0" r="52"/>
+      <circle cx="0" cy="0" r="30"/>
+      <line x1="-58" y1="0" x2="-30" y2="0"/><line x1="30" y1="0" x2="58" y2="0"/>
+      <line x1="0" y1="-58" x2="0" y2="-30"/><line x1="0" y1="30" x2="0" y2="58"/>
+      <line x1="-41" y1="-41" x2="-21" y2="-21"/><line x1="21" y1="21" x2="41" y2="41"/>
+      <line x1="41" y1="-41" x2="21" y2="-21"/><line x1="-21" y1="21" x2="-41" y2="41"/>
+    </g>
+    <!-- gear bottom-left -->
+    <g transform="translate(55,680)" stroke="#E8590C" stroke-width="5" fill="none">
+      <circle cx="0" cy="0" r="42"/>
+      <circle cx="0" cy="0" r="22"/>
+      <line x1="-48" y1="0" x2="-22" y2="0"/><line x1="22" y1="0" x2="48" y2="0"/>
+      <line x1="0" y1="-48" x2="0" y2="-22"/><line x1="0" y1="22" x2="0" y2="48"/>
+      <line x1="-34" y1="-34" x2="-16" y2="-16"/><line x1="16" y1="16" x2="34" y2="34"/>
+      <line x1="34" y1="-34" x2="16" y2="-16"/><line x1="-16" y1="16" x2="-34" y2="34"/>
+    </g>
+    <!-- wrench left -->
+    <g transform="translate(40,280) rotate(-35)" stroke="#fff" stroke-width="4" fill="none" stroke-linecap="round">
+      <line x1="0" y1="-100" x2="0" y2="60"/>
+      <ellipse cx="0" cy="-100" rx="18" ry="22"/>
+      <line x1="-18" y1="-88" x2="-18" y2="-112"/><line x1="18" y1="-88" x2="18" y2="-112"/>
+      <ellipse cx="0" cy="60" rx="12" ry="14"/>
+    </g>
+    <!-- wrench right -->
+    <g transform="translate(335,480) rotate(20)" stroke="#fff" stroke-width="3.5" fill="none" stroke-linecap="round">
+      <line x1="0" y1="-80" x2="0" y2="50"/>
+      <ellipse cx="0" cy="-80" rx="14" ry="17"/>
+      <line x1="-14" y1="-70" x2="-14" y2="-90"/><line x1="14" y1="-70" x2="14" y2="-90"/>
+      <ellipse cx="0" cy="50" rx="10" ry="11"/>
+    </g>
+    <!-- screwdriver -->
+    <g transform="translate(180,740) rotate(-10)" stroke="#fff" stroke-width="3" fill="none" stroke-linecap="round">
+      <line x1="0" y1="-55" x2="0" y2="35"/>
+      <rect x="-10" y="-55" width="20" height="28" rx="4"/>
+      <line x1="-6" y1="35" x2="6" y2="35"/>
+    </g>
+    <!-- diagonal stripe lines (metal sheet feel) -->
+    <line x1="0" y1="200" x2="150" y2="0" stroke="#fff" stroke-width="1" opacity=".3"/>
+    <line x1="50" y1="250" x2="200" y2="0" stroke="#fff" stroke-width="1" opacity=".2"/>
+    <line x1="225" y1="812" x2="375" y2="550" stroke="#E8590C" stroke-width="1" opacity=".4"/>
+    <line x1="180" y1="812" x2="375" y2="490" stroke="#E8590C" stroke-width="1" opacity=".25"/>
+    <!-- bolt circles -->
+    <circle cx="25" cy="25" r="6" stroke="#fff" stroke-width="2" fill="none"/>
+    <circle cx="350" cy="25" r="6" stroke="#fff" stroke-width="2" fill="none"/>
+    <circle cx="25" cy="787" r="6" stroke="#fff" stroke-width="2" fill="none"/>
+    <circle cx="350" cy="787" r="6" stroke="#fff" stroke-width="2" fill="none"/>
+    <!-- center ring -->
+    <circle cx="187" cy="400" r="140" stroke="#E8590C" stroke-width="1.5" fill="none" opacity=".4" stroke-dasharray="8 6"/>
+    <circle cx="187" cy="400" r="100" stroke="#fff" stroke-width="1" fill="none" opacity=".15" stroke-dasharray="4 8"/>
+  </svg>
+
+  <!-- ORANGE GLOW TOP -->
+  <div style="position:absolute;top:-60px;left:50%;transform:translateX(-50%);width:280px;height:200px;background:radial-gradient(ellipse,rgba(232,89,12,.35) 0%,transparent 70%);pointer-events:none"></div>
+
+  <!-- CONTENT -->
+  <div class="sbar" style="background:transparent;position:relative;z-index:2">
+    <span class="t" style="color:#fff">9:41</span>
+    <span style="font-size:12px;color:#fff">📶 🔋</span>
+  </div>
+
+  <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:32px;text-align:center;position:relative;z-index:2">
+    <!-- LOGO ICON -->
+    <div style="width:88px;height:88px;border-radius:20px;background:linear-gradient(135deg,#E8590C,#ff7c35);display:flex;align-items:center;justify-content:center;margin-bottom:20px;font-size:42px;box-shadow:0 6px 28px rgba(232,89,12,.6),0 0 0 4px rgba(232,89,12,.2)">🛵</div>
+
+    <!-- NAME — Bebas Neue garage style -->
+    <div style="font-family:'Bebas Neue',cursive;font-size:34px;color:#fff;letter-spacing:3px;line-height:1;margin-bottom:4px;text-shadow:0 2px 12px rgba(232,89,12,.5)" id="app-name-splash" data-i18n="app.name">Shri Narsang Bike Care</div>
+    
+    <!-- DIVIDER LINE -->
+    <div style="display:flex;align-items:center;gap:8px;margin:10px 0 10px;width:70%">
+      <div style="flex:1;height:1px;background:linear-gradient(90deg,transparent,rgba(232,89,12,.8))"></div>
+      <div style="width:6px;height:6px;border-radius:50%;background:var(--or)"></div>
+      <div style="flex:1;height:1px;background:linear-gradient(90deg,rgba(232,89,12,.8),transparent)"></div>
+    </div>
+
+    <div style="font-size:13px;color:rgba(255,255,255,.55);line-height:1.7;font-family:'Rajdhani',sans-serif;letter-spacing:.5px" data-i18n="splash.tagline">Your entire workshop<br>managed in one app</div>
+    <div class="ldbar" style="margin-top:28px"><div class="ldfill" id="ld-fill"></div></div>
+  </div>
+
+  <div style="padding:24px 28px 32px;display:flex;flex-direction:column;gap:10px;position:relative;z-index:2">
+    <button class="btn bo" onclick="go('s-intake')" data-i18n="splash.start" style="font-family:'Rajdhani',sans-serif;font-size:16px;font-weight:700;letter-spacing:1px">Get Started →</button>
+    <button class="btn" style="background:rgba(255,255,255,.08);color:rgba(255,255,255,.6);border:1px solid rgba(255,255,255,.12);font-family:'Rajdhani',sans-serif;font-weight:600;letter-spacing:.5px" onclick="go('s-dashboard')" data-i18n="splash.dashboard">View Dashboard First</button>
+  </div>
+</div>
+
+<!-- ══ S02 INTAKE FORM (replaces chatbot) ══ -->
+<div class="screen" id="s-intake">
+  <div class="sbar"><span class="t" style="color:var(--dk)">9:41</span></div>
+  <div class="hdr">
+    <button class="bk" onclick="go('s-splash')"><svg width="18" height="18" viewBox="0 0 24 24"><path d="M19 12H5M12 19l-7-7 7-7" stroke="#0F172A" stroke-width="2" stroke-linecap="round" fill="none"/></svg></button>
+    <div class="hdr-t" data-i18n="intake.title">New Vehicle</div>
+    <button class="sm bo" onclick="go('s-dashboard')" data-i18n="nav.jobs" style="margin-left:auto">Jobs</button>
+  </div>
+  <!-- Progress dots -->
+  <div class="form-progress" id="form-progress">
+    <div class="fp-dot" id="pd0"></div><div class="fp-dot" id="pd1"></div><div class="fp-dot" id="pd2"></div>
+    <div class="fp-dot" id="pd3"></div><div class="fp-dot" id="pd4"></div><div class="fp-dot" id="pd5"></div>
+    <div class="fp-dot" id="pd6"></div><div class="fp-dot" id="pd7"></div><div class="fp-dot" id="pd8"></div>
+  </div>
+  <div class="cnt" style="padding-bottom:96px">
+
+    <!-- SECTION 1: Customer Info -->
+    <div class="form-section">
+      <div class="form-section-title" data-i18n="intake.sec1">👤 Customer Info</div>
+      <div class="ig">
+        <label data-i18n="intake.customer">Customer Name</label>
+        <input class="inp" id="f-cname" placeholder="e.g. Ramesh Kumar" oninput="updateDots()"/>
+      </div>
+      <div class="ig">
+        <label data-i18n="intake.whatsapp">WhatsApp Number</label>
+        <div class="inp-prefix">
+          <span class="pfx">+91</span>
+          <input class="inp" id="f-wa" placeholder="9876543210" type="tel" maxlength="10" oninput="updateDots()"/>
+        </div>
+      </div>
+    </div>
+
+    <!-- SECTION 2: Vehicle Info -->
+    <div class="form-section" style="margin-top:6px">
+      <div class="form-section-title" data-i18n="intake.sec2">🚗 Vehicle Info</div>
+      <div class="ig">
+        <label data-i18n="intake.vtype">Vehicle Type</label>
+        <div class="vtype-grid" id="vtype-grid">
+          <button class="vtype-btn" id="vt-scooter" onclick="selVtype(this,'Scooter')">🛵 <span data-i18n="vtype.scooter">Scooter</span></button>
+          <button class="vtype-btn" id="vt-bike" onclick="selVtype(this,'Bike')">🏍️ <span data-i18n="vtype.bike">Bike</span></button>
+        </div>
+        <input type="hidden" id="f-vtype" oninput="updateDots()"/>
+      </div>
+      <div class="ig">
+        <label data-i18n="intake.plate">Number Plate</label>
+        <input class="inp" id="f-plate" placeholder="e.g. GJ-01-AB-1234" style="text-transform:uppercase;font-family:'Share Tech Mono',monospace;font-weight:600;letter-spacing:1px" oninput="this.value=this.value.toUpperCase();updateDots()"/>
+      </div>
+      <div class="ig">
+        <label data-i18n="intake.owner">Owner Name</label>
+        <input class="inp" id="f-oname" placeholder="e.g. Suresh Bhai" oninput="updateDots()"/>
+      </div>
+      <div class="ig">
+        <label data-i18n="intake.ownernum">Owner Number</label>
+        <div class="inp-prefix">
+          <span class="pfx">+91</span>
+          <input class="inp" id="f-onum" placeholder="9123456780" type="tel" maxlength="10" oninput="updateDots()"/>
+        </div>
+      </div>
+    </div>
+
+    <!-- SECTION 3: Job Info -->
+    <div class="form-section" style="margin-top:6px">
+      <div class="form-section-title" data-i18n="intake.sec3">🔧 Job Info</div>
+      <div class="ig">
+        <label data-i18n="intake.problem">What's the Problem?</label>
+        <textarea class="inp" id="f-problem" placeholder="e.g. Front brake se awaaz aati hai, engine thoda smoke karta hai..." oninput="updateDots()"></textarea>
+      </div>
+      <div class="ig">
+        <label data-i18n="intake.estimate">Estimate (₹)</label>
+        <div class="inp-prefix">
+          <span class="pfx">₹</span>
+          <input class="inp" id="f-est" placeholder="2500" type="number" oninput="updateDots()"/>
+        </div>
+      </div>
+      <div class="ig">
+        <label data-i18n="intake.delivery">Delivery By?</label>
+        <input class="inp" id="f-del" placeholder="e.g. Kal tak, 2 din mein..." oninput="updateDots()"/>
+      </div>
+    </div>
+
+    <!-- Validation message -->
+    <div id="form-err" style="margin:0 16px 10px;background:var(--rdb);border-radius:8px;padding:10px 12px;font-size:12px;color:var(--rdt);display:none">
+      ⚠️ <span id="form-err-msg">Saare zaruri fields bharo</span>
+    </div>
+
+  </div>
+
+  <!-- Save Button (fixed at bottom above nav) -->
+  <div style="position:absolute;bottom:80px;left:0;right:0;padding:12px 16px;background:#fff;border-top:1px solid var(--lg)">
+    <button class="btn bo" onclick="submitForm()" id="save-btn">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4L19 7" stroke="#fff" stroke-width="2.5" stroke-linecap="round"/></svg>
+      <span data-i18n="intake.save">Save ✅</span>
+    </button>
+  </div>
+
+  <div class="bnav">
+    <button class="ni on"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg><span data-i18n="nav.intake">Intake</span></button>
+    <button class="ni" onclick="go('s-dashboard')"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg><span data-i18n="nav.jobs">Jobs</span></button>
+    <button class="ni" onclick="go('s-report')"><svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg><span data-i18n="nav.report">Report</span></button>
+    <button class="ni" onclick="go('s-followup')"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/><line x1="9" y1="10" x2="15" y2="10"/><line x1="9" y1="14" x2="13" y2="14"/></svg><span data-i18n="nav.followup">Follow-up</span></button>
+  </div>
+</div>
+
+<!-- ══ S03 DASHBOARD ══ -->
+<div class="screen" id="s-dashboard">
+  <div class="sbar"><span class="t" style="color:var(--dk)">9:41</span></div>
+  <div style="padding:12px 16px 4px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0">
+    <div>
+      <div style="font-family:'Bebas Neue',cursive;font-size:26px;color:var(--dk);letter-spacing:2px"><span data-i18n="dash.title">Dashboard</span> 🔧</div>
+      <div style="font-size:11px;color:var(--sl)" data-i18n="dash.sub">Today's overview</div>
+    </div>
+    <button class="sm bo" onclick="go('s-intake')" data-i18n="dash.new">+ New</button>
+  </div>
+  <div class="stats">
+    <div class="st"><div class="sv" style="color:var(--or)">3</div><div class="sl2" data-i18n="dash.repair">In Repair</div></div>
+    <div class="st"><div class="sv" style="color:var(--gn)">2</div><div class="sl2" data-i18n="dash.done">Done</div></div>
+    <div class="st"><div class="sv">₹12k</div><div class="sl2" data-i18n="dash.pending">Pending</div></div>
+  </div>
+  <div class="tabs">
+    <button class="tab on" id="tab-r" onclick="switchTab('r')">🔧 <span data-i18n="dash.tab.repair">In Repair (3)</span></button>
+    <button class="tab" id="tab-d" onclick="switchTab('d')">✅ <span data-i18n="dash.tab.done">Done (2)</span></button>
+  </div>
+  <div class="cnt">
+    <div id="panel-r">
+      <div class="card rl" onclick="go('s-card-detail')">
+        <div class="ch"><div><div class="vn">MH-12-AB-1234</div><div class="cn">Ramesh Kumar</div></div><span class="badge br" data-i18n="badge.repair">In Repair</span></div>
+        <div class="cb"><div class="cp">Front brake se awaaz aati hai</div><div class="cm"><span class="mi">⏱ 3 din se</span><span class="mi">₹2,500</span><span class="mi" style="color:var(--rd);font-weight:600">⚠️ Overdue</span></div></div>
+        <div class="ca"><button class="btn bo" style="flex:1;padding:10px;font-size:13px" onclick="event.stopPropagation();go('s-confirm-done')" data-i18n="btn.markdone">Mark as Done ✅</button></div>
+      </div>
+      <div class="card" onclick="go('s-card-detail')">
+        <div class="ch"><div><div class="vn">DL-01-XY-9999</div><div class="cn">Suresh Mehta</div></div><span class="badge br" data-i18n="badge.repair">In Repair</span></div>
+        <div class="cb"><div class="cp">Engine se awaaz — startup pe</div><div class="cm"><span class="mi">⏱ Aaj aayi</span><span class="mi">₹4,000</span></div></div>
+        <div class="ca"><button class="btn bo" style="flex:1;padding:10px;font-size:13px" onclick="event.stopPropagation();go('s-confirm-done')" data-i18n="btn.markdone">Mark as Done ✅</button></div>
+      </div>
+      <div class="card" onclick="go('s-card-detail')">
+        <div class="ch"><div><div class="vn">GJ-05-CD-3210</div><div class="cn">Priya Shah</div></div><span class="badge br" data-i18n="badge.repair">In Repair</span></div>
+        <div class="cb"><div class="cp">AC nahi chalta — compressor issue</div><div class="cm"><span class="mi">⏱ 1 din se</span><span class="mi">₹5,500</span></div></div>
+        <div class="ca"><button class="btn bo" style="flex:1;padding:10px;font-size:13px" onclick="event.stopPropagation();go('s-confirm-done')" data-i18n="btn.markdone">Mark as Done ✅</button></div>
+      </div>
+    </div>
+    <div id="panel-d" style="display:none">
+      <div class="card yl">
+        <div class="ch"><div><div class="vn">MH-14-PQ-7777</div><div class="cn">Anil Joshi</div></div><span class="badge bd">Ready ✅</span></div>
+        <div class="cb"><div class="cp">Tyre change — saare 4 tyres</div><div class="cm"><span class="mi" style="color:var(--yw);font-weight:600">📩 2 din se pending</span><span class="mi">₹3,200</span></div></div>
+        <div class="ca">
+          <button class="sm bo" style="flex:1;justify-content:center" onclick="go('s-payment')" data-i18n="btn.payment">💰 Payment Received</button>
+          <button class="sm" style="background:var(--ywb);color:var(--ywt)" onclick="go('s-followup')" data-i18n="btn.remind">🔔 Remind</button>
+        </div>
+      </div>
+      <div class="card yl" onclick="go('s-partial-track')">
+        <div class="ch"><div><div class="vn">RJ-14-GH-5555</div><div class="cn">Mohan Lal</div></div><span class="badge by">⚡ <span data-i18n="badge.partial">Partial</span></span></div>
+        <div class="cb">
+          <div class="cp">Oil change + filter</div>
+          <div style="margin-top:6px"><div style="display:flex;justify-content:space-between;font-size:11px;color:var(--sl);margin-bottom:4px"><span data-i18n="pay.received">₹1,000 received</span><span data-i18n="pay.pending">₹800 pending</span></div><div class="pb"><div class="pf" style="width:55%;background:var(--gn)"></div></div></div>
+        </div>
+        <div class="ca">
+          <button class="sm bo" style="flex:1;justify-content:center" onclick="event.stopPropagation();go('s-partial-track')" data-i18n="btn.tracker">📊 View Tracker</button>
+          <button class="sm" style="background:var(--gnb);color:var(--gnt)" onclick="event.stopPropagation();go('s-payment-installment')" data-i18n="btn.addkisat">+ Add Payment</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="bnav">
+    <button class="ni" onclick="go('s-intake')"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg><span data-i18n="nav.intake">Intake</span></button>
+    <button class="ni on"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg><span data-i18n="nav.jobs">Jobs</span></button>
+    <button class="ni" onclick="go('s-report')"><svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg><span data-i18n="nav.report">Report</span></button>
+    <button class="ni" onclick="go('s-followup')"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/><line x1="9" y1="10" x2="15" y2="10"/><line x1="9" y1="14" x2="13" y2="14"/></svg><span data-i18n="nav.followup">Follow-up</span></button>
+  </div>
+</div>
+
+<!-- ══ S04 CARD DETAIL ══ -->
+<div class="screen" id="s-card-detail">
+  <div class="sbar"><span class="t" style="color:var(--dk)">9:41</span></div>
+  <div class="hdr">
+    <button class="bk" onclick="go('s-dashboard')"><svg width="18" height="18" viewBox="0 0 24 24"><path d="M19 12H5M12 19l-7-7 7-7" stroke="#0F172A" stroke-width="2" stroke-linecap="round" fill="none"/></svg></button>
+    <div class="hdr-t" data-i18n="detail.title">Vehicle Detail</div>
+    <button class="sm" style="background:var(--orl);color:var(--or);margin-left:auto" onclick="go('s-chatbot-edit')" data-i18n="btn.edit">✏️ Edit</button>
+  </div>
+  <div class="cnt">
+    <div style="margin:14px 16px;background:var(--dk);border-radius:14px;padding:18px;text-align:center">
+      <div style="font-family:'Share Tech Mono',monospace;font-size:22px;font-weight:700;color:#fff;letter-spacing:2px">MH-12-AB-1234</div>
+      <span class="badge br" style="margin-top:8px;display:inline-block">In Repair • 3 din se</span>
+    </div>
+    <div style="margin:0 16px;background:#fff;border-radius:14px;border:1.5px solid var(--lg);overflow:hidden">
+      <div class="ir"><div class="il" data-i18n="lbl.customer">Customer</div><div class="iv" style="font-weight:700">Ramesh Kumar</div></div>
+      <div class="ir"><div class="il" data-i18n="lbl.whatsapp">WhatsApp</div><div class="iv">+91 9876543210</div></div>
+      <div class="ir hi"><div class="il" data-i18n="lbl.vtype">Vehicle</div><div class="iv" style="font-weight:700">Car 🚗</div></div>
+      <div class="ir hi"><div class="il" data-i18n="lbl.owner">Owner</div><div class="iv" style="font-weight:700">Suresh Bhai</div></div>
+      <div class="ir hi"><div class="il" data-i18n="lbl.ownernum">Owner No.</div><div class="iv" style="font-weight:700">+91 9123456780</div></div>
+      <div class="ir"><div class="il" data-i18n="lbl.problem">Problem</div><div class="iv">Front brake se awaaz aati hai</div></div>
+      <div class="ir"><div class="il" data-i18n="lbl.estimate">Estimate</div><div class="iv" style="font-size:18px;font-weight:700;color:var(--or)">₹2,500</div></div>
+      <div class="ir" style="border:none"><div class="il" data-i18n="lbl.delivery">Delivery</div><div class="iv">Kal tak</div></div>
+    </div>
+    <div style="padding:16px;display:flex;flex-direction:column;gap:10px">
+      <button class="btn bo" onclick="go('s-confirm-done')" data-i18n="btn.markdone">Mark as Done ✅</button>
+      <button class="btn" style="background:var(--orl);color:var(--or);border:none" onclick="go('s-chatbot-edit')" data-i18n="btn.editdetail">✏️ Edit Details</button>
+      <button class="btn bw" onclick="go('s-dashboard')" data-i18n="btn.backdash">← Back to Dashboard</button>
+    </div>
+  </div>
+  <div class="bnav">
+    <button class="ni" onclick="go('s-intake')"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg><span data-i18n="nav.intake">Intake</span></button>
+    <button class="ni on"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg><span data-i18n="nav.jobs">Jobs</span></button>
+    <button class="ni" onclick="go('s-report')"><svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg><span data-i18n="nav.report">Report</span></button>
+    <button class="ni" onclick="go('s-followup')"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/><line x1="9" y1="10" x2="15" y2="10"/><line x1="9" y1="14" x2="13" y2="14"/></svg><span data-i18n="nav.followup">Follow-up</span></button>
+  </div>
+</div>
+
+<!-- ══ S05 EDIT MODE ══ -->
+<div class="screen" id="s-chatbot-edit">
+  <div class="sbar"><span class="t" style="color:var(--dk)">9:41</span></div>
+  <div class="hdr">
+    <button class="bk" onclick="go('s-card-detail')"><svg width="18" height="18" viewBox="0 0 24 24"><path d="M19 12H5M12 19l-7-7 7-7" stroke="#0F172A" stroke-width="2" stroke-linecap="round" fill="none"/></svg></button>
+    <div><div class="hdr-t" style="font-size:15px" data-i18n="edit.title">Edit Details</div><div style="font-size:10px;color:var(--or);font-weight:600">✏️ MH-12-AB-1234</div></div>
+  </div>
+  <div class="cnt" style="padding-bottom:140px">
+    <div class="chat-wrap">
+      <div>
+        <div class="bub bb" style="background:var(--orl);border:1px solid var(--orm);max-width:95%">
+          ✏️ <strong data-i18n="edit.mode">Edit Mode</strong><br><br>
+          <div style="background:#fff;border-radius:8px;padding:10px;border:1px solid var(--lg);font-size:12px">
+            <div class="cf"><span class="cfl" data-i18n="lbl.estimate">Estimate</span><span class="cfv">₹2,500</span></div>
+            <div class="cf" style="border:none"><span class="cfl" data-i18n="lbl.delivery">Delivery</span><span class="cfv">Kal tak</span></div>
+          </div>
+        </div>
+        <div class="bt">9:50 AM</div>
+      </div>
+      <div><div class="bub bb" data-i18n="edit.prompt">Kya change karna hai? e.g. "estimate 3000 karo"</div><div class="bt">9:50</div></div>
+      <div style="display:flex;flex-direction:column;align-items:flex-end"><div class="bub bu">Estimate 3000 karo aur delivery 2 din</div><div class="bt r">9:51</div></div>
+      <div>
+        <div class="bub bb" style="background:var(--gnb);color:var(--gnt);max-width:95%">
+          ✅ <strong data-i18n="edit.confirm">These changes will apply:</strong>
+          <div style="background:#fff;border-radius:8px;padding:10px;border:1px solid #A7F3D0;margin-top:8px;font-size:12px">
+            <div class="cf"><span class="cfl" data-i18n="lbl.estimate">Estimate</span><span class="cfv" style="color:var(--or)">₹3,000 ✏️</span></div>
+            <div class="cf" style="border:none"><span class="cfl" data-i18n="lbl.delivery">Delivery</span><span class="cfv" style="color:var(--or)">2 din ✏️</span></div>
+          </div>
+        </div>
+        <div class="bt">9:51</div>
+      </div>
+      <div style="display:flex;gap:8px;align-self:flex-end">
+        <button class="sm" style="background:var(--gnb);color:var(--gnt)" onclick="go('s-card-detail')" data-i18n="btn.save">✅ Save</button>
+        <button class="sm" style="background:var(--rdb);color:var(--rdt)" data-i18n="edit.more">More Edits</button>
+      </div>
+    </div>
+  </div>
+  <div class="chat-bar">
+    <button class="cbtn cmic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M12 2a3 3 0 0 1 3 3v7a3 3 0 0 1-6 0V5a3 3 0 0 1 3-3z" stroke="var(--or)" stroke-width="2"/><path d="M19 10v2a7 7 0 0 1-14 0v-2M12 19v4M8 23h8" stroke="var(--or)" stroke-width="2"/></svg></button>
+    <input class="cinp" data-i18n-placeholder="edit.placeholder" placeholder="Kya change karna hai bolo..."/>
+    <button class="cbtn"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M22 2L11 13M22 2L15 22 11 13 2 9z" stroke="#fff" stroke-width="2" stroke-linecap="round"/></svg></button>
+  </div>
+  <div class="bnav">
+    <button class="ni on"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg><span data-i18n="nav.intake">Intake</span></button>
+    <button class="ni" onclick="go('s-dashboard')"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg><span data-i18n="nav.jobs">Jobs</span></button>
+    <button class="ni" onclick="go('s-report')"><svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg><span data-i18n="nav.report">Report</span></button>
+    <button class="ni" onclick="go('s-followup')"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/><line x1="9" y1="10" x2="15" y2="10"/><line x1="9" y1="14" x2="13" y2="14"/></svg><span data-i18n="nav.followup">Follow-up</span></button>
+  </div>
+</div>
+
+<!-- ══ S06 CONFIRM DONE DIALOG ══ -->
+<div class="screen" id="s-confirm-done">
+  <div class="sbar"><span class="t" style="color:var(--dk)">9:41</span></div>
+  <div class="hdr"><button class="bk" onclick="go('s-dashboard')"><svg width="18" height="18" viewBox="0 0 24 24"><path d="M19 12H5M12 19l-7-7 7-7" stroke="#0F172A" stroke-width="2" stroke-linecap="round" fill="none"/></svg></button><div class="hdr-t" data-i18n="nav.jobs">Dashboard</div></div>
+  <div style="flex:1;opacity:.4;pointer-events:none;padding:12px">
+    <div class="card rl"><div class="ch"><div><div class="vn">MH-12-AB-1234</div><div class="cn">Ramesh Kumar</div></div><span class="badge br">In Repair</span></div></div>
+  </div>
+  <div class="ov" id="ov-confirm">
+    <div class="dlg">
+      <div class="dlg-h"></div>
+      <div style="font-size:34px;text-align:center;margin-bottom:8px">📱</div>
+      <div style="font-size:17px;font-weight:700;color:var(--dk);padding:0 20px 4px" data-i18n="done.title">Send WhatsApp?</div>
+      <div style="font-size:12px;color:var(--sl);padding:0 20px 12px" data-i18n="done.sub">Ramesh Kumar ko message jayega: +91 9876543210</div>
+      <div class="wam" style="margin:0 20px 16px">
+        <div class="waf">🔧 Preview — Shri Narsang Bike Care</div>
+        <div class="wab">✅ <b>Gaadi Tayaar Hai!</b>
+Namaste Ramesh ji! 🙏
+MH-12-AB-1234 tayyaar ho gayi!
+💰 Total: ₹2,500
+— Shri Narsang Bike Care 🛵</div>
+      </div>
+      <div style="padding:0 20px;display:flex;flex-direction:column;gap:8px">
+        <button class="btn bo" onclick="go('s-wa-sent')" data-i18n="done.send">✅ Yes Send — Mark as Done</button>
+        <button class="btn bw" onclick="go('s-dashboard')" data-i18n="btn.cancel">Cancel</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ S07 WA SENT ══ -->
+<div class="screen" id="s-wa-sent">
+  <div class="sbar"><span class="t" style="color:var(--dk)">9:41</span></div>
+  <div class="hdr"><button class="bk" onclick="go('s-dashboard')"><svg width="18" height="18" viewBox="0 0 24 24"><path d="M19 12H5M12 19l-7-7 7-7" stroke="#0F172A" stroke-width="2" stroke-linecap="round" fill="none"/></svg></button><div class="hdr-t" data-i18n="wasent.title">WhatsApp Bheja</div></div>
+  <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:28px">
+    <div style="width:88px;height:88px;border-radius:50%;background:var(--gnb);display:flex;align-items:center;justify-content:center;font-size:42px;margin-bottom:18px">✅</div>
+    <div style="font-size:22px;font-weight:800;color:var(--dk);margin-bottom:6px" data-i18n="wasent.heading">WhatsApp Sent!</div>
+    <div style="font-size:13px;color:var(--sl);text-align:center;line-height:1.6;margin-bottom:22px" data-i18n="wasent.sub">Ramesh Kumar received the message. Vehicle is now in Done.</div>
+    <div style="background:var(--dk);border-radius:14px;padding:14px 16px;display:flex;align-items:center;gap:12px;width:100%;margin-bottom:20px">
+      <div style="flex:1"><div style="font-size:12px;font-weight:700;color:#fff" data-i18n="wasent.done">Marked as Done ✅</div><div style="font-size:10px;color:#94A3B8;margin-top:2px" data-i18n="wasent.undo">You can undo within 8 seconds</div></div>
+      <button class="sm" style="background:var(--or);color:#fff" onclick="go('s-dashboard')" data-i18n="btn.undo">⏪ Undo</button>
+    </div>
+    <button class="btn bo" onclick="go('s-dashboard');switchTab('d')" style="margin-bottom:10px" data-i18n="btn.viewdash">View Dashboard →</button>
+    <button class="btn bw" onclick="go('s-intake')" data-i18n="btn.newvehicle">+ New Vehicle</button>
+  </div>
+  <div class="bnav">
+    <button class="ni" onclick="go('s-intake')"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg><span data-i18n="nav.intake">Intake</span></button>
+    <button class="ni on"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg><span data-i18n="nav.jobs">Jobs</span></button>
+    <button class="ni" onclick="go('s-report')"><svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg><span data-i18n="nav.report">Report</span></button>
+    <button class="ni" onclick="go('s-followup')"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/><line x1="9" y1="10" x2="15" y2="10"/><line x1="9" y1="14" x2="13" y2="14"/></svg><span data-i18n="nav.followup">Follow-up</span></button>
+  </div>
+</div>
+
+<!-- ══ S08 PAYMENT DIALOG ══ -->
+<div class="screen" id="s-payment">
+  <div class="sbar"><span class="t" style="color:var(--dk)">9:41</span></div>
+  <div class="hdr"><button class="bk" onclick="go('s-dashboard')"><svg width="18" height="18" viewBox="0 0 24 24"><path d="M19 12H5M12 19l-7-7 7-7" stroke="#0F172A" stroke-width="2" stroke-linecap="round" fill="none"/></svg></button><div class="hdr-t" data-i18n="nav.jobs">Jobs</div></div>
+  <div style="flex:1;opacity:.4;pointer-events:none;padding:12px">
+    <div class="card yl"><div class="ch"><div><div class="vn">MH-14-PQ-7777</div><div class="cn">Anil Joshi</div></div><span class="badge bd">Ready ✅</span></div></div>
+  </div>
+  <div class="ov" id="ov-payment">
+    <div class="dlg">
+      <div class="dlg-h"></div>
+      <div style="font-size:32px;text-align:center;margin-bottom:8px">💰</div>
+      <div style="font-size:17px;font-weight:700;color:var(--dk);padding:0 20px 4px" data-i18n="pay.title">Record Payment</div>
+      <div style="font-size:12px;color:var(--sl);padding:0 20px 12px"><span data-i18n="pay.total">Total:</span> <strong>₹3,200</strong></div>
+      <div style="padding:0 20px">
+        <div class="ig"><label data-i18n="pay.howmuch">How Much Received Today (₹)</label>
+          <input class="inp" id="pay-inp" value="2000" oninput="calcPay()" style="font-size:22px;font-weight:700;color:var(--or)"/>
+        </div>
+        <div style="background:var(--of);border-radius:10px;padding:12px;margin-bottom:10px">
+          <div style="display:flex;justify-content:space-between;margin-bottom:4px">
+            <span style="font-size:12px;color:var(--sl)" data-i18n="pay.received">Received</span>
+            <span style="font-size:13px;font-weight:700;color:var(--gnt)" id="p-paid">₹2,000</span>
+          </div>
+          <div class="pb"><div class="pf" id="p-bar" style="width:62%;background:var(--gn)"></div></div>
+          <div style="display:flex;justify-content:space-between;margin-top:4px">
+            <span style="font-size:12px;color:var(--sl)" data-i18n="pay.pending">Remaining</span>
+            <span style="font-size:13px;font-weight:700;color:var(--rd)" id="p-rem">₹1,200</span>
+          </div>
+        </div>
+        <div id="partial-note" style="background:var(--ywb);border-radius:8px;padding:8px 12px;margin-bottom:10px;display:flex;gap:6px">
+          <span>⚠️</span><div style="font-size:11px;color:var(--ywt);line-height:1.5"><span data-i18n="pay.warn">Remaining</span> <strong id="p-bamt">₹1,200</strong> <span data-i18n="pay.warn2">pending. Owner will get WhatsApp reminder.</span></div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:8px">
+          <button class="btn bg" onclick="fullPayment()" data-i18n="pay.full">✅ Full Payment Confirm (₹3,200)</button>
+          <button class="btn" style="background:var(--ywb);color:var(--ywt);border:none" onclick="go('s-payment-wa-partial')" data-i18n="pay.partial">⚡ Save Partial + Send WA</button>
+          <button class="btn bw" onclick="go('s-dashboard')" data-i18n="btn.cancel">Cancel</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ S09 WA PARTIAL ══ -->
+<div class="screen" id="s-payment-wa-partial">
+  <div class="sbar"><span class="t" style="color:var(--dk)">9:41</span></div>
+  <div class="hdr"><button class="bk" onclick="go('s-payment')"><svg width="18" height="18" viewBox="0 0 24 24"><path d="M19 12H5M12 19l-7-7 7-7" stroke="#0F172A" stroke-width="2" stroke-linecap="round" fill="none"/></svg></button><div class="hdr-t" data-i18n="wa.sent">WhatsApp Sent</div></div>
+  <div class="cnt">
+    <div style="margin:14px 16px;background:var(--dk);border-radius:14px;padding:16px;text-align:center">
+      <div style="font-size:28px;margin-bottom:6px">📨</div>
+      <div style="font-size:15px;font-weight:700;color:#fff;margin-bottom:2px" data-i18n="wa.three">3 WhatsApp Messages Sent</div>
+      <div style="font-size:11px;color:#94A3B8">MH-14-PQ-7777 • ₹2,000 partial payment</div>
+    </div>
+    <div style="padding:0 16px;display:flex;flex-direction:column;gap:10px">
+      <div><div style="font-size:10px;font-weight:700;color:var(--sl);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px" data-i18n="wa.owner">1. To Owner — Anil Joshi</div>
+        <div class="wam"><div class="waf">📱 +91 9876540001 • Delivered ✓✓</div><div class="wab">💰 <b>Partial Payment Mila!</b>
+Anil ji — ₹2,000 receive hua.
+Baaki: ₹1,200 pending hai.
+— Shri Narsang Bike Care 🛵</div></div>
+      </div>
+      <div><div style="font-size:10px;font-weight:700;color:var(--sl);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px" data-i18n="wa.customer">2. To Customer — Suresh Bhai</div>
+        <div class="wam"><div class="waf">📱 +91 9123456780 • Delivered ✓✓</div><div class="wab">🚗 <b>Payment Update</b>
+Suresh ji — MH-14-PQ-7777:
+✅ Mila: ₹2,000 | ⚠️ Balance: ₹1,200
+— Shri Narsang Bike Care 🛵</div></div>
+      </div>
+      <div><div style="font-size:10px;font-weight:700;color:var(--sl);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px" data-i18n="wa.mechanic">3. Your Record Copy</div>
+        <div class="wam wam-o"><div class="waf waf-o">📊 Record</div><div class="wab">Partial: MH-14-PQ-7777
+Mila: ₹2,000 ✅ | Baaki: ₹1,200 ⚠️</div></div>
+      </div>
+      <button class="btn bo" onclick="go('s-partial-track')" data-i18n="btn.tracker">📊 View Tracker →</button>
+      <button class="btn bw" onclick="go('s-dashboard')" data-i18n="btn.backdash">Back to Dashboard</button>
+    </div>
+  </div>
+  <div class="bnav">
+    <button class="ni" onclick="go('s-intake')"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg><span data-i18n="nav.intake">Intake</span></button>
+    <button class="ni on"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg><span data-i18n="nav.jobs">Jobs</span></button>
+    <button class="ni" onclick="go('s-report')"><svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg><span data-i18n="nav.report">Report</span></button>
+    <button class="ni" onclick="go('s-followup')"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/><line x1="9" y1="10" x2="15" y2="10"/><line x1="9" y1="14" x2="13" y2="14"/></svg><span data-i18n="nav.followup">Follow-up</span></button>
+  </div>
+</div>
+
+<!-- ══ S10 PARTIAL TRACKER ══ -->
+<div class="screen" id="s-partial-track">
+  <div class="sbar"><span class="t" style="color:var(--dk)">9:41</span></div>
+  <div class="hdr">
+    <button class="bk" onclick="go('s-dashboard')"><svg width="18" height="18" viewBox="0 0 24 24"><path d="M19 12H5M12 19l-7-7 7-7" stroke="#0F172A" stroke-width="2" stroke-linecap="round" fill="none"/></svg></button>
+    <div class="hdr-t" data-i18n="tracker.title">Payment Tracker</div>
+    <span class="badge by" style="margin-left:auto">⚡ <span data-i18n="badge.partial">Partial</span></span>
+  </div>
+  <div class="cnt">
+    <div style="margin:14px 16px;background:var(--dk);border-radius:12px;padding:16px;display:flex;align-items:center;gap:12px">
+      <div><div style="font-family:'Share Tech Mono',monospace;font-size:16px;font-weight:700;color:#fff">MH-14-PQ-7777</div><div style="font-size:11px;color:#94A3B8">Anil Joshi • Tyre Change</div></div>
+      <span class="badge by" style="margin-left:auto">⚡ Partial</span>
+    </div>
+    <div style="margin:0 16px 14px;background:#fff;border-radius:12px;border:1.5px solid var(--lg);padding:16px">
+      <div style="font-size:11px;font-weight:700;color:var(--sl);text-transform:uppercase;letter-spacing:.5px;margin-bottom:12px" data-i18n="tracker.progress">Payment Progress</div>
+      <div style="display:flex;justify-content:space-between;margin-bottom:6px">
+        <span style="font-size:12px;color:var(--sl)" data-i18n="pay.received">Received</span>
+        <span style="font-size:16px;font-weight:700;color:var(--gnt)">₹2,000</span>
+      </div>
+      <div class="pb" style="height:10px"><div class="pf" style="width:62%;background:linear-gradient(90deg,var(--gn),#34D399)"></div></div>
+      <div style="display:flex;justify-content:space-between;margin-top:6px;font-size:11px;color:var(--sl)">
+        <span>62% complete</span><span>Total: ₹3,200</span>
+      </div>
+      <div style="margin-top:12px;background:var(--rdb);border-radius:8px;padding:12px;display:flex;justify-content:space-between;align-items:center">
+        <div><div style="font-size:10px;color:var(--rdt);font-weight:700" data-i18n="tracker.baaki">REMAINING</div><div style="font-size:22px;font-weight:800;color:var(--rd)">₹1,200</div></div>
+        <button class="sm" style="background:var(--rd);color:#fff" onclick="go('s-payment-installment')" data-i18n="btn.addkisat">+ Baaki Liya</button>
+      </div>
+    </div>
+    <div style="margin:0 16px 14px">
+      <div style="font-size:11px;font-weight:700;color:var(--sl);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px" data-i18n="tracker.history">Payment History</div>
+      <div style="background:#fff;border-radius:10px;border:1.5px solid var(--lg);overflow:hidden">
+        <div style="padding:12px 14px;display:flex;align-items:center;gap:10px;border-bottom:1px solid var(--of)">
+          <div style="width:32px;height:32px;border-radius:50%;background:var(--gnb);display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0">💰</div>
+          <div style="flex:1"><div style="font-size:13px;font-weight:600;color:var(--dk)" data-i18n="tracker.first">First Installment</div><div style="font-size:11px;color:var(--sl)">24 Jan 3:15 PM • UPI</div></div>
+          <div style="font-size:14px;font-weight:700;color:var(--gnt)">+₹2,000</div>
+        </div>
+        <div style="padding:12px 14px;display:flex;align-items:center;gap:10px;background:var(--of)">
+          <div style="width:32px;height:32px;border-radius:50%;background:var(--rdb);display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0">⏳</div>
+          <div style="flex:1"><div style="font-size:13px;font-weight:600;color:var(--rdt)" data-i18n="tracker.pending">Remaining Pending</div><div style="font-size:11px;color:var(--sl)" data-i18n="tracker.followup">Please follow up</div></div>
+          <div style="font-size:14px;font-weight:700;color:var(--rd)">-₹1,200</div>
+        </div>
+      </div>
+    </div>
+    <div style="padding:0 16px;display:flex;gap:8px">
+      <button class="btn bo" style="flex:1;padding:11px;font-size:13px" onclick="go('s-payment-installment')" data-i18n="btn.addkisat">💰 Baaki Liya</button>
+      <button class="sm wa-btn" style="padding:11px 14px" onclick="go('s-payment-wa-partial')">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413z"/></svg>
+        <span data-i18n="btn.remind">Remind</span>
+      </button>
+    </div>
+  </div>
+  <div class="bnav">
+    <button class="ni" onclick="go('s-intake')"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg><span data-i18n="nav.intake">Intake</span></button>
+    <button class="ni on"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg><span data-i18n="nav.jobs">Jobs</span></button>
+    <button class="ni" onclick="go('s-report')"><svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg><span data-i18n="nav.report">Report</span></button>
+    <button class="ni" onclick="go('s-followup')"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/><line x1="9" y1="10" x2="15" y2="10"/><line x1="9" y1="14" x2="13" y2="14"/></svg><span data-i18n="nav.followup">Follow-up</span></button>
+  </div>
+</div>
+
+<!-- ══ S11 ADD INSTALLMENT ══ -->
+<div class="screen" id="s-payment-installment">
+  <div class="sbar"><span class="t" style="color:var(--dk)">9:41</span></div>
+  <div class="hdr"><button class="bk" onclick="go('s-partial-track')"><svg width="18" height="18" viewBox="0 0 24 24"><path d="M19 12H5M12 19l-7-7 7-7" stroke="#0F172A" stroke-width="2" stroke-linecap="round" fill="none"/></svg></button><div class="hdr-t" data-i18n="install.title">Record Remaining Payment</div></div>
+  <div class="cnt" style="padding:16px">
+    <div style="background:var(--rdb);border-radius:12px;padding:14px;margin-bottom:16px;display:flex">
+      <div style="flex:1;text-align:center;border-right:1px solid #FECACA;padding-right:12px">
+        <div style="font-size:10px;color:var(--rdt);font-weight:700;text-transform:uppercase;margin-bottom:4px" data-i18n="install.prev">Previously Received</div>
+        <div style="font-size:22px;font-weight:800;color:var(--gnt)">₹2,000</div>
+      </div>
+      <div style="flex:1;text-align:center;padding-left:12px">
+        <div style="font-size:10px;color:var(--rdt);font-weight:700;text-transform:uppercase;margin-bottom:4px" data-i18n="install.rem">Remaining</div>
+        <div style="font-size:22px;font-weight:800;color:var(--rd)">₹1,200</div>
+      </div>
+    </div>
+    <div class="ig"><label data-i18n="pay.howmuch">How Much Received Today (₹)</label><input class="inp" value="1200" style="font-size:22px;font-weight:700;color:var(--or)"/></div>
+    <div class="ig">
+      <label data-i18n="install.method">Payment Method</label>
+      <div style="display:flex;gap:8px">
+        <button class="sm bo">📱 UPI</button>
+        <button class="sm" style="background:var(--of);color:var(--sl);border:1.5px solid var(--lg)" data-i18n="install.cash">💵 Cash</button>
+        <button class="sm" style="background:var(--of);color:var(--sl);border:1.5px solid var(--lg)" data-i18n="install.bank">🏦 Bank</button>
+      </div>
+    </div>
+    <div class="ig"><label data-i18n="install.note">Note (Optional)</label><input class="inp" data-i18n-placeholder="install.noteph" placeholder="e.g. Cash mein diya..." style="font-size:14px"/></div>
+    <div style="background:var(--gnb);border-radius:10px;padding:12px;margin-bottom:16px">
+      <div style="font-size:12px;color:var(--gnt);font-weight:700;margin-bottom:2px" data-i18n="install.complete">✅ Full payment will be complete!</div>
+      <div style="font-size:11px;color:var(--gnt)">₹2,000 + ₹1,200 = ₹3,200 — Total clear! 🎉</div>
+    </div>
+    <button class="btn bg" onclick="go('s-payment-wa-full')" style="margin-bottom:10px" data-i18n="install.confirm">Confirm — Send WhatsApp 📱</button>
+    <button class="btn bw" onclick="go('s-partial-track')" data-i18n="btn.backtracker">← Back to Tracker</button>
+  </div>
+  <div class="bnav">
+    <button class="ni" onclick="go('s-intake')"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg><span data-i18n="nav.intake">Intake</span></button>
+    <button class="ni on"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg><span data-i18n="nav.jobs">Jobs</span></button>
+    <button class="ni" onclick="go('s-report')"><svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg><span data-i18n="nav.report">Report</span></button>
+    <button class="ni" onclick="go('s-followup')"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/><line x1="9" y1="10" x2="15" y2="10"/><line x1="9" y1="14" x2="13" y2="14"/></svg><span data-i18n="nav.followup">Follow-up</span></button>
+  </div>
+</div>
+
+<!-- ══ S12 WA FULL ══ -->
+<div class="screen" id="s-payment-wa-full">
+  <div class="sbar"><span class="t" style="color:var(--dk)">9:41</span></div>
+  <div class="hdr"><button class="bk" onclick="go('s-payment-installment')"><svg width="18" height="18" viewBox="0 0 24 24"><path d="M19 12H5M12 19l-7-7 7-7" stroke="#0F172A" stroke-width="2" stroke-linecap="round" fill="none"/></svg></button><div class="hdr-t" data-i18n="wa.sent">WhatsApp Sent</div></div>
+  <div class="cnt">
+    <div style="margin:14px 16px;background:var(--gnt);border-radius:14px;padding:16px;text-align:center">
+      <div style="font-size:28px;margin-bottom:6px">🎉</div>
+      <div style="font-size:15px;font-weight:700;color:#fff;margin-bottom:2px" data-i18n="wafull.title">Full Payment Complete!</div>
+      <div style="font-size:11px;color:rgba(255,255,255,.7)">₹3,200 cleared • 3 WhatsApp bheje gaye</div>
+    </div>
+    <div style="padding:0 16px;display:flex;flex-direction:column;gap:10px">
+      <div><div style="font-size:10px;font-weight:700;color:var(--sl);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px" data-i18n="wa.owner">1. To Owner — Anil Joshi</div>
+        <div class="wam"><div class="waf">📱 +91 9876540001 • Delivered ✓✓</div><div class="wab">💚 <b>Full Payment Clear!</b>
+Anil ji — ₹3,200 poora receive ho gaya. Shukriya! 🙏
+— Shri Narsang Bike Care 🛵</div></div>
+      </div>
+      <div><div style="font-size:10px;font-weight:700;color:var(--sl);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px" data-i18n="wa.customer">2. To Customer — Suresh Bhai</div>
+        <div class="wam"><div class="waf">📱 +91 9123456780 • Delivered ✓✓</div><div class="wab">✅ <b>Payment Complete!</b>
+Suresh ji — ₹3,200 full payment clear!
+— Shri Narsang Bike Care 🛵</div></div>
+      </div>
+      <div><div style="font-size:10px;font-weight:700;color:var(--sl);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px" data-i18n="wa.mechanic">3. Mechanic Record</div>
+        <div class="wam wam-o"><div class="waf waf-o">📊 Record</div><div class="wab">Full Payment: MH-14-PQ-7777 • ₹3,200 ✅</div></div>
+      </div>
+      <button class="btn bg" onclick="go('s-paid-success')" data-i18n="btn.success">🎉 Success Screen Dekho</button>
+      <button class="btn bw" onclick="go('s-dashboard')" data-i18n="btn.backdash">Back to Dashboard</button>
+    </div>
+  </div>
+  <div class="bnav">
+    <button class="ni" onclick="go('s-intake')"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg><span data-i18n="nav.intake">Intake</span></button>
+    <button class="ni on"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg><span data-i18n="nav.jobs">Jobs</span></button>
+    <button class="ni" onclick="go('s-report')"><svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg><span data-i18n="nav.report">Report</span></button>
+    <button class="ni" onclick="go('s-followup')"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/><line x1="9" y1="10" x2="15" y2="10"/><line x1="9" y1="14" x2="13" y2="14"/></svg><span data-i18n="nav.followup">Follow-up</span></button>
+  </div>
+</div>
+
+<!-- ══ S13 PAID SUCCESS ══ -->
+<div class="screen" id="s-paid-success">
+  <div class="sbar"><span class="t" style="color:var(--dk)">9:41</span></div>
+  <div class="hdr"><button class="bk" onclick="go('s-dashboard')"><svg width="18" height="18" viewBox="0 0 24 24"><path d="M19 12H5M12 19l-7-7 7-7" stroke="#0F172A" stroke-width="2" stroke-linecap="round" fill="none"/></svg></button><div class="hdr-t" data-i18n="success.title">Payment Complete</div></div>
+  <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:28px">
+    <div style="width:90px;height:90px;border-radius:50%;background:var(--gnb);display:flex;align-items:center;justify-content:center;font-size:44px;margin-bottom:18px">💚</div>
+    <div style="font-size:22px;font-weight:800;color:var(--dk);margin-bottom:6px" data-i18n="success.heading">Full Payment Done!</div>
+    <div style="font-size:13px;color:var(--sl);text-align:center;margin-bottom:22px">Anil Joshi — ₹3,200 complete ✓</div>
+    <div style="width:100%;margin-bottom:20px;display:flex;flex-direction:column;gap:6px">
+      <div style="background:var(--gnb);border-radius:8px;padding:9px 12px;display:flex;align-items:center;gap:8px"><span>✅</span><div style="flex:1;font-size:12px;color:var(--gnt);font-weight:500" data-i18n="success.wa1">Owner (Anil Joshi) received WhatsApp</div><span style="font-size:10px;color:var(--sl)">✓✓</span></div>
+      <div style="background:var(--gnb);border-radius:8px;padding:9px 12px;display:flex;align-items:center;gap:8px"><span>✅</span><div style="flex:1;font-size:12px;color:var(--gnt);font-weight:500" data-i18n="success.wa2">Customer (Suresh Bhai) received WhatsApp</div><span style="font-size:10px;color:var(--sl)">✓✓</span></div>
+      <div style="background:var(--orl);border-radius:8px;padding:9px 12px;display:flex;align-items:center;gap:8px"><span>📋</span><div style="flex:1;font-size:12px;color:var(--or);font-weight:500" data-i18n="success.wa3">Mechanic — record copy received</div></div>
+    </div>
+    <div style="width:100%;background:#fff;border-radius:12px;border:1.5px solid #A7F3D0;border-left:4px solid var(--gn);padding:14px;margin-bottom:18px">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <div><div style="font-family:'Share Tech Mono',monospace;font-weight:700;color:var(--dk)">MH-14-PQ-7777</div><div style="font-size:11px;color:var(--sl)">Anil Joshi</div></div>
+        <span class="badge bp">PAID ✅</span>
+      </div>
+      <div style="margin-top:8px;font-size:15px;font-weight:700;color:var(--gn)">💚 ₹3,200 — Full Payment</div>
+    </div>
+    <button class="btn bo" onclick="go('s-dashboard')" style="width:100%" data-i18n="btn.backdash">Back to Dashboard</button>
+  </div>
+  <div class="bnav">
+    <button class="ni" onclick="go('s-intake')"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg><span data-i18n="nav.intake">Intake</span></button>
+    <button class="ni" onclick="go('s-dashboard')"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg><span data-i18n="nav.jobs">Jobs</span></button>
+    <button class="ni on"><svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg><span data-i18n="nav.report">Report</span></button>
+    <button class="ni" onclick="go('s-followup')"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/><line x1="9" y1="10" x2="15" y2="10"/><line x1="9" y1="14" x2="13" y2="14"/></svg><span data-i18n="nav.followup">Follow-up</span></button>
+  </div>
+</div>
+
+<!-- ══ S14 REPORT ══ -->
+<div class="screen" id="s-report">
+  <div class="sbar"><span class="t" style="color:var(--dk)">9:41</span></div>
+  <div class="hdr"><button class="bk" onclick="go('s-dashboard')"><svg width="18" height="18" viewBox="0 0 24 24"><path d="M19 12H5M12 19l-7-7 7-7" stroke="#0F172A" stroke-width="2" stroke-linecap="round" fill="none"/></svg></button><div class="hdr-t" data-i18n="nav.report">Report</div></div>
+  <div class="cnt">
+    <div style="margin:10px 16px;background:var(--of);border-radius:10px;padding:10px 14px;border:1.5px solid var(--lg);display:flex;align-items:center;gap:8px">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M21 21l-4.35-4.35M17 11A6 6 0 1 1 5 11a6 6 0 0 1 12 0z" stroke="#64748B" stroke-width="2" stroke-linecap="round"/></svg>
+      <input data-i18n-placeholder="report.search" placeholder="Vehicle number ya customer name..." style="border:none;background:none;font-family:'Rajdhani',sans-serif;font-size:13px;color:var(--dk);flex:1;outline:none"/>
+    </div>
+    <div style="margin:0 16px 10px;background:var(--of);border-radius:12px;padding:14px;border:1.5px solid var(--lg)">
+      <div style="font-size:10px;font-weight:700;color:var(--sl);text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px" data-i18n="report.filter">Date Range Filter</div>
+      <div style="display:flex;gap:8px;margin-bottom:10px">
+        <div style="flex:1"><div style="font-size:10px;font-weight:600;color:var(--sl);margin-bottom:4px;text-transform:uppercase" data-i18n="report.from">From</div><div style="background:#fff;border:1.5px solid var(--lg);border-radius:8px;padding:9px 12px;font-size:12px;color:var(--dk)">📅 01 Jan 2025</div></div>
+        <div style="flex:1"><div style="font-size:10px;font-weight:600;color:var(--sl);margin-bottom:4px;text-transform:uppercase" data-i18n="report.to">To</div><div style="background:#fff;border:1.5px solid var(--lg);border-radius:8px;padding:9px 12px;font-size:12px;color:var(--dk)">📅 31 Mar 2025</div></div>
+      </div>
+      <div style="display:flex;gap:8px">
+        <button class="btn bo" style="flex:1;padding:10px;font-size:13px" data-i18n="report.search.btn">🔍 Search</button>
+        <button class="btn bw" style="flex:1;padding:10px;font-size:13px" data-i18n="report.reset">Reset</button>
+      </div>
+    </div>
+    <div style="display:flex;gap:8px;padding:0 16px 10px">
+      <div style="flex:1;background:var(--gnb);border-radius:10px;padding:10px;text-align:center"><div style="font-size:18px;font-weight:700;color:var(--gnt)">₹9,700</div><div style="font-size:10px;color:var(--gnt)" data-i18n="report.earned">Total Earned</div></div>
+      <div style="flex:1;background:var(--orl);border-radius:10px;padding:10px;text-align:center"><div style="font-size:18px;font-weight:700;color:var(--or)">5</div><div style="font-size:10px;color:var(--or)" data-i18n="report.jobs">Total Jobs</div></div>
+    </div>
+    <div style="padding:0 16px;display:flex;flex-direction:column;gap:8px">
+      <div style="background:#fff;border-radius:10px;border:1.5px solid var(--lg);padding:12px 14px;display:flex;align-items:center;gap:10px;cursor:pointer" onclick="go('s-card-detail')">
+        <span class="badge bp" style="padding:4px 8px">PAID</span>
+        <div style="flex:1"><div style="font-family:'Share Tech Mono',monospace;font-size:12px;font-weight:700;color:var(--dk)">MH-12-AB-1234</div><div style="font-size:11px;color:var(--sl)">Ramesh Kumar • 15 Jan</div></div>
+        <div style="font-size:14px;font-weight:700;color:var(--gnt)">₹2,500</div>
+      </div>
+      <div style="background:#fff;border-radius:10px;border:1.5px solid var(--lg);padding:12px 14px;display:flex;align-items:center;gap:10px;cursor:pointer" onclick="go('s-partial-track')">
+        <span class="badge by" style="padding:4px 8px">PARTIAL</span>
+        <div style="flex:1"><div style="font-family:'Share Tech Mono',monospace;font-size:12px;font-weight:700;color:var(--dk)">RJ-14-GH-5555</div><div style="font-size:11px;color:var(--sl)">Mohan Lal • 18 Jan</div></div>
+        <div style="font-size:14px;font-weight:700;color:var(--ywt)">₹1,000/₹1,800</div>
+      </div>
+      <div style="background:#fff;border-radius:10px;border:1.5px solid var(--lg);padding:12px 14px;display:flex;align-items:center;gap:10px;cursor:pointer" onclick="go('s-card-detail')">
+        <span class="badge bd" style="padding:4px 8px">DONE</span>
+        <div style="flex:1"><div style="font-family:'Share Tech Mono',monospace;font-size:12px;font-weight:700;color:var(--dk)">MH-14-PQ-7777</div><div style="font-size:11px;color:var(--sl)">Anil Joshi • 20 Jan</div></div>
+        <div style="font-size:14px;font-weight:700;color:var(--sl)">₹3,200</div>
+      </div>
+      <div style="background:#fff;border-radius:10px;border:1.5px solid var(--lg);padding:12px 14px;display:flex;align-items:center;gap:10px;cursor:pointer" onclick="go('s-card-detail')">
+        <span class="badge br" style="padding:4px 8px">REPAIR</span>
+        <div style="flex:1"><div style="font-family:'Share Tech Mono',monospace;font-size:12px;font-weight:700;color:var(--dk)">DL-01-XY-9999</div><div style="font-size:11px;color:var(--sl)">Suresh Mehta • 22 Jan</div></div>
+        <div style="font-size:14px;font-weight:700;color:var(--sl)">₹4,000</div>
+      </div>
+    </div>
+  </div>
+  <div class="bnav">
+    <button class="ni" onclick="go('s-intake')"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg><span data-i18n="nav.intake">Intake</span></button>
+    <button class="ni" onclick="go('s-dashboard')"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg><span data-i18n="nav.jobs">Jobs</span></button>
+    <button class="ni on"><svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg><span data-i18n="nav.report">Report</span></button>
+    <button class="ni" onclick="go('s-followup')"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/><line x1="9" y1="10" x2="15" y2="10"/><line x1="9" y1="14" x2="13" y2="14"/></svg><span data-i18n="nav.followup">Follow-up</span></button>
+  </div>
+</div>
+
+<!-- ══ S15 FOLLOW-UP ══ -->
+<div class="screen" id="s-followup">
+  <div class="sbar"><span class="t" style="color:var(--dk)">9:41</span></div>
+  <div class="hdr">
+    <button class="bk" onclick="go('s-dashboard')"><svg width="18" height="18" viewBox="0 0 24 24"><path d="M19 12H5M12 19l-7-7 7-7" stroke="#0F172A" stroke-width="2" stroke-linecap="round" fill="none"/></svg></button>
+    <div class="hdr-t" data-i18n="nav.followup">Follow-up</div>
+    <button class="sm wa-btn" style="margin-left:auto" onclick="go('s-wa-sent')">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413z"/></svg>
+      <span data-i18n="followup.bulk">Bulk WA</span>
+    </button>
+  </div>
+  <div style="padding:8px 16px;background:var(--blb);border-bottom:1px solid #BFDBFE;font-size:12px;color:var(--blt);flex-shrink:0" data-i18n="followup.tip">💡 Toggle ON → WhatsApp will be sent to all selected</div>
+  <div class="cnt">
+    <div class="card yl" style="margin-top:12px">
+      <div class="ch"><div><div class="vn">MH-14-PQ-7777</div><div class="cn">Anil Joshi • +91 9876540001</div></div><label class="tgl"><input type="checkbox" checked/><span class="tgl-s"></span></label></div>
+      <div class="cb"><div class="cp">Tyre change — 2 din se pending</div><div class="cm"><span class="mi" style="color:var(--yw);font-weight:600">💰 ₹3,200 pending</span></div></div>
+    </div>
+    <div class="card">
+      <div class="ch"><div><div class="vn">DL-01-XY-9999</div><div class="cn">Suresh Mehta • +91 9123456789</div></div><label class="tgl"><input type="checkbox"/><span class="tgl-s"></span></label></div>
+      <div class="cb"><div class="cp">Engine awaaz — 1 din se</div><div class="cm"><span class="mi">₹4,000</span></div></div>
+    </div>
+    <div class="card">
+      <div class="ch"><div><div class="vn">GJ-05-CD-3210</div><div class="cn">Priya Shah • +91 9988776655</div></div><label class="tgl"><input type="checkbox" checked/><span class="tgl-s"></span></label></div>
+      <div class="cb"><div class="cp">AC nahi chalta</div><div class="cm"><span class="mi">₹5,500</span></div></div>
+    </div>
+    <div style="padding:16px">
+      <button class="btn wa-btn" onclick="go('s-wa-sent')">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413z"/></svg>
+        <span data-i18n="followup.send">Send WhatsApp to 2 Selected</span>
+      </button>
+    </div>
+  </div>
+  <div class="bnav">
+    <button class="ni" onclick="go('s-intake')"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg><span data-i18n="nav.intake">Intake</span></button>
+    <button class="ni" onclick="go('s-dashboard')"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg><span data-i18n="nav.jobs">Jobs</span></button>
+    <button class="ni" onclick="go('s-report')"><svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg><span data-i18n="nav.report">Report</span></button>
+    <button class="ni on"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/><line x1="9" y1="10" x2="15" y2="10"/><line x1="9" y1="14" x2="13" y2="14"/></svg><span data-i18n="nav.followup">Follow-up</span></button>
+  </div>
+</div>
+
+</div><!-- /phone -->
+
+<script>
+/* ═══════════════════════════════════════
+   TRANSLATIONS
+═══════════════════════════════════════ */
+const APP_NAME = 'Shri Narsang Bike Care';
+
+const T = {
+  en: {
+    'app.name': 'Shri Narsang Bike Care',
+    'splash.tagline': 'Your entire workshop<br>managed in one app',
+    'splash.start': 'Get Started →',
+    'splash.dashboard': 'View Dashboard First',
+    'intake.title': 'New Vehicle',
+    'intake.sec1': '👤 Customer Info',
+    'intake.sec2': '🛵 Vehicle Info',
+    'intake.sec3': '🔧 Job Info',
+    'intake.customer': 'Customer Name',
+    'intake.whatsapp': 'WhatsApp Number',
+    'intake.vtype': 'Vehicle Type',
+    'intake.plate': 'Number Plate',
+    'intake.owner': 'Owner Name',
+    'intake.ownernum': 'Owner Number',
+    'intake.problem': "What's the Problem?",
+    'intake.estimate': 'Estimate (₹)',
+    'intake.delivery': 'Delivery By?',
+    'intake.save': 'Save ✅',
+    'intake.err': 'Please fill all required fields',
+    'vtype.scooter': 'Scooter',
+    'vtype.bike': 'Bike',
+    'nav.intake': 'Intake',
+    'nav.jobs': 'Jobs',
+    'nav.report': 'Report',
+    'nav.followup': 'Follow-up',
+    'dash.title': 'Dashboard',
+    'dash.sub': "Today's overview",
+    'dash.new': '+ New',
+    'dash.repair': 'In Repair',
+    'dash.done': 'Done',
+    'dash.pending': 'Pending',
+    'dash.tab.repair': 'In Repair (3)',
+    'dash.tab.done': 'Done (2)',
+    'badge.repair': 'In Repair',
+    'badge.partial': 'Partial',
+    'btn.markdone': 'Mark as Done ✅',
+    'btn.payment': '💰 Payment Received',
+    'btn.remind': '🔔 Remind',
+    'btn.tracker': '📊 View Tracker →',
+    'btn.addkisat': '+ Add Payment',
+    'btn.edit': '✏️ Edit',
+    'btn.editdetail': '✏️ Edit Details',
+    'btn.backdash': '← Back to Dashboard',
+    'btn.save': '✅ Save',
+    'btn.cancel': 'Cancel',
+    'btn.undo': '⏪ Undo',
+    'btn.viewdash': 'View Dashboard →',
+    'btn.newvehicle': '+ New Vehicle',
+    'btn.backtracker': '← Back to Tracker',
+    'btn.success': '🎉 View Success',
+    'detail.title': 'Vehicle Detail',
+    'lbl.customer': 'Customer',
+    'lbl.whatsapp': 'WhatsApp',
+    'lbl.vtype': 'Vehicle',
+    'lbl.owner': 'Owner',
+    'lbl.ownernum': 'Owner No.',
+    'lbl.problem': 'Problem',
+    'lbl.estimate': 'Estimate',
+    'lbl.delivery': 'Delivery',
+    'edit.title': 'Edit Details',
+    'edit.mode': 'Edit Mode',
+    'edit.prompt': 'What to change? e.g. "estimate 3000 karo"',
+    'edit.confirm': 'These changes will apply:',
+    'edit.more': 'More Edits',
+    'edit.placeholder': 'What do you want to change...',
+    'done.title': 'Send WhatsApp?',
+    'done.sub': 'Ramesh Kumar will receive: +91 9876543210',
+    'done.send': '✅ Yes Send — Mark as Done',
+    'wasent.title': 'WhatsApp Sent',
+    'wasent.heading': 'WhatsApp Sent!',
+    'wasent.sub': 'Ramesh Kumar received the message. Vehicle is now in Done.',
+    'wasent.done': 'Marked as Done ✅',
+    'wasent.undo': 'You can undo within 8 seconds',
+    'pay.title': 'Record Payment',
+    'pay.total': 'Total:',
+    'pay.howmuch': 'How Much Received Today (₹)',
+    'pay.received': 'Received',
+    'pay.pending': 'Remaining',
+    'pay.warn': 'Remaining',
+    'pay.warn2': 'pending. Owner will get WhatsApp reminder.',
+    'pay.full': '✅ Full Payment Confirm (₹3,200)',
+    'pay.partial': '⚡ Save Partial + Send WA',
+    'wa.sent': 'WhatsApp Sent',
+    'wa.three': '3 WhatsApp Messages Sent',
+    'wa.owner': '1. To Owner — Anil Joshi',
+    'wa.customer': '2. To Customer — Suresh Bhai',
+    'wa.mechanic': '3. Your Record Copy',
+    'tracker.title': 'Payment Tracker',
+    'tracker.progress': 'Payment Progress',
+    'tracker.baaki': 'REMAINING',
+    'tracker.history': 'Payment History',
+    'tracker.first': 'First Installment',
+    'tracker.pending': 'Remaining Pending',
+    'tracker.followup': 'Please follow up',
+    'install.title': 'Record Remaining Payment',
+    'install.prev': 'Previously Received',
+    'install.rem': 'Remaining',
+    'install.method': 'Payment Method',
+    'install.cash': '💵 Cash',
+    'install.bank': '🏦 Bank',
+    'install.note': 'Note (Optional)',
+    'install.noteph': 'e.g. Paid in cash...',
+    'install.complete': '✅ Full payment will be complete!',
+    'install.confirm': 'Confirm — Send WhatsApp 📱',
+    'wafull.title': 'Full Payment Complete!',
+    'success.title': 'Payment Complete',
+    'success.heading': 'Full Payment Done!',
+    'success.wa1': 'Owner (Anil Joshi) received WhatsApp',
+    'success.wa2': 'Customer (Suresh Bhai) received WhatsApp',
+    'success.wa3': 'Mechanic — record copy received',
+    'report.search': 'Vehicle number or customer name...',
+    'report.filter': 'Date Range Filter',
+    'report.from': 'FROM',
+    'report.to': 'TO',
+    'report.search.btn': '🔍 Search',
+    'report.reset': 'Reset',
+    'report.earned': 'Total Earned',
+    'report.jobs': 'Total Jobs',
+    'followup.bulk': 'Bulk WA',
+    'followup.tip': '💡 Toggle ON → WhatsApp will be sent to all selected',
+    'followup.send': 'Send WhatsApp to 2 Selected',
+  },
+  hi: {
+    'app.name': 'श्री नरसंग बाइक केयर',
+    'splash.tagline': 'आपकी पूरी वर्कशॉप<br>एक app में मैनेज करें',
+    'splash.start': 'शुरू करें →',
+    'splash.dashboard': 'पहले डैशबोर्ड देखें',
+    'intake.title': 'नया वाहन',
+    'intake.sec1': '👤 ग्राहक जानकारी',
+    'intake.sec2': '🛵 वाहन जानकारी',
+    'intake.sec3': '🔧 काम की जानकारी',
+    'intake.customer': 'ग्राहक का नाम',
+    'intake.whatsapp': 'WhatsApp नंबर',
+    'intake.vtype': 'वाहन का प्रकार',
+    'intake.plate': 'नंबर प्लेट',
+    'intake.owner': 'मालिक का नाम',
+    'intake.ownernum': 'मालिक का नंबर',
+    'intake.problem': 'क्या समस्या है?',
+    'intake.estimate': 'अनुमान (₹)',
+    'intake.delivery': 'कब तक तैयार?',
+    'intake.save': 'सेव करें ✅',
+    'intake.err': 'कृपया सभी जरूरी fields भरें',
+    'vtype.scooter': 'स्कूटर',
+    'vtype.bike': 'बाइक',
+    'nav.intake': 'इंटेक',
+    'nav.jobs': 'जॉब्स',
+    'nav.report': 'रिपोर्ट',
+    'nav.followup': 'फॉलो-अप',
+    'dash.title': 'डैशबोर्ड',
+    'dash.sub': 'आज का अवलोकन',
+    'dash.new': '+ नया',
+    'dash.repair': 'मरम्मत में',
+    'dash.done': 'हो गया',
+    'dash.pending': 'बकाया',
+    'dash.tab.repair': 'मरम्मत (3)',
+    'dash.tab.done': 'हो गया (2)',
+    'badge.repair': 'मरम्मत में',
+    'badge.partial': 'आंशिक',
+    'btn.markdone': 'Done करें ✅',
+    'btn.payment': '💰 भुगतान मिला',
+    'btn.remind': '🔔 याद दिलाएं',
+    'btn.tracker': '📊 ट्रैकर देखें →',
+    'btn.addkisat': '+ किस्त जोड़ें',
+    'btn.edit': '✏️ बदलें',
+    'btn.editdetail': '✏️ विवरण बदलें',
+    'btn.backdash': '← डैशबोर्ड पर वापस',
+    'btn.save': '✅ सेव',
+    'btn.cancel': 'रद्द करें',
+    'btn.undo': '⏪ वापस लें',
+    'btn.viewdash': 'डैशबोर्ड देखें →',
+    'btn.newvehicle': '+ नया वाहन',
+    'btn.backtracker': '← ट्रैकर पर वापस',
+    'btn.success': '🎉 सफलता देखें',
+    'detail.title': 'वाहन विवरण',
+    'lbl.customer': 'ग्राहक',
+    'lbl.whatsapp': 'WhatsApp',
+    'lbl.vtype': 'वाहन',
+    'lbl.owner': 'मालिक',
+    'lbl.ownernum': 'मालिक नं.',
+    'lbl.problem': 'समस्या',
+    'lbl.estimate': 'अनुमान',
+    'lbl.delivery': 'डिलीवरी',
+    'edit.title': 'विवरण बदलें',
+    'edit.mode': 'संपादन मोड',
+    'edit.prompt': 'क्या बदलना है? e.g. "estimate 3000 karo"',
+    'edit.confirm': 'ये बदलाव होंगे:',
+    'edit.more': 'और बदलाव',
+    'edit.placeholder': 'क्या बदलना है बताएं...',
+    'done.title': 'WhatsApp भेजें?',
+    'done.sub': 'Ramesh Kumar को message जाएगा',
+    'done.send': '✅ हाँ भेजो — Done करो',
+    'wasent.title': 'WhatsApp भेजा',
+    'wasent.heading': 'WhatsApp भेज दिया!',
+    'wasent.sub': 'Ramesh Kumar को message मिल गया। वाहन Done में है।',
+    'wasent.done': 'Done mark हो गया ✅',
+    'wasent.undo': '8 सेकंड में वापस ले सकते हो',
+    'pay.title': 'भुगतान रिकॉर्ड',
+    'pay.total': 'कुल:',
+    'pay.howmuch': 'आज कितना मिला (₹)',
+    'pay.received': 'मिला',
+    'pay.pending': 'बाकी',
+    'pay.warn': 'बाकी',
+    'pay.warn2': 'pending। मालिक को reminder जाएगा।',
+    'pay.full': '✅ पूरा भुगतान confirm (₹3,200)',
+    'pay.partial': '⚡ आंशिक save + WA भेजो',
+    'wa.sent': 'WhatsApp भेजे गए',
+    'wa.three': '3 WhatsApp भेजे गए',
+    'wa.owner': '1. मालिक को — Anil Joshi',
+    'wa.customer': '2. ग्राहक को — Suresh Bhai',
+    'wa.mechanic': '3. आपका रिकॉर्ड',
+    'tracker.title': 'भुगतान ट्रैकर',
+    'tracker.progress': 'भुगतान प्रगति',
+    'tracker.baaki': 'बाकी पैसा',
+    'tracker.history': 'भुगतान इतिहास',
+    'tracker.first': 'पहली किस्त',
+    'tracker.pending': 'बाकी Pending',
+    'tracker.followup': 'Follow up करें',
+    'install.title': 'बाकी भुगतान रिकॉर्ड',
+    'install.prev': 'पहले मिला',
+    'install.rem': 'बाकी बची',
+    'install.method': 'भुगतान तरीका',
+    'install.cash': '💵 नकद',
+    'install.bank': '🏦 बैंक',
+    'install.note': 'नोट (वैकल्पिक)',
+    'install.noteph': 'e.g. नकद में दिया...',
+    'install.complete': '✅ पूरा भुगतान हो जाएगा!',
+    'install.confirm': 'Confirm — WhatsApp भेजो 📱',
+    'wafull.title': 'पूरा भुगतान हो गया!',
+    'success.title': 'भुगतान पूर्ण',
+    'success.heading': 'पूरा भुगतान हो गया!',
+    'success.wa1': 'मालिक (Anil Joshi) को WhatsApp गया',
+    'success.wa2': 'ग्राहक (Suresh Bhai) को WhatsApp गया',
+    'success.wa3': 'मैकेनिक — रिकॉर्ड कॉपी मिली',
+    'report.search': 'वाहन नंबर या ग्राहक का नाम...',
+    'report.filter': 'तारीख फिल्टर',
+    'report.from': 'से',
+    'report.to': 'तक',
+    'report.search.btn': '🔍 खोजें',
+    'report.reset': 'रीसेट',
+    'report.earned': 'कुल कमाई',
+    'report.jobs': 'कुल जॉब्स',
+    'followup.bulk': 'Bulk WA',
+    'followup.tip': '💡 Toggle ON करें → सबको WhatsApp जाएगा',
+    'followup.send': '2 चुने हुए को WhatsApp भेजो',
+  },
+  gu: {
+    'app.name': 'શ્રી નરસંગ બાઇક કૅર',
+    'splash.tagline': 'તમારી સંપૂર્ણ વર્કશૉપ<br>એક app માં મૅનૅજ કરો',
+    'splash.start': 'શરૂ કરો →',
+    'splash.dashboard': 'પ્રથમ ડૅશ-બૉર્ડ જુઓ',
+    'intake.title': 'નવું વાહન',
+    'intake.sec1': '👤 ગ્રાહક માહિતી',
+    'intake.sec2': '🛵 વાહન માહિતી',
+    'intake.sec3': '🔧 કામની માહિતી',
+    'intake.customer': 'ગ્રાહકનું નામ',
+    'intake.whatsapp': 'WhatsApp નંબર',
+    'intake.vtype': 'વાહનનો પ્રકાર',
+    'intake.plate': 'નંબર પ્લેટ',
+    'intake.owner': 'માલિકનું નામ',
+    'intake.ownernum': 'માલિકનો નંબર',
+    'intake.problem': 'શું સમસ્યા છે?',
+    'intake.estimate': 'અંદાજ (₹)',
+    'intake.delivery': 'ક્યારે સુધી?',
+    'intake.save': 'સાચવો ✅',
+    'intake.err': 'કૃપા કરી બધા જરૂરી fields ભરો',
+    'vtype.scooter': 'સ્કૂટર',
+    'vtype.bike': 'બાઇક',
+    'nav.intake': 'ઇન્ટૅક',
+    'nav.jobs': 'જૉબ્સ',
+    'nav.report': 'રિપૉર્ટ',
+    'nav.followup': 'ફૉલો-અપ',
+    'dash.title': 'ડૅશ-બૉર્ડ',
+    'dash.sub': 'આજની ઝલક',
+    'dash.new': '+ નવું',
+    'dash.repair': 'રિપૅર માં',
+    'dash.done': 'થઈ ગ્યું',
+    'dash.pending': 'બાકી',
+    'dash.tab.repair': 'રિપૅર (3)',
+    'dash.tab.done': 'થઈ ગ્યું (2)',
+    'badge.repair': 'રિપૅર માં',
+    'badge.partial': 'આંશિક',
+    'btn.markdone': 'Done કરો ✅',
+    'btn.payment': '💰 ચૂકવણી મળી',
+    'btn.remind': '🔔 યાદ કરાવો',
+    'btn.tracker': '📊 ટ્રૅકર જુઓ →',
+    'btn.addkisat': '+ હપ્તો ઉમેરો',
+    'btn.edit': '✏️ ફેરફાર',
+    'btn.editdetail': '✏️ વિગત બદલો',
+    'btn.backdash': '← ડૅશ-બૉર્ડ પર પાછા',
+    'btn.save': '✅ સાચવો',
+    'btn.cancel': 'રદ કરો',
+    'btn.undo': '⏪ પૂર્વવત',
+    'btn.viewdash': 'ડૅશ-બૉર્ડ જુઓ →',
+    'btn.newvehicle': '+ નવું વાહન',
+    'btn.backtracker': '← ટ્રૅકર પર પાછા',
+    'btn.success': '🎉 સફળ',
+    'detail.title': 'વાહન વિગત',
+    'lbl.customer': 'ગ્રાહક',
+    'lbl.whatsapp': 'WhatsApp',
+    'lbl.vtype': 'વાહન',
+    'lbl.owner': 'માલિક',
+    'lbl.ownernum': 'માલિક નં.',
+    'lbl.problem': 'સમસ્યા',
+    'lbl.estimate': 'અંદાજ',
+    'lbl.delivery': 'ડિલિવરી',
+    'edit.title': 'વિગત બદલો',
+    'edit.mode': 'ફેરફાર મોડ',
+    'edit.prompt': 'શું બદલવું? e.g. "estimate 3000 karo"',
+    'edit.confirm': 'આ ફેરફાર થશે:',
+    'edit.more': 'વધુ ફેરફાર',
+    'edit.placeholder': 'શું બદલવું છે કહો...',
+    'done.title': 'WhatsApp મોકલીએ?',
+    'done.sub': 'Ramesh Kumar ને message જશે',
+    'done.send': '✅ હા મોકલો — Done કરો',
+    'wasent.title': 'WhatsApp મોકલ્યો',
+    'wasent.heading': 'WhatsApp મોકલ્યો!',
+    'wasent.sub': 'Ramesh Kumar ને message મળ્યો। વાહન Done માં છે।',
+    'wasent.done': 'Done mark થઈ ગ્યું ✅',
+    'wasent.undo': '8 સેકંડ માં પૂર્વવત',
+    'pay.title': 'ચૂકવણી નોંધ',
+    'pay.total': 'કુલ:',
+    'pay.howmuch': 'આજ કેટલું મળ્યું (₹)',
+    'pay.received': 'મળ્યું',
+    'pay.pending': 'બાકી',
+    'pay.warn': 'બાકી',
+    'pay.warn2': 'pending। માલિકને reminder જશે।',
+    'pay.full': '✅ સંપૂર્ણ ચૂકવણી confirm (₹3,200)',
+    'pay.partial': '⚡ આંશિક save + WA',
+    'wa.sent': 'WhatsApp મોકલ્યા',
+    'wa.three': '3 WhatsApp મોકલ્યા',
+    'wa.owner': '1. માલિકને — Anil Joshi',
+    'wa.customer': '2. ગ્રાહકને — Suresh Bhai',
+    'wa.mechanic': '3. તમારી નકલ',
+    'tracker.title': 'ચૂકવણી ટ્રૅકર',
+    'tracker.progress': 'ચૂકવણી પ્રગતિ',
+    'tracker.baaki': 'બાકી પૈસા',
+    'tracker.history': 'ચૂકવણી ઇતિહાસ',
+    'tracker.first': 'પ્રથમ હપ્તો',
+    'tracker.pending': 'બાકી Pending',
+    'tracker.followup': 'Follow up કરો',
+    'install.title': 'બાકી ચૂકવણી નોંધ',
+    'install.prev': 'પહેલા મળ્યું',
+    'install.rem': 'બાકી',
+    'install.method': 'ચૂકવણી પ્રકાર',
+    'install.cash': '💵 રોકડ',
+    'install.bank': '🏦 બૅન્ક',
+    'install.note': 'નોંધ (વૈકલ્પિક)',
+    'install.noteph': 'e.g. રોકડ માં આપ્યું...',
+    'install.complete': '✅ સંપૂર્ણ ચૂકવણી થઈ જશે!',
+    'install.confirm': 'Confirm — WhatsApp મોકલો 📱',
+    'wafull.title': 'સંપૂર્ણ ચૂકવણી!',
+    'success.title': 'ચૂકવણી પૂર્ણ',
+    'success.heading': 'ચૂકવણી થઈ ગઈ!',
+    'success.wa1': 'માલિક (Anil Joshi) ને WhatsApp',
+    'success.wa2': 'ગ્રાહક (Suresh Bhai) ને WhatsApp',
+    'success.wa3': 'મૅકૅનિક — નોંધ નકલ',
+    'report.search': 'વાહન નંબર અથવા ગ્રાહકનું નામ...',
+    'report.filter': 'તારીખ ફિલ્ટર',
+    'report.from': 'થી',
+    'report.to': 'સુધી',
+    'report.search.btn': '🔍 શોધો',
+    'report.reset': 'ફરીથી',
+    'report.earned': 'કુલ કમાણી',
+    'report.jobs': 'કુલ જૉબ્સ',
+    'followup.bulk': 'Bulk WA',
+    'followup.tip': '💡 Toggle ON → બધાને WhatsApp જશે',
+    'followup.send': '2 પસંદ ને WhatsApp',
+  }
+};
+
+let currentLang = 'en';
+
+function setLang(lang) {
+  currentLang = lang;
+  const labels = {en:'EN', hi:'हि', gu:'ગુ'};
+  document.getElementById('lang-label').textContent = labels[lang];
+
+  // Update all data-i18n text elements
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const key = el.getAttribute('data-i18n');
+    const val = (T[lang] && T[lang][key]) || (T['en'] && T['en'][key]);
+    if (val !== undefined) el.innerHTML = val;
+  });
+
+  // Update placeholder elements
+  document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+    const key = el.getAttribute('data-i18n-placeholder');
+    const val = (T[lang] && T[lang][key]) || (T['en'] && T['en'][key]);
+    if (val !== undefined) el.placeholder = val;
+  });
+
+  // Update form input placeholders that have data-i18n-ph attribute
+  document.querySelectorAll('[data-i18n-ph]').forEach(el => {
+    const key = el.getAttribute('data-i18n-ph');
+    const val = (T[lang] && T[lang][key]) || (T['en'] && T['en'][key]);
+    if (val !== undefined) el.placeholder = val;
+  });
+
+  // Update app name in splash screen
+  const appNameEl = document.getElementById('app-name-splash');
+  if (appNameEl) appNameEl.textContent = T[lang]['app.name'] || APP_NAME;
+
+  // Update active class in popup
+  document.querySelectorAll('.lang-opt').forEach(opt => {
+    opt.classList.remove('active');
+    if (opt.getAttribute('onclick') === `setLang('${lang}')`) opt.classList.add('active');
+  });
+
+  // Update document title
+  document.title = T[lang]['app.name'] || APP_NAME;
+
+  closeLangMenu();
+}
+
+function toggleLangMenu() {
+  const popup = document.getElementById('lang-popup');
+  popup.classList.toggle('open');
+}
+
+function closeLangMenu() {
+  document.getElementById('lang-popup').classList.remove('open');
+}
+
+// Close menu when clicking outside
+document.addEventListener('click', (e) => {
+  if (!e.target.closest('#lang-dot') && !e.target.closest('#lang-popup')) {
+    closeLangMenu();
+  }
+});
+
+/* ═══════════════════════════════════════
+   NAVIGATION
+═══════════════════════════════════════ */
+function go(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  const ovC = document.getElementById('ov-confirm');
+  const ovP = document.getElementById('ov-payment');
+  if (ovC) ovC.classList.remove('show');
+  if (ovP) ovP.classList.remove('show');
+  const t = document.getElementById(id);
+  if (t) t.classList.add('active');
+  if (id === 's-confirm-done' && ovC) setTimeout(() => ovC.classList.add('show'), 20);
+  if (id === 's-payment' && ovP) setTimeout(() => ovP.classList.add('show'), 20);
+  closeLangMenu();
+}
+
+function switchTab(t) {
+  document.getElementById('panel-r').style.display = t==='r' ? 'block' : 'none';
+  document.getElementById('panel-d').style.display = t==='d' ? 'block' : 'none';
+  document.getElementById('tab-r').className = 'tab' + (t==='r' ? ' on' : '');
+  document.getElementById('tab-d').className = 'tab' + (t==='d' ? ' on' : '');
+}
+
+/* ═══════════════════════════════════════
+   INTAKE FORM
+═══════════════════════════════════════ */
+let selectedVtype = '';
+
+function selVtype(btn, type) {
+  document.querySelectorAll('.vtype-btn').forEach(b => b.classList.remove('sel'));
+  btn.classList.add('sel');
+  selectedVtype = type;
+  document.getElementById('f-vtype').value = type;
+  updateDots();
+}
+
+function updateDots() {
+  const fields = [
+    document.getElementById('f-cname').value.trim(),
+    document.getElementById('f-wa').value.trim(),
+    selectedVtype,
+    document.getElementById('f-plate').value.trim(),
+    document.getElementById('f-oname').value.trim(),
+    document.getElementById('f-onum').value.trim(),
+    document.getElementById('f-problem').value.trim(),
+    document.getElementById('f-est').value.trim(),
+    document.getElementById('f-del').value.trim(),
+  ];
+  fields.forEach((v, i) => {
+    const dot = document.getElementById('pd' + i);
+    if (dot) dot.className = 'fp-dot' + (v ? ' filled' : '');
+  });
+}
+
+function submitForm() {
+  const cname = document.getElementById('f-cname').value.trim();
+  const wa    = document.getElementById('f-wa').value.trim();
+  const plate = document.getElementById('f-plate').value.trim();
+  const prob  = document.getElementById('f-problem').value.trim();
+  const est   = document.getElementById('f-est').value.trim();
+
+  const errEl  = document.getElementById('form-err');
+  const errMsg = document.getElementById('form-err-msg');
+
+  if (!cname || !wa || !selectedVtype || !plate || !prob || !est) {
+    errMsg.textContent = (T[currentLang] && T[currentLang]['intake.err']) || T['en']['intake.err'];
+    errEl.style.display = 'block';
+    return;
+  }
+  errEl.style.display = 'none';
+  go('s-dashboard');
+}
+
+/* ═══════════════════════════════════════
+   PAYMENT
+═══════════════════════════════════════ */
+function fullPayment() {
+  const inp = document.getElementById('pay-inp');
+  if (inp) inp.value = '3200';
+  calcPay();
+  go('s-payment-wa-full');
+}
+
+function calcPay() {
+  const total = 3200;
+  const paid = parseInt((document.getElementById('pay-inp') || {}).value || 0) || 0;
+  const rem = Math.max(0, total - paid);
+  const pct = Math.min(100, Math.round(paid / total * 100));
+  const ep = document.getElementById('p-paid');
+  const er = document.getElementById('p-rem');
+  const eb = document.getElementById('p-bar');
+  const en = document.getElementById('partial-note');
+  const ea = document.getElementById('p-bamt');
+  if (ep) ep.textContent = '₹' + paid.toLocaleString('en-IN');
+  if (er) er.textContent = '₹' + rem.toLocaleString('en-IN');
+  if (eb) eb.style.width = pct + '%';
+  if (en) en.style.display = rem > 0 ? 'flex' : 'none';
+  if (ea) ea.textContent = '₹' + rem.toLocaleString('en-IN');
+}
+
+/* ═══════════════════════════════════════
+   INIT
+═══════════════════════════════════════ */
+window.addEventListener('load', () => {
+  const fill = document.getElementById('ld-fill');
+  if (fill) setTimeout(() => { fill.style.width = '100%'; }, 200);
+  // Auto-navigate to dashboard after splash animation
+  // (user can manually click too)
+});
+</script>
+</body>
+</html>
