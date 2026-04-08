@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useVehicleStore } from '../store/vehicleStore';
+import { sendWhatsAppMessage, generateFollowUpMessage } from '../utils/whatsapp';
 
 const FollowUp: React.FC = () => {
   const navigate = useNavigate();
@@ -23,9 +24,18 @@ const FollowUp: React.FC = () => {
     );
   };
 
-  const handleBulkSend = () => {
+  const handleBulkSend = async () => {
     if (selectedIds.length === 0) return;
-    alert(`Sending bulk WhatsApp to ${selectedIds.length} customers...`);
+    const selectedVehicles = pendingVehicles.filter(v => selectedIds.includes(v.id));
+    let successCount = 0;
+    for (const v of selectedVehicles) {
+      const remaining = (v.estimate || 0) - (v.total_paid || 0);
+      const msg = generateFollowUpMessage(v.customer_name, v.number_plate, remaining);
+      const ok = await sendWhatsAppMessage(v.customer_whatsapp, msg);
+      if (ok) successCount++;
+    }
+    alert(`Successfully sent messages to ${successCount} out of ${selectedVehicles.length} customers via API.`);
+    setSelectedIds([]);
   };
 
   return (
@@ -70,7 +80,18 @@ const FollowUp: React.FC = () => {
                   </div>
                   <div style={{ textAlign: 'right' }}>
                     <div style={{ fontSize: '14px', fontWeight: 800, color: 'var(--rd)' }}>₹{remaining}</div>
-                    <div style={{ fontSize: '10px', fontWeight: 700, color: 'var(--sl)', textTransform: 'uppercase' }}>pending</div>
+                    <div style={{ fontSize: '10px', fontWeight: 700, color: 'var(--sl)', textTransform: 'uppercase', marginBottom: '6px' }}>pending</div>
+                    <button 
+                      onClick={async (e) => { 
+                        e.stopPropagation(); 
+                        const btn = e.currentTarget;
+                        btn.innerText = '...';
+                        const ok = await sendWhatsAppMessage(v.customer_whatsapp, generateFollowUpMessage(v.customer_name, v.number_plate, remaining)); 
+                        btn.innerText = ok ? '✅ Done' : '❌ Fail';
+                      }} 
+                      style={{ background: '#25D366', color: '#fff', border: 'none', borderRadius: '4px', padding: '4px 8px', fontSize: '11px', fontWeight: 'bold' }}>
+                      📱 Send
+                    </button>
                   </div>
                 </div>
               );

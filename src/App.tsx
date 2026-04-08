@@ -8,6 +8,7 @@ import Splash from './pages/Splash';
 import Dashboard from './pages/Dashboard';
 import IntakeForm from './pages/IntakeForm';
 import CardDetail from './pages/CardDetail';
+import ConfirmDone from './pages/ConfirmDone';
 import EditVehicle from './pages/EditVehicle';
 import WASent from './pages/WASent';
 import Payment from './pages/Payment';
@@ -35,6 +36,7 @@ function App() {
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/intake" element={<IntakeForm />} />
         <Route path="/vehicle/:id" element={<CardDetail />} />
+        <Route path="/confirm-done/:id" element={<ConfirmDone />} />
         <Route path="/vehicle/:id/edit" element={<EditVehicle />} />
         <Route path="/wa-sent" element={<WASent />} />
         <Route path="/vehicle/:id/payment" element={<Payment />} />

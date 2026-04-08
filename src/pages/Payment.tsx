@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useVehicleStore } from '../store/vehicleStore';
 import { usePaymentStore } from '../store/paymentStore';
+import { sendWhatsAppMessage, generatePaymentConfirmationMessage } from '../utils/whatsapp';
 
 const Payment: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -46,6 +47,21 @@ const Payment: React.FC = () => {
         total_amount: estimate,
         payment_type: amount >= remaining ? 'full' : 'partial'
       });
+
+      const newTotalPaid = alreadyPaid + amount;
+      const newRemaining = estimate - newTotalPaid;
+
+      // Send payment confirmation to owner
+      const ownerPhone = v.owner_whatsapp || v.customer_whatsapp;
+      const ownerName = v.owner_name || v.customer_name;
+      const confirmMsg = generatePaymentConfirmationMessage(
+        ownerName,
+        v.number_plate,
+        amount,
+        newTotalPaid,
+        newRemaining
+      );
+      await sendWhatsAppMessage(ownerPhone, confirmMsg);
 
       if (amount >= remaining) {
         navigate('/wa-full');

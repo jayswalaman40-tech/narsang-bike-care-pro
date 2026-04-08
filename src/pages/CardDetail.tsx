@@ -25,8 +25,7 @@ const CardDetail: React.FC = () => {
 
   const handleMarkDone = async () => {
     if (id) {
-      await markAsDone(id);
-      navigate('/wa-sent');
+      navigate(`/confirm-done/${id}`);
     }
   };
 

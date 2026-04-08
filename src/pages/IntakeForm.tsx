@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useVehicleStore } from '../store/vehicleStore';
+import { sendWhatsAppMessage, generateVehicleRegistrationMessage } from '../utils/whatsapp';
 
 const IntakeForm: React.FC = () => {
   const navigate = useNavigate();
@@ -55,17 +56,31 @@ const IntakeForm: React.FC = () => {
     setError('');
 
     try {
+      const ownerName = formData.owner_name || formData.customer_name;
+      const ownerWhatsapp = formData.owner_whatsapp || formData.customer_whatsapp;
+
       await addVehicle({
         customer_name: formData.customer_name,
         customer_whatsapp: formData.customer_whatsapp,
         vehicle_type: formData.vehicle_type as 'Bike' | 'Scooter',
         number_plate: formData.number_plate.toUpperCase(),
-        owner_name: formData.owner_name || formData.customer_name,
-        owner_whatsapp: formData.owner_whatsapp || formData.customer_whatsapp,
+        owner_name: ownerName,
+        owner_whatsapp: ownerWhatsapp,
         problem: formData.problem,
         estimate: Number(formData.estimate),
         delivery_by: formData.delivery_by,
       });
+
+      // Send WhatsApp registration confirmation to owner
+      const msg = generateVehicleRegistrationMessage(
+        ownerName,
+        formData.number_plate.toUpperCase(),
+        formData.problem,
+        Number(formData.estimate),
+        formData.delivery_by
+      );
+      await sendWhatsAppMessage(ownerWhatsapp, msg);
+
       navigate('/dashboard');
     } catch (err: any) {
       setError(err.message || 'Error saving vehicle');
@@ -94,7 +109,7 @@ const IntakeForm: React.FC = () => {
         ))}
       </div>
 
-      <div className="cnt" style={{ paddingBottom: '96px' }}>
+      <div className="cnt" style={{ paddingBottom: '160px' }}>
         {/* SECTION 1: Customer Info */}
         <div className="form-section">
           <div className="form-section-title">{t('intake.sec1')}</div>

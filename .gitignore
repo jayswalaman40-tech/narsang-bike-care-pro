@@ -1,16 +1,24 @@
-# Logs
-logs
+# Node modules and build distributions
+node_modules/
+dist/
+dist-ssr/
+*.local
+
+# Capacitor and Android builds
+android/
+ios/
+.tools/
+.gradle/
+build/
+
+# Logs and temporary files
 *.log
+*.txt
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
-
-node_modules
-dist
-dist-ssr
-*.local
 
 # Editor directories and files
 .vscode/*
