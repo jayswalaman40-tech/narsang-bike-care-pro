@@ -75,7 +75,7 @@ const Payment: React.FC = () => {
 
   return (
     <div className="screen active" id="s-payment">
-      <div className="sbar"><span className="t" style={{ color: 'var(--dk)' }}>9:41</span></div>
+      <div className="sbar"></div>
       <div className="hdr">
         <button className="bk" onClick={() => navigate(`/vehicle/${v.id}`)}>
           <svg width="18" height="18" viewBox="0 0 24 24">
@@ -102,12 +102,14 @@ const Payment: React.FC = () => {
             <span className="pfx">₹</span>
             <input 
               className="inp" 
-              placeholder={remaining.toString()}
+              readOnly
               type="number" 
-              value={receivedAmount}
-              onChange={(e) => setReceivedAmount(e.target.value)}
-              style={{ fontSize: '20px', fontWeight: 700 }}
+              value={remaining}
+              style={{ fontSize: '20px', fontWeight: 700, background: 'var(--of)', color: 'var(--sl)' }}
             />
+          </div>
+          <div style={{ fontSize: '11px', color: 'var(--sl)', marginTop: '4px' }}>
+            ℹ️ This is the exact pending balance.
           </div>
         </div>
 
@@ -136,16 +138,16 @@ const Payment: React.FC = () => {
         )}
 
         <div style={{ marginTop: '20px', padding: '16px', background: 'var(--of)', borderRadius: '12px', fontSize: '12px', color: 'var(--sl)', lineHeight: 1.6 }}>
-          💡 <strong>{t('pay.warn')} ₹{remaining - (Number(receivedAmount) || 0)}</strong> {t('pay.warn2')}
+          💡 <strong>{t('pay.warn')} ₹0</strong> {t('pay.warn2')}
         </div>
       </div>
 
-      <div style={{ position: 'absolute', bottom: '80px', left: 0, right: 0, padding: '16px', background: '#fff', borderTop: '1px solid var(--lg)' }}>
-        <button className="btn bo" onClick={handleSave} style={{ background: Number(receivedAmount) >= remaining ? 'var(--gn)' : 'var(--or)' }}>
+      <div style={{ position: 'absolute', bottom: '88px', left: 0, right: 0, padding: '16px', background: '#fff', borderTop: '1px solid var(--lg)' }}>
+        <button className="btn bo" onClick={handleSave} style={{ background: 'var(--gn)' }}>
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
             <path d="M5 13l4 4L19 7" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" />
           </svg>
-          <span>{Number(receivedAmount) >= remaining ? t('pay.full') : t('pay.partial')}</span>
+          <span>{t('pay.full')} (₹{remaining})</span>
         </button>
       </div>
 

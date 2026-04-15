@@ -32,7 +32,7 @@ const WASent: React.FC = () => {
 
   return (
     <div className="screen active" id="s-wasent" style={{ background: '#fff' }}>
-      <div className="sbar"><span className="t" style={{ color: 'var(--dk)' }}>9:41</span></div>
+      <div className="sbar"></div>
       <div className="hdr">
         <button className="bk" onClick={() => navigate('/dashboard')}>
            <svg width="18" height="18" viewBox="0 0 24 24">
@@ -51,13 +51,13 @@ const WASent: React.FC = () => {
 
         <h2 style={{ fontSize: '24px', fontWeight: 800, color: 'var(--dk)', marginBottom: '12px' }}>{t('wasent.heading')}</h2>
         <p style={{ fontSize: '14px', color: 'var(--sl)', lineHeight: 1.6, marginBottom: '32px' }}>
-          {t('wasent.sub')}
+          {t('wasent.sub', { name: selectedVehicle?.customer_name || 'Customer' })}
         </p>
 
         <div style={{ padding: '20px', background: 'var(--of)', borderRadius: '16px', border: '1.5px solid var(--lg)', width: '100%', marginBottom: '20px' }}>
           <div style={{ fontSize: '12px', fontWeight: 700, color: 'var(--sl)', marginBottom: '12px', textTransform: 'uppercase', letterSpacing: '1px' }}>Message Preview</div>
           <div className="wam wam-o" style={{ textAlign: 'left', marginBottom: 0 }}>
-            <div className="waf waf-o">WhatsApp to {selectedVehicle?.customer_name}</div>
+            <div className="waf waf-o">WhatsApp to {selectedVehicle?.customer_name || 'Customer'}</div>
             <div className="wab">
               Vehicle Ready: {selectedVehicle?.number_plate}<br/>
               Bill: ₹{selectedVehicle?.estimate}<br/>

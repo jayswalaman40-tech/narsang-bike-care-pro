@@ -85,7 +85,6 @@ const Splash: React.FC = () => {
 
       {/* CONTENT */}
       <div className="sbar" style={{ background: 'transparent', position: 'relative', zIndex: 2 }}>
-        <span className="t" style={{ color: '#fff' }}>9:41</span>
         <span style={{ fontSize: '12px', color: '#fff' }}>📶 🔋</span>
       </div>
 

@@ -87,26 +87,25 @@ body{
   opacity:0;pointer-events:none;transition:opacity .2s;overflow:hidden}
 .screen.active{opacity:1;pointer-events:all}
 
-/* STATUS BAR */
-.sbar{height:44px;padding:12px 20px 0;display:flex;align-items:center;justify-content:center;flex-shrink:0}
-.sbar .t{font-size:15px;font-weight:600}
+/* STATUS BAR SPACER */
+.sbar{height:env(safe-area-inset-top, 24px);padding:0;display:flex;align-items:center;justify-content:center;flex-shrink:0}
 
 /* HEADER */
-.hdr{padding:10px 18px 12px;display:flex;align-items:center;gap:10px;flex-shrink:0;
+.hdr{padding:12px 18px;display:flex;align-items:center;gap:10px;flex-shrink:0;
   border-bottom:1px solid var(--lg);background:#fff}
 .hdr-t{font-size:17px;font-weight:700;color:var(--dk);flex:1}
 .bk{width:36px;height:36px;border-radius:50%;background:var(--of);border:none;cursor:pointer;
   display:flex;align-items:center;justify-content:center;flex-shrink:0}
 
 /* BOTTOM NAV */
-.bnav{position:absolute;bottom:0;left:0;right:0;height:80px;background:#fff;
-  border-top:1px solid var(--lg);display:flex;justify-content:space-around;padding:10px 0 0;z-index:100}
-.ni{display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;padding:4px 8px;border:none;background:none}
-.ni svg{width:22px;height:22px}
-.ni span{font-size:10px;font-weight:600;color:var(--sl);font-family:'Rajdhani',sans-serif;letter-spacing:.4px}
+.bnav{position:absolute;bottom:0;left:0;right:0;height:calc(72px + env(safe-area-inset-bottom, 0px));background:#fff;
+  border-top:1px solid var(--lg);display:flex;padding:8px 8px env(safe-area-inset-bottom, 8px);z-index:100}
+.ni{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;cursor:pointer;padding:4px 0;border:none;background:none;transition:all 0.2s}
+.ni svg{width:20px;height:20px}
+.ni span{font-size:10px;font-weight:600;color:var(--sl);font-family:'Rajdhani',sans-serif;letter-spacing:.3px;text-align:center;width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .ni svg path,.ni svg rect,.ni svg polyline,.ni svg line,.ni svg circle{stroke:var(--sl);stroke-width:1.8;fill:none;stroke-linecap:round;stroke-linejoin:round}
-.ni.on span{color:var(--or);font-weight:700}
-.ni.on svg path,.ni.on svg rect,.ni.on svg polyline,.ni.on svg line,.ni.on svg circle{stroke:var(--or)}
+.ni.on span{color:var(--or);font-weight:800}
+.ni.on svg path,.ni.on svg rect,.ni.on svg polyline,.ni.on svg line,.ni.on svg circle{stroke:var(--or);stroke-width:2.2}
 
 /* CONTENT */
 .cnt{flex:1;overflow-y:auto;padding-bottom:88px}

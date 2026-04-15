@@ -12,7 +12,7 @@ const PaidSuccess: React.FC = () => {
 
   return (
     <div className="screen active" id="s-paidsuccess">
-      <div className="sbar"><span className="t" style={{ color: 'var(--dk)' }}>9:41</span></div>
+      <div className="sbar"></div>
       <div className="hdr">
         <button className="bk" onClick={() => navigate('/dashboard')}>
            <svg width="18" height="18" viewBox="0 0 24 24">
@@ -42,10 +42,14 @@ const PaidSuccess: React.FC = () => {
           <div style={{ display: 'flex', flexDirection: 'column', gap: '14px', textAlign: 'left' }}>
             <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
               <div style={{ width: '32px', height: '32px', borderRadius: '50%', background: '#E3F2FD', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '14px' }}>👤</div>
-              <div style={{ fontSize: '13px', fontWeight: 600, color: 'var(--dk2)' }}>{t('success.wa1')}</div>
+              <div style={{ fontSize: '13px', fontWeight: 600, color: 'var(--dk2)' }}>{t('success.wa1', { name: v?.owner_name || v?.customer_name || 'Owner' })}</div>
             </div>
             <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
               <div style={{ width: '32px', height: '32px', borderRadius: '50%', background: '#F3E5F5', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '14px' }}>👷</div>
+              <div style={{ fontSize: '13px', fontWeight: 600, color: 'var(--dk2)' }}>{t('success.wa2', { name: v?.customer_name || 'Customer' })}</div>
+            </div>
+            <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+              <div style={{ width: '32px', height: '32px', borderRadius: '50%', background: '#FDF2F2', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '14px' }}>🏠</div>
               <div style={{ fontSize: '13px', fontWeight: 600, color: 'var(--dk2)' }}>{t('success.wa3')}</div>
             </div>
           </div>

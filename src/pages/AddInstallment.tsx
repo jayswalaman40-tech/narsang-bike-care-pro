@@ -55,7 +55,7 @@ const AddInstallment: React.FC = () => {
 
   return (
     <div className="screen active" id="s-installment">
-      <div className="sbar"><span className="t" style={{ color: 'var(--dk)' }}>9:41</span></div>
+      <div className="sbar"></div>
       <div className="hdr">
         <button className="bk" onClick={() => navigate(`/vehicle/${v.id}/tracker`)}>
           <svg width="18" height="18" viewBox="0 0 24 24">

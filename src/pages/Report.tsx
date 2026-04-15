@@ -23,7 +23,7 @@ const Report: React.FC = () => {
 
   return (
     <div className="screen active" id="s-report">
-      <div className="sbar"><span className="t" style={{ color: 'var(--dk)' }}>9:41</span></div>
+      <div className="sbar"></div>
       <div className="hdr">
         <div style={{ width: '36px', height: '36px', borderRadius: '50%', background: 'linear-gradient(135deg,#E8590C,#ff7c35)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontSize: '18px', fontWeight: 700, fontFamily: "'Bebas Neue',cursive" }}>SN</div>
         <div className="hdr-t">{t('nav.report')}</div>

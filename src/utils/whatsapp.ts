@@ -1,9 +1,8 @@
 export const sendWhatsAppMessage = async (phone: string | undefined | null, message: string) => {
   if (!phone) return false;
   
-  // Remove spaces, dashes, or non-numeric characters from the phone number
+  // Normalize Indian phone numbers: 10 digits -> 91 prefix
   const cleanPhone = phone.replace(/\D/g, '');
-  // Prefix with 91 if it's a 10 digit Indian number
   const fullPhone = cleanPhone.length === 10 ? `91${cleanPhone}` : cleanPhone;
   
   const apiUrl = import.meta.env.VITE_EVO_API_URL;
@@ -12,12 +11,14 @@ export const sendWhatsAppMessage = async (phone: string | undefined | null, mess
 
   if (!apiUrl || !instance || !apikey) {
     console.error("Evolution API credentials missing in .env");
-    alert("Evolution API is not configured! Please add VITE_EVO_API_URL and VITE_EVO_INSTANCE in Vercel.");
     return false;
   }
 
+  // Ensure instance is URL encoded as it contains spaces
+  const encodedInstance = encodeURIComponent(instance);
+
   try {
-    const response = await fetch(`${apiUrl}/message/sendText/${instance}`, {
+    const response = await fetch(`${apiUrl}/message/sendText/${encodedInstance}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -25,21 +26,19 @@ export const sendWhatsAppMessage = async (phone: string | undefined | null, mess
       },
       body: JSON.stringify({
         number: fullPhone,
-        textMessage: {
-          text: message
-        }
+        text: message
       })
     });
 
     if (!response.ok) {
-      const errText = await response.text();
-      throw new Error(`Evolution API Error: ${errText}`);
+      const errData = await response.json().catch(() => ({ message: 'Unknown error' }));
+      throw new Error(errData.message || response.statusText);
     }
 
     return true;
-  } catch (error) {
-    console.error("Failed to send WhatsApp message via Evolution API:", error);
-    alert("Failed to send WhatsApp message. Check console for details.");
+  } catch (error: any) {
+    console.error("Evolution API failure:", error);
+    // Silent fail in UI but log to console
     return false;
   }
 };
