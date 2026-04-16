@@ -12,7 +12,6 @@ const Payment: React.FC = () => {
   const { selectedVehicle, getVehicleById, isLoading } = useVehicleStore();
   const { addPayment } = usePaymentStore();
 
-  const [receivedAmount, setReceivedAmount] = useState('');
   const [paymentMethod, setPaymentMethod] = useState<'cash' | 'bank'>('cash');
   const [error, setError] = useState('');
 
@@ -32,9 +31,9 @@ const Payment: React.FC = () => {
   const remaining = estimate - alreadyPaid;
 
   const handleSave = async () => {
-    const amount = Number(receivedAmount);
-    if (!amount || amount <= 0) {
-      setError('Please enter a valid amount');
+    const amount = remaining;
+    if (amount <= 0) {
+      setError('No balance remaining to pay');
       return;
     }
 

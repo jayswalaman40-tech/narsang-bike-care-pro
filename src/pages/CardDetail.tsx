@@ -7,7 +7,7 @@ const CardDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { t } = useTranslation();
-  const { selectedVehicle, getVehicleById, isLoading, markAsDone } = useVehicleStore();
+  const { selectedVehicle, getVehicleById, isLoading } = useVehicleStore();
 
   useEffect(() => {
     if (id) {
