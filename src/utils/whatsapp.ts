@@ -1,7 +1,7 @@
 export const sendWhatsAppMessage = async (phone: string | undefined | null, message: string) => {
   if (!phone) return false;
   
-  // Normalize Indian phone numbers: 10 digits -> 91 prefix
+  // Normalize: 10 digits -> 91 prefix
   const cleanPhone = phone.replace(/\D/g, '');
   const fullPhone = cleanPhone.length === 10 ? `91${cleanPhone}` : cleanPhone;
   
@@ -14,31 +14,37 @@ export const sendWhatsAppMessage = async (phone: string | undefined | null, mess
     return false;
   }
 
-  // Ensure instance is URL encoded as it contains spaces
+  // Ensure instance is URL encoded
   const encodedInstance = encodeURIComponent(instance);
 
   try {
+    const payload = {
+      number: fullPhone,
+      text: message,
+      delay: 1200,
+      linkPreview: false
+    };
+
     const response = await fetch(`${apiUrl}/message/sendText/${encodedInstance}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         'apikey': apikey
       },
-      body: JSON.stringify({
-        number: fullPhone,
-        text: message
-      })
+      body: JSON.stringify(payload)
     });
 
+    const data = await response.json().catch(() => ({}));
+
     if (!response.ok) {
-      const errData = await response.json().catch(() => ({ message: 'Unknown error' }));
-      throw new Error(errData.message || response.statusText);
+      console.error("Evolution API Error Response:", data);
+      return false;
     }
 
+    console.log("WhatsApp sent successfully:", data);
     return true;
   } catch (error: any) {
-    console.error("Evolution API failure:", error);
-    // Silent fail in UI but log to console
+    console.error("Critical failure calling Evolution API:", error);
     return false;
   }
 };

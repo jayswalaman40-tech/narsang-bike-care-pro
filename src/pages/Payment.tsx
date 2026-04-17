@@ -12,6 +12,7 @@ const Payment: React.FC = () => {
   const { selectedVehicle, getVehicleById, isLoading } = useVehicleStore();
   const { addPayment } = usePaymentStore();
 
+  const [amountToPay, setAmountToPay] = useState('');
   const [paymentMethod, setPaymentMethod] = useState<'cash' | 'bank'>('cash');
   const [error, setError] = useState('');
 
@@ -20,6 +21,13 @@ const Payment: React.FC = () => {
       getVehicleById(id);
     }
   }, [id, getVehicleById]);
+
+  useEffect(() => {
+    if (selectedVehicle) {
+      const remaining = (selectedVehicle.estimate || 0) - (selectedVehicle.total_paid || 0);
+      setAmountToPay(remaining.toString());
+    }
+  }, [selectedVehicle]);
 
   if (isLoading || !selectedVehicle) {
     return <div className="screen active" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>Loading...</div>;
@@ -31,9 +39,13 @@ const Payment: React.FC = () => {
   const remaining = estimate - alreadyPaid;
 
   const handleSave = async () => {
-    const amount = remaining;
-    if (amount <= 0) {
-      setError('No balance remaining to pay');
+    const amount = Number(amountToPay);
+    if (!amount || amount <= 0) {
+      setError('Please enter a valid amount');
+      return;
+    }
+    if (amount > remaining) {
+      setError(`Amount cannot be more than pending ₹${remaining}`);
       return;
     }
 
@@ -101,14 +113,17 @@ const Payment: React.FC = () => {
             <span className="pfx">₹</span>
             <input 
               className="inp" 
-              readOnly
               type="number" 
-              value={remaining}
-              style={{ fontSize: '20px', fontWeight: 700, background: 'var(--of)', color: 'var(--sl)' }}
+              value={amountToPay}
+              onChange={(e) => {
+                setAmountToPay(e.target.value);
+                setError('');
+              }}
+              style={{ fontSize: '20px', fontWeight: 700 }}
             />
           </div>
           <div style={{ fontSize: '11px', color: 'var(--sl)', marginTop: '4px' }}>
-            ℹ️ This is the exact pending balance.
+            ℹ️ Maximum possible: ₹{remaining}
           </div>
         </div>
 
@@ -137,16 +152,16 @@ const Payment: React.FC = () => {
         )}
 
         <div style={{ marginTop: '20px', padding: '16px', background: 'var(--of)', borderRadius: '12px', fontSize: '12px', color: 'var(--sl)', lineHeight: 1.6 }}>
-          💡 <strong>{t('pay.warn')} ₹0</strong> {t('pay.warn2')}
+          💡 <strong>{t('pay.warn')} ₹{remaining - (Number(amountToPay) || 0)}</strong> {t('pay.warn2')}
         </div>
       </div>
 
       <div style={{ position: 'absolute', bottom: '88px', left: 0, right: 0, padding: '16px', background: '#fff', borderTop: '1px solid var(--lg)' }}>
-        <button className="btn bo" onClick={handleSave} style={{ background: 'var(--gn)' }}>
+        <button className="btn bo" onClick={handleSave} style={{ background: Number(amountToPay) >= remaining ? 'var(--gn)' : 'var(--or)' }}>
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
             <path d="M5 13l4 4L19 7" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" />
           </svg>
-          <span>{t('pay.full')} (₹{remaining})</span>
+          <span>{Number(amountToPay) >= remaining ? t('pay.full') : t('pay.partial')} (₹{amountToPay})</span>
         </button>
       </div>
 

@@ -1,11 +1,19 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { SplashScreen } from '@capacitor/splash-screen';
 
 const Splash: React.FC = () => {
   const navigate = useNavigate();
   const { t } = useTranslation();
   const [loading, setLoading] = useState(0);
+
+  useEffect(() => {
+    // Hide native splash screen
+    SplashScreen.hide().catch(() => {
+      // Ignore errors if not running on native platform
+    });
+  }, []);
 
   useEffect(() => {
     const timer = setTimeout(() => {
