@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useVehicleStore } from '../store/vehicleStore';
-import { sendWhatsAppMessage, generateVehicleRegistrationMessage } from '../utils/whatsapp';
+import { sendWhatsAppNotification } from '../utils/whatsapp';
 
 const IntakeForm: React.FC = () => {
   const navigate = useNavigate();
@@ -21,6 +21,7 @@ const IntakeForm: React.FC = () => {
     delivery_by: '',
   });
 
+  const [isSaving, setIsSaving] = useState(false);
   const [error, setError] = useState('');
 
   const updateDots = () => {
@@ -49,17 +50,20 @@ const IntakeForm: React.FC = () => {
   };
 
   const handleSubmit = async () => {
+    if (isSaving) return;
+    
     if (!formData.customer_name || !formData.customer_whatsapp || !formData.vehicle_type || !formData.number_plate || !formData.problem || !formData.estimate) {
       setError(t('intake.err'));
       return;
     }
     setError('');
+    setIsSaving(true);
 
     try {
       const ownerName = formData.owner_name || formData.customer_name;
       const ownerWhatsapp = formData.owner_whatsapp || formData.customer_whatsapp;
 
-      await addVehicle({
+      const newVehicle = await addVehicle({
         customer_name: formData.customer_name,
         customer_whatsapp: formData.customer_whatsapp,
         vehicle_type: formData.vehicle_type as 'Bike' | 'Scooter',
@@ -71,19 +75,15 @@ const IntakeForm: React.FC = () => {
         delivery_by: formData.delivery_by,
       });
 
-      // Send WhatsApp registration confirmation to owner
-      const msg = generateVehicleRegistrationMessage(
-        ownerName,
-        formData.number_plate.toUpperCase(),
-        formData.problem,
-        Number(formData.estimate),
-        formData.delivery_by
-      );
-      await sendWhatsAppMessage(ownerWhatsapp, msg);
+      // Send WhatsApp registration confirmation via Edge Function
+      if (newVehicle && newVehicle.id) {
+        await sendWhatsAppNotification(newVehicle.id, 'registration');
+      }
 
       navigate('/dashboard');
     } catch (err: any) {
       setError(err.message || 'Error saving vehicle');
+      setIsSaving(false);
     }
   };
 
@@ -238,11 +238,11 @@ const IntakeForm: React.FC = () => {
 
       {/* Save Button */}
       <div style={{ position: 'absolute', bottom: '80px', left: 0, right: 0, padding: '12px 16px', background: '#fff', borderTop: '1px solid var(--lg)' }}>
-        <button className="btn bo" onClick={handleSubmit}>
+        <button className="btn bo" onClick={handleSubmit} disabled={isSaving}>
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
             <path d="M5 13l4 4L19 7" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" />
           </svg>
-          <span>{t('intake.save')}</span>
+          <span>{isSaving ? 'Saving...' : t('intake.save')}</span>
         </button>
       </div>
 

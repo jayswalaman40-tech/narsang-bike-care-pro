@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useVehicleStore } from '../store/vehicleStore';
 import { usePaymentStore } from '../store/paymentStore';
+import { sendWhatsAppNotification } from '../utils/whatsapp';
 
 const AddInstallment: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -13,6 +14,7 @@ const AddInstallment: React.FC = () => {
 
   const [amount, setAmount] = useState('');
   const [method, setMethod] = useState<'cash' | 'bank'>('cash');
+  const [isSaving, setIsSaving] = useState(false);
   const [error, setError] = useState('');
 
   useEffect(() => {
@@ -27,13 +29,17 @@ const AddInstallment: React.FC = () => {
   const remaining = estimate - alreadyPaid;
 
   const handleSave = async () => {
+    if (isSaving) return;
     const val = Number(amount);
     if (!val || val <= 0) {
       setError('Enter a valid amount');
       return;
     }
 
+    setIsSaving(true);
     try {
+      if (!v.id) throw new Error("Vehicle ID missing");
+
       await addPayment({
         vehicle_id: v.id,
         amount_paid: val,
@@ -43,6 +49,9 @@ const AddInstallment: React.FC = () => {
         payment_type: val >= remaining ? 'full' : 'partial'
       });
 
+      // Send WhatsApp confirmation via Edge Function
+      await sendWhatsAppNotification(v.id, 'payment', { amount: val });
+
       if (val >= remaining) {
         navigate('/wa-full');
       } else {
@@ -50,6 +59,8 @@ const AddInstallment: React.FC = () => {
       }
     } catch (err: any) {
       setError(err.message || 'Error saving installment');
+    } finally {
+      setIsSaving(false);
     }
   };
 
@@ -131,8 +142,8 @@ const AddInstallment: React.FC = () => {
       </div>
 
       <div style={{ position: 'absolute', bottom: '80px', left: 0, right: 0, padding: '16px', background: '#fff', borderTop: '1px solid var(--lg)' }}>
-        <button className="btn bo" onClick={handleSave} style={{ background: Number(amount) >= remaining ? 'var(--gn)' : 'var(--or)' }}>
-          <span>{t('install.confirm')}</span>
+        <button className="btn bo" onClick={handleSave} disabled={isSaving} style={{ background: Number(amount) >= remaining ? 'var(--gn)' : 'var(--or)' }}>
+          <span>{isSaving ? 'Saving...' : t('install.confirm')}</span>
         </button>
       </div>
 

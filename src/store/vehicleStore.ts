@@ -11,7 +11,7 @@ interface VehicleState {
   // Actions
   fetchVehicles: () => Promise<void>;
   getVehicleById: (id: string) => Promise<void>;
-  addVehicle: (vehicle: Omit<Vehicle, 'id' | 'created_at' | 'updated_at' | 'status'>) => Promise<void>;
+  addVehicle: (vehicle: Omit<Vehicle, 'id' | 'created_at' | 'updated_at' | 'status'>) => Promise<Vehicle>;
   updateVehicle: (id: string, updates: Partial<Vehicle>) => Promise<void>;
   markAsDone: (id: string) => Promise<void>;
   setSelectedVehicle: (vehicle: VehicleWithPayment | null) => void;
@@ -59,9 +59,10 @@ export const useVehicleStore = create<VehicleState>((set, get) => ({
   addVehicle: async (vehicle) => {
     set({ isLoading: true, error: null });
     try {
-      await vehicleService.create(vehicle);
+      const newVehicle = await vehicleService.create(vehicle);
       await get().fetchVehicles(); // Refresh list to get view data
       set({ isLoading: false });
+      return newVehicle;
     } catch (error: any) {
       set({ error: error.message, isLoading: false });
       throw error;

@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useVehicleStore } from '../store/vehicleStore';
-import { sendWhatsAppMessage, generateDoneMessage } from '../utils/whatsapp';
+import { sendWhatsAppNotification, generateDoneMessage } from '../utils/whatsapp';
 
 const ConfirmDone: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -24,21 +24,17 @@ const ConfirmDone: React.FC = () => {
   const v = selectedVehicle;
 
   const handleSendAndMarkDone = async () => {
+    if (isSending) return;
     setIsSending(true);
     try {
       if (id) {
+        // 1. Mark as done in DB
         await markAsDone(id);
-        const msg = generateDoneMessage(v.customer_name, v.number_plate, v.estimate || 0);
         
-        // Send to customer
-        await sendWhatsAppMessage(v.customer_whatsapp, msg);
+        // 2. Trigger WhatsApp via Edge Function
+        await sendWhatsAppNotification(id, 'done');
         
-        // Also send to owner if different from customer
-        if (v.owner_whatsapp && v.owner_whatsapp !== v.customer_whatsapp) {
-          const ownerMsg = generateDoneMessage(v.owner_name || v.customer_name, v.number_plate, v.estimate || 0);
-          await sendWhatsAppMessage(v.owner_whatsapp, ownerMsg);
-        }
-        
+        // 3. Navigate away
         navigate('/wa-sent');
       }
     } catch (err) {

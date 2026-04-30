@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useVehicleStore } from '../store/vehicleStore';
 import { usePaymentStore } from '../store/paymentStore';
-import { sendWhatsAppMessage, generatePaymentConfirmationMessage } from '../utils/whatsapp';
+import { sendWhatsAppNotification } from '../utils/whatsapp';
 
 const Payment: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -14,6 +14,7 @@ const Payment: React.FC = () => {
 
   const [amountToPay, setAmountToPay] = useState('');
   const [paymentMethod, setPaymentMethod] = useState<'cash' | 'bank'>('cash');
+  const [isSaving, setIsSaving] = useState(false);
   const [error, setError] = useState('');
 
   useEffect(() => {
@@ -39,6 +40,7 @@ const Payment: React.FC = () => {
   const remaining = estimate - alreadyPaid;
 
   const handleSave = async () => {
+    if (isSaving) return;
     const amount = Number(amountToPay);
     if (!amount || amount <= 0) {
       setError('Please enter a valid amount');
@@ -49,7 +51,10 @@ const Payment: React.FC = () => {
       return;
     }
 
+    setIsSaving(true);
     try {
+      if (!v.id) throw new Error("Vehicle ID missing");
+      
       await addPayment({
         vehicle_id: v.id,
         amount_paid: amount,
@@ -59,20 +64,8 @@ const Payment: React.FC = () => {
         payment_type: amount >= remaining ? 'full' : 'partial'
       });
 
-      const newTotalPaid = alreadyPaid + amount;
-      const newRemaining = estimate - newTotalPaid;
-
-      // Send payment confirmation to owner
-      const ownerPhone = v.owner_whatsapp || v.customer_whatsapp;
-      const ownerName = v.owner_name || v.customer_name;
-      const confirmMsg = generatePaymentConfirmationMessage(
-        ownerName,
-        v.number_plate,
-        amount,
-        newTotalPaid,
-        newRemaining
-      );
-      await sendWhatsAppMessage(ownerPhone, confirmMsg);
+      // Send payment confirmation via Edge Function
+      await sendWhatsAppNotification(v.id, 'payment', { amount });
 
       if (amount >= remaining) {
         navigate('/wa-full');
@@ -81,6 +74,8 @@ const Payment: React.FC = () => {
       }
     } catch (err: any) {
       setError(err.message || 'Error recording payment');
+    } finally {
+      setIsSaving(false);
     }
   };
 
@@ -157,11 +152,11 @@ const Payment: React.FC = () => {
       </div>
 
       <div style={{ position: 'absolute', bottom: '88px', left: 0, right: 0, padding: '16px', background: '#fff', borderTop: '1px solid var(--lg)' }}>
-        <button className="btn bo" onClick={handleSave} style={{ background: Number(amountToPay) >= remaining ? 'var(--gn)' : 'var(--or)' }}>
+        <button className="btn bo" onClick={handleSave} disabled={isSaving} style={{ background: Number(amountToPay) >= remaining ? 'var(--gn)' : 'var(--or)' }}>
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
             <path d="M5 13l4 4L19 7" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" />
           </svg>
-          <span>{Number(amountToPay) >= remaining ? t('pay.full') : t('pay.partial')} (₹{amountToPay})</span>
+          <span>{isSaving ? 'Processing...' : (Number(amountToPay) >= remaining ? t('pay.full') : t('pay.partial')) + ` (₹${amountToPay})`}</span>
         </button>
       </div>
 

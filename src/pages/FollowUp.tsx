@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useVehicleStore } from '../store/vehicleStore';
-import { sendWhatsAppMessage, generateFollowUpMessage } from '../utils/whatsapp';
+import { sendWhatsAppNotification } from '../utils/whatsapp';
 
 const FollowUp: React.FC = () => {
   const navigate = useNavigate();
@@ -29,12 +29,10 @@ const FollowUp: React.FC = () => {
     const selectedVehicles = pendingVehicles.filter(v => selectedIds.includes(v.id));
     let successCount = 0;
     for (const v of selectedVehicles) {
-      const remaining = (v.estimate || 0) - (v.total_paid || 0);
-      const msg = generateFollowUpMessage(v.customer_name, v.number_plate, remaining);
-      const ok = await sendWhatsAppMessage(v.customer_whatsapp, msg);
+      const ok = await sendWhatsAppNotification(v.id, 'reminder');
       if (ok) successCount++;
     }
-    alert(`Successfully sent messages to ${successCount} out of ${selectedVehicles.length} customers via API.`);
+    alert(`Successfully triggered notifications for ${successCount} out of ${selectedVehicles.length} customers.`);
     setSelectedIds([]);
   };
 
@@ -86,7 +84,7 @@ const FollowUp: React.FC = () => {
                         e.stopPropagation(); 
                         const btn = e.currentTarget;
                         btn.innerText = '...';
-                        const ok = await sendWhatsAppMessage(v.customer_whatsapp, generateFollowUpMessage(v.customer_name, v.number_plate, remaining)); 
+                        const ok = await sendWhatsAppNotification(v.id, 'reminder'); 
                         btn.innerText = ok ? '✅ Done' : '❌ Fail';
                       }} 
                       style={{ background: '#25D366', color: '#fff', border: 'none', borderRadius: '4px', padding: '4px 8px', fontSize: '11px', fontWeight: 'bold' }}>
