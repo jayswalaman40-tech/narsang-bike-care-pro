@@ -10,11 +10,48 @@ export const sendWhatsAppNotification = async (
   extraData?: any
 ) => {
   try {
+    // 1. Fetch vehicle details to generate message
+    const { data: v, error: fetchErr } = await supabase
+      .from('vehicles')
+      .select('*')
+      .eq('id', vehicleId)
+      .single();
+
+    if (fetchErr || !v) {
+      console.error("Error fetching vehicle for WhatsApp:", fetchErr);
+      return false;
+    }
+
+    // 2. Generate the appropriate message text
+    let messageText = "";
+    switch (type) {
+      case 'registration':
+        messageText = generateVehicleRegistrationMessage(
+          v.owner_name || v.customer_name,
+          v.number_plate,
+          v.problem,
+          v.estimate,
+          v.delivery_by
+        );
+        break;
+      case 'done':
+        messageText = generateDoneMessage(v.customer_name, v.number_plate, v.estimate);
+        break;
+      case 'payment':
+        const remaining = (v.estimate || 0) - (v.total_paid || 0);
+        messageText = generatePaymentConfirmationMessage(v.customer_name, extraData?.amount || 0, remaining);
+        break;
+      case 'reminder':
+        const rem = (v.estimate || 0) - (v.total_paid || 0);
+        messageText = generateFollowUpMessage(v.customer_name, v.number_plate, rem);
+        break;
+    }
+
+    // 3. Invoke the Edge Function with the expected 'message' payload
     const { data, error } = await supabase.functions.invoke('send-owner-customer-text', {
       body: { 
         vehicle_id: vehicleId, 
-        type, 
-        extra_data: extraData 
+        message: messageText
       }
     });
 
@@ -23,7 +60,7 @@ export const sendWhatsAppNotification = async (
       return false;
     }
 
-    console.log(`WhatsApp (${type}) notification triggered:`, data);
+    console.log(`WhatsApp (${type}) notification sent successfully:`, data);
     return true;
   } catch (error: any) {
     console.error("Critical failure calling WhatsApp Edge Function:", error);
