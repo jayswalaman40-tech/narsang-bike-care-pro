@@ -25,8 +25,7 @@ const Dashboard: React.FC = () => {
     e.stopPropagation();
     const vehicle = vehicles.find(v => v.id === id);
     if (vehicle?.status === 'in_repair') {
-      await markAsDone(id);
-      navigate('/wa-sent');
+      navigate(`/confirm-done/${id}`);
     } else if (vehicle?.status === 'done') {
       navigate(`/vehicle/${id}/payment`);
     }
