@@ -1,4 +1,5 @@
 import { supabase } from '../lib/supabase';
+import { triggerN8nWebhook } from './n8n';
 
 // Helper to clean and format phone number for Evolution API
 const formatWhatsAppNumber = (number: string) => {
@@ -20,6 +21,12 @@ export const sendWhatsAppNotification = async (
   type: 'registration' | 'done' | 'payment' | 'reminder', 
   extraData?: any
 ) => {
+  // --- Trigger n8n Webhook (Data Sync/Automation) ---
+  // We trigger this first so that even if WhatsApp fails, n8n gets the data.
+  triggerN8nWebhook(vehicleId, type, extraData).catch(err => 
+    console.error("n8n Trigger Background Error:", err)
+  );
+
   try {
     // 1. Fetch vehicle details to generate message
     const { data: v, error: fetchErr } = await supabase
