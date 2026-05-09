@@ -65,7 +65,8 @@ const Payment: React.FC = () => {
       });
 
       // Send payment confirmation via Edge Function
-      await sendWhatsAppNotification(v.id, 'payment', { amount });
+      const paymentEvent = amount >= remaining ? 'full_payment' : 'partial_payment';
+      await sendWhatsAppNotification(v.id, paymentEvent, { amount });
 
       if (amount >= remaining) {
         navigate('/wa-full');

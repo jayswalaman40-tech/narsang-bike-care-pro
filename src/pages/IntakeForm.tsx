@@ -77,7 +77,7 @@ const IntakeForm: React.FC = () => {
 
       // Send WhatsApp registration confirmation via Edge Function
       if (newVehicle && newVehicle.id) {
-        await sendWhatsAppNotification(newVehicle.id, 'registration');
+        await sendWhatsAppNotification(newVehicle.id, 'vehicle_registration');
       }
 
       navigate('/dashboard');

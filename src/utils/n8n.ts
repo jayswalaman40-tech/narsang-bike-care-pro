@@ -5,7 +5,7 @@ import { supabase } from '../lib/supabase';
  */
 export const triggerN8nWebhook = async (
   vehicleId: string,
-  type: 'registration' | 'done' | 'payment' | 'reminder',
+  type: 'vehicle_registration' | 'mark_as_done' | 'partial_payment' | 'full_payment' | 'reminder',
   extraData?: any
 ) => {
   try {

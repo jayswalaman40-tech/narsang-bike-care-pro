@@ -32,7 +32,7 @@ const ConfirmDone: React.FC = () => {
         await markAsDone(id);
         
         // 2. Trigger WhatsApp via Edge Function
-        await sendWhatsAppNotification(id, 'done');
+        await sendWhatsAppNotification(id, 'mark_as_done');
         
         // 3. Navigate away
         navigate('/wa-sent');
