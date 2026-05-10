@@ -2,6 +2,7 @@ import React, { useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useVehicleStore } from '../store/vehicleStore';
+import BottomNav from '../components/BottomNav';
 
 const CardDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -30,8 +31,8 @@ const CardDetail: React.FC = () => {
   };
 
   return (
-    <div className="screen active" id="s-detail">
-      <div className="sbar"></div>
+    <div className="screen active" id="s-card-detail">
+      <div className="sbar"><span className="t" style={{ color: 'var(--dk)' }}>9:41</span></div>
       <div className="hdr">
         <button className="bk" onClick={() => navigate('/dashboard')}>
           <svg width="18" height="18" viewBox="0 0 24 24">
@@ -40,20 +41,16 @@ const CardDetail: React.FC = () => {
         </button>
         <div className="hdr-t">{t('detail.title')}</div>
         <button className="sm bo" onClick={() => navigate(`/vehicle/${v.id}/edit`)}>
-          <span>{t('btn.edit')}</span>
+          {t('btn.edit')}
         </button>
       </div>
 
       <div className="cnt">
-        <div style={{ padding: '20px 16px', background: 'var(--of)', borderBottom: '1px solid var(--lg)' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-            <div style={{ width: '52px', height: '52px', borderRadius: '12px', background: '#fff', border: '1.5px solid var(--lg)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '24px' }}>
-              {v.vehicle_type === 'Bike' ? '🏍️' : '🛵'}
-            </div>
-            <div>
-              <div style={{ fontSize: '18px', fontWeight: 700, color: 'var(--dk)', fontFamily: "'Share Tech Mono',monospace", letterSpacing: '1px' }}>{v.number_plate}</div>
-              <div style={{ fontSize: '12px', fontWeight: 600, color: 'var(--or)', textTransform: 'uppercase' }}>{v.vehicle_type}</div>
-            </div>
+        <div className="ir hi">
+          <div className="il">{t('lbl.vehicle', 'Vehicle')}</div>
+          <div className="iv">
+            <div style={{ fontWeight: 700 }}>{v.number_plate}</div>
+            <div style={{ fontSize: '12px', color: 'var(--sl)' }}>{v.vehicle_type}</div>
           </div>
         </div>
 
@@ -61,21 +58,11 @@ const CardDetail: React.FC = () => {
           <div className="il">{t('lbl.customer')}</div>
           <div className="iv">
             <div style={{ fontWeight: 700 }}>{v.customer_name}</div>
-            <div style={{ fontSize: '12px', color: 'var(--sl)', marginTop: '2px' }}>+91 {v.customer_whatsapp}</div>
+            <div style={{ fontSize: '12px', color: 'var(--sl)' }}>+91 {v.customer_whatsapp}</div>
           </div>
         </div>
 
-        {v.owner_name && v.owner_name !== v.customer_name && (
-          <div className="ir">
-            <div className="il">{t('lbl.owner')}</div>
-            <div className="iv">
-              <div style={{ fontWeight: 700 }}>{v.owner_name}</div>
-              <div style={{ fontSize: '12px', color: 'var(--sl)', marginTop: '2px' }}>+91 {v.owner_whatsapp}</div>
-            </div>
-          </div>
-        )}
-
-        <div className="ir hi">
+        <div className="ir">
           <div className="il">{t('lbl.problem')}</div>
           <div className="iv">{v.problem}</div>
         </div>
@@ -92,50 +79,31 @@ const CardDetail: React.FC = () => {
 
         <div style={{ padding: '24px 16px' }}>
           <div className="wam wam-o">
-            <div className="waf waf-o">{t('wa.sent')}</div>
+            <div className="waf waf-o">{t('wa.sent', 'WhatsApp Sent Confirmation')}</div>
             <div className="wab">
-              Vehicle Registered: {v.number_plate}<br/>
-              Problem: {v.problem}<br/>
-              Est cost: ₹{v.estimate}
+              Vehicle: {v.number_plate} registered. Problem: {v.problem}. Est: ₹{v.estimate}. Team Nursing Bike Care.
             </div>
           </div>
         </div>
       </div>
 
-      <div style={{ position: 'absolute', bottom: '80px', left: 0, right: 0, padding: '16px', background: '#fff', borderTop: '1px solid var(--lg)', display: 'flex', gap: '10px' }}>
+      <div style={{ position: 'absolute', bottom: '80px', left: 0, right: 0, padding: '16px', background: '#fff', borderTop: '1px solid var(--lg)' }}>
         {!isDone ? (
-          <button className="btn bo" style={{ flex: 1 }} onClick={handleMarkDone}>
-            <span>{t('btn.markdone')}</span>
+          <button className="btn bo" onClick={handleMarkDone}>
+            {t('btn.markdone')} ✅
           </button>
         ) : !isPaid ? (
-          <button className="btn bo" style={{ flex: 1, background: '#25D366' }} onClick={() => navigate(`/vehicle/${v.id}/payment`)}>
-            <span>{t('btn.payment')}</span>
+          <button className="btn bo" style={{ background: '#25D366' }} onClick={() => navigate(`/vehicle/${v.id}/payment`)}>
+            {t('btn.payment')} 💰
           </button>
         ) : (
-          <button className="btn bw" style={{ flex: 1, opacity: 0.5 }}>
-            <span>{t('btn.success')}</span>
+          <button className="btn bw" style={{ opacity: 0.5 }} disabled>
+            {t('btn.success')}
           </button>
         )}
       </div>
 
-      <div className="bnav">
-        <button className="ni" onClick={() => navigate('/intake')}>
-          <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" /></svg>
-          <span>{t('nav.intake')}</span>
-        </button>
-        <button className="ni on" onClick={() => navigate('/dashboard')}>
-           <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" /><rect x="14" y="3" width="7" height="7" /><rect x="14" y="14" width="7" height="7" /><rect x="3" y="14" width="7" height="7" /></svg>
-          <span>{t('nav.jobs')}</span>
-        </button>
-        <button className="ni" onClick={() => navigate('/report')}>
-          <svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12" /></svg>
-          <span>{t('nav.report')}</span>
-        </button>
-        <button className="ni" onClick={() => navigate('/follow-up')}>
-          <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" /><line x1="9" y1="10" x2="15" y2="10" /><line x1="9" y1="14" x2="13" y2="14" /></svg>
-          <span>{t('nav.followup')}</span>
-        </button>
-      </div>
+      <BottomNav />
     </div>
   );
 };

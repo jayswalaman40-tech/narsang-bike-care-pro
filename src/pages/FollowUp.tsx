@@ -1,11 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useVehicleStore } from '../store/vehicleStore';
 import { sendWhatsAppNotification } from '../utils/whatsapp';
+import BottomNav from '../components/BottomNav';
 
 const FollowUp: React.FC = () => {
-  const navigate = useNavigate();
   const { t } = useTranslation();
   const { vehicles, fetchVehicles, isLoading } = useVehicleStore();
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
@@ -38,21 +37,20 @@ const FollowUp: React.FC = () => {
 
   return (
     <div className="screen active" id="s-followup">
-      <div className="sbar"></div>
+      <div className="sbar"><span className="t" style={{ color: 'var(--dk)' }}>9:41</span></div>
       <div className="hdr">
-        <div style={{ width: '36px', height: '36px', borderRadius: '50%', background: 'linear-gradient(135deg,#E8590C,#ff7c35)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontSize: '18px', fontWeight: 700, fontFamily: "'Bebas Neue',cursive" }}>SN</div>
-        <div className="hdr-t">{t('nav.followup')}</div>
+        <div className="hdr-t">{t('nav.followup', 'Follow Up (Pending)')}</div>
       </div>
 
       <div style={{ padding: '16px', background: 'var(--orl)', borderBottom: '1px solid var(--orm)', display: 'flex', alignItems: 'center', gap: '12px' }}>
         <div style={{ padding: '8px', background: '#fff', borderRadius: '8px', fontSize: '18px', boxShadow: '0 2px 8px rgba(0,0,0,.05)' }}>🔔</div>
         <div>
-          <div style={{ fontSize: '13px', fontWeight: 700, color: 'var(--or)' }}>{t('followup.bulk')}</div>
-          <div style={{ fontSize: '11px', color: 'var(--sl)', fontWeight: 600 }}>{t('followup.tip')}</div>
+          <div style={{ fontSize: '13px', fontWeight: 700, color: 'var(--or)' }}>{t('followup.bulk', 'Bulk Reminders')}</div>
+          <div style={{ fontSize: '11px', color: 'var(--sl)', fontWeight: 600 }}>{t('followup.tip', 'Select multiple to send WhatsApp reminders at once.')}</div>
         </div>
       </div>
 
-      <div className="cnt">
+      <div className="cnt" style={{ paddingBottom: selectedIds.length > 0 ? '160px' : '96px' }}>
         {isLoading ? (
           <div style={{ padding: '20px', textAlign: 'center' }}>Loading...</div>
         ) : pendingVehicles.length === 0 ? (
@@ -87,7 +85,7 @@ const FollowUp: React.FC = () => {
                         const ok = await sendWhatsAppNotification(v.id, 'reminder'); 
                         btn.innerText = ok ? '✅ Done' : '❌ Fail';
                       }} 
-                      style={{ background: '#25D366', color: '#fff', border: 'none', borderRadius: '4px', padding: '4px 8px', fontSize: '11px', fontWeight: 'bold' }}>
+                      style={{ background: '#25D366', color: '#fff', border: 'none', borderRadius: '4px', padding: '4px 8px', fontSize: '11px', fontWeight: 'bold', cursor: 'pointer' }}>
                       📱 Send
                     </button>
                   </div>
@@ -99,9 +97,9 @@ const FollowUp: React.FC = () => {
       </div>
 
       {selectedIds.length > 0 && (
-        <div style={{ position: 'absolute', bottom: '80px', left: 0, right: 0, padding: '16px', background: '#fff', borderTop: '1px solid var(--lg)' }}>
-          <button className="btn wa-btn" onClick={handleBulkSend}>
-             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+        <div style={{ position: 'absolute', bottom: '80px', left: 0, right: 0, padding: '16px', background: '#fff', borderTop: '1px solid var(--lg)', zIndex: 10 }}>
+          <button className="btn bo" onClick={handleBulkSend}>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ marginRight: '8px' }}>
               <path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/>
             </svg>
             <span>Send WhatsApp to {selectedIds.length} Selected</span>
@@ -109,24 +107,7 @@ const FollowUp: React.FC = () => {
         </div>
       )}
 
-      <div className="bnav">
-        <button className="ni" onClick={() => navigate('/intake')}>
-          <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" /></svg>
-          <span>{t('nav.intake')}</span>
-        </button>
-        <button className="ni" onClick={() => navigate('/dashboard')}>
-           <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" /><rect x="14" y="3" width="7" height="7" /><rect x="14" y="14" width="7" height="7" /><rect x="3" y="14" width="7" height="7" /></svg>
-          <span>{t('nav.jobs')}</span>
-        </button>
-        <button className="ni" onClick={() => navigate('/report')}>
-          <svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12" /></svg>
-          <span>{t('nav.report')}</span>
-        </button>
-        <button className="ni on">
-          <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" /><line x1="9" y1="10" x2="15" y2="10" /><line x1="9" y1="14" x2="13" y2="14" /></svg>
-          <span>{t('nav.followup')}</span>
-        </button>
-      </div>
+      <BottomNav />
     </div>
   );
 };

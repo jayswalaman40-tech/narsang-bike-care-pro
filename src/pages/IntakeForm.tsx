@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useVehicleStore } from '../store/vehicleStore';
 import { sendWhatsAppNotification } from '../utils/whatsapp';
+import BottomNav from '../components/BottomNav';
 
 const IntakeForm: React.FC = () => {
   const navigate = useNavigate();
@@ -75,7 +76,6 @@ const IntakeForm: React.FC = () => {
         delivery_by: formData.delivery_by,
       });
 
-      // Send WhatsApp registration confirmation via Edge Function
       if (newVehicle && newVehicle.id) {
         await sendWhatsAppNotification(newVehicle.id, 'vehicle_registration');
       }
@@ -89,7 +89,7 @@ const IntakeForm: React.FC = () => {
 
   return (
     <div className="screen active" id="s-intake">
-      <div className="sbar"></div>
+      <div className="sbar"><span className="t" style={{ color: 'var(--dk)' }}>9:41</span></div>
       <div className="hdr">
         <button className="bk" onClick={() => navigate('/')}>
           <svg width="18" height="18" viewBox="0 0 24 24">
@@ -102,15 +102,13 @@ const IntakeForm: React.FC = () => {
         </button>
       </div>
 
-      {/* Progress dots */}
       <div className="form-progress">
         {dots.map(dot => (
           <div key={dot.id} className={`fp-dot ${dot.filled ? 'filled' : ''}`} />
         ))}
       </div>
 
-      <div className="cnt" style={{ paddingBottom: '160px' }}>
-        {/* SECTION 1: Customer Info */}
+      <div className="cnt" style={{ paddingBottom: '96px' }}>
         <div className="form-section">
           <div className="form-section-title">{t('intake.sec1')}</div>
           <div className="ig">
@@ -138,7 +136,6 @@ const IntakeForm: React.FC = () => {
           </div>
         </div>
 
-        {/* SECTION 2: Vehicle Info */}
         <div className="form-section" style={{ marginTop: '6px' }}>
           <div className="form-section-title">{t('intake.sec2')}</div>
           <div className="ig">
@@ -193,7 +190,6 @@ const IntakeForm: React.FC = () => {
           </div>
         </div>
 
-        {/* SECTION 3: Job Info */}
         <div className="form-section" style={{ marginTop: '6px' }}>
           <div className="form-section-title">{t('intake.sec3')}</div>
           <div className="ig">
@@ -230,13 +226,12 @@ const IntakeForm: React.FC = () => {
         </div>
 
         {error && (
-          <div style={{ margin: '0 16px 10px', background: 'var(--rdb)', borderRadius: '8px', padding: '10px 12px', fontSize: '12px', color: 'var(--rdt)' }}>
+          <div id="form-err" style={{ margin: '0 16px 10px', background: 'var(--rdb)', borderRadius: '8px', padding: '10px 12px', fontSize: '12px', color: 'var(--rdt)' }}>
             ⚠️ <span>{error}</span>
           </div>
         )}
       </div>
 
-      {/* Save Button */}
       <div style={{ position: 'absolute', bottom: '80px', left: 0, right: 0, padding: '12px 16px', background: '#fff', borderTop: '1px solid var(--lg)' }}>
         <button className="btn bo" onClick={handleSubmit} disabled={isSaving}>
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
@@ -246,24 +241,7 @@ const IntakeForm: React.FC = () => {
         </button>
       </div>
 
-      <div className="bnav">
-        <button className="ni on">
-          <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" /></svg>
-          <span>{t('nav.intake')}</span>
-        </button>
-        <button className="ni" onClick={() => navigate('/dashboard')}>
-          <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" /><rect x="14" y="3" width="7" height="7" /><rect x="14" y="14" width="7" height="7" /><rect x="3" y="14" width="7" height="7" /></svg>
-          <span>{t('nav.jobs')}</span>
-        </button>
-        <button className="ni" onClick={() => navigate('/report')}>
-          <svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12" /></svg>
-          <span>{t('nav.report')}</span>
-        </button>
-        <button className="ni" onClick={() => navigate('/follow-up')}>
-          <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" /><line x1="9" y1="10" x2="15" y2="10" /><line x1="9" y1="14" x2="13" y2="14" /></svg>
-          <span>{t('nav.followup')}</span>
-        </button>
-      </div>
+      <BottomNav />
     </div>
   );
 };

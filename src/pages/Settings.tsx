@@ -3,10 +3,11 @@ import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { supabase } from '../lib/supabase';
 import { useUIStore } from '../store/uiStore';
+import BottomNav from '../components/BottomNav';
 import type { Language } from '../types';
 
 const Settings: React.FC = () => {
-  const { t, i18n } = useTranslation();
+  const { i18n } = useTranslation();
   const navigate = useNavigate();
   const { settings, mechanicWhatsapp, setMechanicWhatsapp, language, setLanguage } = useUIStore();
 
@@ -23,10 +24,10 @@ const Settings: React.FC = () => {
   useEffect(() => {
     if (settings) {
       setFormData({
-        garage_name: settings.garage_name,
-        mechanic_name: settings.mechanic_name,
-        mechanic_whatsapp: mechanicWhatsapp,
-        primary_language: language
+        garage_name: settings.garage_name || '',
+        mechanic_name: settings.mechanic_name || '',
+        mechanic_whatsapp: mechanicWhatsapp || '',
+        primary_language: language || 'en'
       });
     }
   }, [settings, mechanicWhatsapp, language]);
@@ -73,7 +74,7 @@ const Settings: React.FC = () => {
 
   return (
     <div className="screen active" id="s-settings">
-      <div className="sbar"></div>
+      <div className="sbar"><span className="t" style={{ color: 'var(--dk)' }}>9:41</span></div>
       <div className="hdr">
         <button className="bk" onClick={() => navigate(-1)}>
           <svg width="18" height="18" viewBox="0 0 24 24">
@@ -83,7 +84,7 @@ const Settings: React.FC = () => {
         <div className="hdr-t">Settings</div>
       </div>
 
-      <div className="cnt">
+      <div className="cnt" style={{ paddingBottom: '96px' }}>
         <div style={{ padding: '24px 16px' }}>
           <form onSubmit={handleSave} style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
             <div className="form-section-title">Workshop Config</div>
@@ -132,24 +133,7 @@ const Settings: React.FC = () => {
         </div>
       </div>
 
-      <div className="bnav">
-        <button className="ni" onClick={() => navigate('/intake')}>
-          <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" /></svg>
-          <span>{t('nav.intake')}</span>
-        </button>
-        <button className="ni" onClick={() => navigate('/dashboard')}>
-          <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" /><rect x="14" y="3" width="7" height="7" /><rect x="14" y="14" width="7" height="7" /><rect x="3" y="14" width="7" height="7" /></svg>
-          <span>{t('nav.jobs')}</span>
-        </button>
-        <button className="ni" onClick={() => navigate('/report')}>
-          <svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12" /></svg>
-          <span>{t('nav.report')}</span>
-        </button>
-        <button className="ni" onClick={() => navigate('/follow-up')}>
-          <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" /><line x1="9" y1="10" x2="15" y2="10" /><line x1="9" y1="14" x2="13" y2="14" /></svg>
-          <span>{t('nav.followup')}</span>
-        </button>
-      </div>
+      <BottomNav />
     </div>
   );
 };

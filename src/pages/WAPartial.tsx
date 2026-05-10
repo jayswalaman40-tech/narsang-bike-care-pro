@@ -2,6 +2,7 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useVehicleStore } from '../store/vehicleStore';
+import BottomNav from '../components/BottomNav';
 
 const WAPartial: React.FC = () => {
   const navigate = useNavigate();
@@ -15,17 +16,17 @@ const WAPartial: React.FC = () => {
 
   return (
     <div className="screen active" id="s-wapartial">
-      <div className="sbar"></div>
+      <div className="sbar"><span className="t" style={{ color: 'var(--dk)' }}>9:41</span></div>
       <div className="hdr">
         <button className="bk" onClick={() => navigate('/dashboard')}>
            <svg width="18" height="18" viewBox="0 0 24 24">
             <path d="M19 12H5M12 19l-7-7 7-7" stroke="#0F172A" strokeWidth="2" strokeLinecap="round" fill="none" />
           </svg>
         </button>
-        <div className="hdr-t">{t('wa.sent')}</div>
+        <div className="hdr-t">{t('wa.sent', 'WhatsApp Sent')}</div>
       </div>
 
-      <div className="cnt" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '40px 32px', textAlign: 'center' }}>
+      <div className="cnt" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '40px 32px', textAlign: 'center', paddingBottom: '200px' }}>
         <div style={{ width: '80px', height: '80px', borderRadius: '50%', background: 'var(--orl)', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '24px' }}>
           <svg width="40" height="40" viewBox="0 0 24 24" fill="none">
             <path d="M5 13l4 4L19 7" stroke="var(--or)" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
@@ -51,7 +52,7 @@ const WAPartial: React.FC = () => {
         </div>
       </div>
 
-      <div style={{ padding: '24px 16px', background: '#fff', borderTop: '1px solid var(--of)' }}>
+      <div style={{ position: 'absolute', bottom: '80px', left: 0, right: 0, padding: '24px 16px', background: '#fff', borderTop: '1px solid var(--of)' }}>
         <button className="btn bo" onClick={() => navigate(`/vehicle/${v?.id}/tracker`)}>
           <span>{t('btn.tracker')}</span>
         </button>
@@ -60,24 +61,7 @@ const WAPartial: React.FC = () => {
         </button>
       </div>
 
-      <div className="bnav">
-        <button className="ni" onClick={() => navigate('/intake')}>
-          <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" /></svg>
-          <span>{t('nav.intake')}</span>
-        </button>
-        <button className="ni on" onClick={() => navigate('/dashboard')}>
-          <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" /><rect x="14" y="3" width="7" height="7" /><rect x="14" y="14" width="7" height="7" /><rect x="3" y="14" width="7" height="7" /></svg>
-          <span>{t('nav.jobs')}</span>
-        </button>
-        <button className="ni" onClick={() => navigate('/report')}>
-          <svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12" /></svg>
-          <span>{t('nav.report')}</span>
-        </button>
-        <button className="ni" onClick={() => navigate('/follow-up')}>
-          <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" /><line x1="9" y1="10" x2="15" y2="10" /><line x1="9" y1="14" x2="13" y2="14" /></svg>
-          <span>{t('nav.followup')}</span>
-        </button>
-      </div>
+      <BottomNav />
     </div>
   );
 };

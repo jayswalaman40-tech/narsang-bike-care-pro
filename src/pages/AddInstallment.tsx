@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { useVehicleStore } from '../store/vehicleStore';
 import { usePaymentStore } from '../store/paymentStore';
 import { sendWhatsAppNotification } from '../utils/whatsapp';
+import BottomNav from '../components/BottomNav';
 
 const AddInstallment: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -21,7 +22,7 @@ const AddInstallment: React.FC = () => {
     if (id) getVehicleById(id);
   }, [id, getVehicleById]);
 
-  if (!selectedVehicle) return <div className="screen active">Loading...</div>;
+  if (!selectedVehicle) return <div className="screen active" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>Loading...</div>;
 
   const v = selectedVehicle;
   const estimate = v.estimate || 0;
@@ -49,7 +50,6 @@ const AddInstallment: React.FC = () => {
         payment_type: val >= remaining ? 'full' : 'partial'
       });
 
-      // Send WhatsApp confirmation via Edge Function
       const paymentEvent = val >= remaining ? 'full_payment' : 'partial_payment';
       await sendWhatsAppNotification(v.id, paymentEvent, { amount: val });
 
@@ -60,85 +60,81 @@ const AddInstallment: React.FC = () => {
       }
     } catch (err: any) {
       setError(err.message || 'Error saving installment');
-    } finally {
       setIsSaving(false);
     }
   };
 
   return (
     <div className="screen active" id="s-installment">
-      <div className="sbar"></div>
+      <div className="sbar"><span className="t" style={{ color: 'var(--dk)' }}>9:41</span></div>
       <div className="hdr">
         <button className="bk" onClick={() => navigate(`/vehicle/${v.id}/tracker`)}>
           <svg width="18" height="18" viewBox="0 0 24 24">
             <path d="M19 12H5M12 19l-7-7 7-7" stroke="#0F172A" strokeWidth="2" strokeLinecap="round" fill="none" />
           </svg>
         </button>
-        <div className="hdr-t">{t('install.title')}</div>
+        <div className="hdr-t">{t('install.title', 'Add Installment')}</div>
       </div>
 
-      <div className="cnt" style={{ padding: '24px 16px' }}>
-        <div className="form-section">
-          <div className="ig">
-            <label>{t('install.method')}</label>
-            <div className="vtype-grid">
-              <button className={`vtype-btn ${method === 'cash' ? 'sel' : ''}`} onClick={() => setMethod('cash')}>
-                💵 <span>{t('install.cash')}</span>
-              </button>
-              <button className={`vtype-btn ${method === 'bank' ? 'sel' : ''}`} onClick={() => setMethod('bank')}>
-                🏦 <span>{t('install.bank')}</span>
-              </button>
+      <div className="cnt" style={{ paddingBottom: '160px' }}>
+        <div style={{ padding: '16px' }}>
+          <div className="form-section">
+            <div className="ig">
+              <label>{t('install.method')}</label>
+              <div className="vtype-grid">
+                <button className={`vtype-btn ${method === 'cash' ? 'sel' : ''}`} onClick={() => setMethod('cash')}>
+                  💵 <span>{t('install.cash')}</span>
+                </button>
+                <button className={`vtype-btn ${method === 'bank' ? 'sel' : ''}`} onClick={() => setMethod('bank')}>
+                  🏦 <span>{t('install.bank')}</span>
+                </button>
+              </div>
+            </div>
+
+            <div className="ig">
+              <label>{t('pay.howmuch')}</label>
+              <div className="inp-prefix">
+                <span className="pfx">₹</span>
+                <input 
+                  className="inp" 
+                  placeholder={remaining.toString()}
+                  type="number" 
+                  value={amount}
+                  onChange={(e) => setAmount(e.target.value)}
+                  style={{ fontSize: '20px', fontWeight: 700 }}
+                />
+              </div>
+            </div>
+
+            <div style={{ padding: '16px', background: 'var(--of)', borderRadius: '12px', border: '1.5px solid var(--lg)', marginTop: '10px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
+                <span style={{ fontSize: '12px', color: 'var(--sl)', fontWeight: 600 }}>{t('install.prev')}</span>
+                <span style={{ fontSize: '13px', fontWeight: 700 }}>₹{v.total_paid}</span>
+              </div>
+              <div style={{ height: '1px', background: 'var(--lg)', marginBottom: '8px' }}></div>
+              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                <span style={{ fontSize: '12px', color: 'var(--rd)', fontWeight: 700 }}>{t('install.rem')}</span>
+                <span style={{ fontSize: '14px', fontWeight: 800, color: 'var(--rd)' }}>₹{remaining - (Number(amount) || 0)}</span>
+              </div>
             </div>
           </div>
 
-          <div className="ig">
-            <label>{t('pay.howmuch')}</label>
-            <div className="inp-prefix">
-              <span className="pfx">₹</span>
-              <input 
-                className="inp" 
-                placeholder={remaining.toString()}
-                type="number" 
-                value={amount}
-                onChange={(e) => setAmount(e.target.value)}
-                style={{ fontSize: '20px', fontWeight: 700 }}
-              />
-            </div>
-          </div>
-
-          <div className="ig">
-            <label>{t('install.note')}</label>
-            <input className="inp" placeholder={t('install.noteph')} />
-          </div>
-
-          <div style={{ padding: '16px', background: 'var(--of)', borderRadius: '12px', border: '1.5px solid var(--lg)', marginTop: '10px' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
-              <span style={{ fontSize: '12px', color: 'var(--sl)', fontWeight: 600 }}>{t('install.prev')}</span>
-              <span style={{ fontSize: '13px', fontWeight: 700 }}>₹{v.total_paid}</span>
-            </div>
-            <div style={{ height: '1px', background: 'var(--lg)', marginBottom: '8px' }}></div>
-            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-              <span style={{ fontSize: '12px', color: 'var(--rd)', fontWeight: 700 }}>{t('install.rem')}</span>
-              <span style={{ fontSize: '14px', fontWeight: 800, color: 'var(--rd)' }}>₹{remaining - (Number(amount) || 0)}</span>
-            </div>
-          </div>
-        </div>
-
-        {error && (
-          <div style={{ margin: '16px', background: 'var(--rdb)', borderRadius: '8px', padding: '10px 12px', fontSize: '12px', color: 'var(--rdt)' }}>
-            ⚠️ <span>{error}</span>
-          </div>
-        )}
-
-        <div style={{ padding: '16px', marginTop: '10px' }}>
-          {Number(amount) >= remaining && (
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--gn)', fontSize: '13px', fontWeight: 700 }}>
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-                <path d="M5 13l4 4L19 7" stroke="var(--gn)" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
-              </svg>
-              {t('install.complete')}
+          {error && (
+            <div style={{ margin: '16px 0', background: 'var(--rdb)', borderRadius: '8px', padding: '10px 12px', fontSize: '12px', color: 'var(--rdt)' }}>
+              ⚠️ <span>{error}</span>
             </div>
           )}
+
+          <div style={{ marginTop: '10px' }}>
+            {Number(amount) >= remaining && (
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--gn)', fontSize: '13px', fontWeight: 700 }}>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                  <path d="M5 13l4 4L19 7" stroke="var(--gn)" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+                {t('install.complete')}
+              </div>
+            )}
+          </div>
         </div>
       </div>
 
@@ -148,24 +144,7 @@ const AddInstallment: React.FC = () => {
         </button>
       </div>
 
-      <div className="bnav">
-        <button className="ni" onClick={() => navigate('/intake')}>
-          <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" /></svg>
-          <span>{t('nav.intake')}</span>
-        </button>
-        <button className="ni on" onClick={() => navigate('/dashboard')}>
-           <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" /><rect x="14" y="3" width="7" height="7" /><rect x="14" y="14" width="7" height="7" /><rect x="3" y="14" width="7" height="7" /></svg>
-          <span>{t('nav.jobs')}</span>
-        </button>
-        <button className="ni" onClick={() => navigate('/report')}>
-          <svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12" /></svg>
-          <span>{t('nav.report')}</span>
-        </button>
-        <button className="ni" onClick={() => navigate('/follow-up')}>
-          <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" /><line x1="9" y1="10" x2="15" y2="10" /><line x1="9" y1="14" x2="13" y2="14" /></svg>
-          <span>{t('nav.followup')}</span>
-        </button>
-      </div>
+      <BottomNav />
     </div>
   );
 };
