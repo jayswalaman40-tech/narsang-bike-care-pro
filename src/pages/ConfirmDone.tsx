@@ -2,7 +2,11 @@ import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useVehicleStore } from '../store/vehicleStore';
-import { sendWhatsAppNotification, generateDoneMessage } from '../utils/whatsapp';
+import { sendWhatsAppNotification } from '../utils/whatsapp';
+
+const generateDoneMessage = (name: string, plate: string, cost: number) => {
+  return `✅ *Gaadi Tayaar Hai!*\nNamaste ${name} ji! 🙏\n${plate} tayyaar ho gayi!\n💰 Total: ₹${cost}\n\n— *Shri Narsang Bike Care* 🛵`;
+};
 
 const ConfirmDone: React.FC = () => {
   const { id } = useParams<{ id: string }>();

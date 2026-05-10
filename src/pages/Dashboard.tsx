@@ -7,7 +7,7 @@ import VehicleCard from '../components/VehicleCard';
 const Dashboard: React.FC = () => {
   const navigate = useNavigate();
   const { t } = useTranslation();
-  const { vehicles, fetchVehicles, isLoading, markAsDone } = useVehicleStore();
+  const { vehicles, fetchVehicles, isLoading } = useVehicleStore();
   const [activeTab, setActiveTab] = useState<'in_repair' | 'done'>('in_repair');
 
   useEffect(() => {
