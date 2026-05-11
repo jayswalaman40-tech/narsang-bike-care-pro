@@ -89,7 +89,7 @@ const EditVehicle: React.FC = () => {
 
   return (
     <div className="screen active" id="s-edit-form">
-      <div className="sbar"><span className="t" style={{ color: 'var(--dk)' }}>9:41</span></div>
+      <div className="sbar"></div>
       <div className="hdr">
         <button className="bk" onClick={() => navigate(`/vehicle/${id}`)}>
           <svg width="18" height="18" viewBox="0 0 24 24">
@@ -99,7 +99,7 @@ const EditVehicle: React.FC = () => {
         <div className="hdr-t">{t('edit.title', 'Edit Details')}</div>
       </div>
 
-      <div className="cnt" style={{ paddingBottom: '96px' }}>
+      <div className="cnt" style={{ paddingBottom: '160px' }}>
         <div className="form-section">
           <div className="form-section-title">{t('intake.sec1')}</div>
           <div className="ig">
@@ -217,7 +217,10 @@ const EditVehicle: React.FC = () => {
 
       <div style={{ position: 'absolute', bottom: '80px', left: 0, right: 0, padding: '12px 16px', background: '#fff', borderTop: '1px solid var(--lg)' }}>
         <button className="btn bo" onClick={handleSave} disabled={isSaving}>
-          <span>{isSaving ? 'Saving...' : t('btn.save', 'Save Changes')} ✅</span>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+            <path d="M5 13l4 4L19 7" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" />
+          </svg>
+          <span>{isSaving ? 'Saving...' : t('btn.save', 'Save Changes')}</span>
         </button>
       </div>
 

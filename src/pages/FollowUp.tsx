@@ -37,7 +37,7 @@ const FollowUp: React.FC = () => {
 
   return (
     <div className="screen active" id="s-followup">
-      <div className="sbar"><span className="t" style={{ color: 'var(--dk)' }}>9:41</span></div>
+      <div className="sbar"></div>
       <div className="hdr">
         <div className="hdr-t">{t('nav.followup', 'Follow Up (Pending)')}</div>
       </div>

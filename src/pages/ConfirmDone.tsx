@@ -45,7 +45,7 @@ const ConfirmDone: React.FC = () => {
 
   return (
     <div className="screen active" id="s-confirm-done">
-      <div className="sbar"><span className="t" style={{ color: 'var(--dk)' }}>9:41</span></div>
+      <div className="sbar"></div>
       <div className="hdr">
         <button className="bk" onClick={() => navigate(`/vehicle/${id}`)}>
           <svg width="18" height="18" viewBox="0 0 24 24">
@@ -73,7 +73,7 @@ const ConfirmDone: React.FC = () => {
           </div>
           <div style={{ padding: '0 20px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
             <button className="btn bo" onClick={handleSendAndMarkDone} disabled={isSending}>
-              {isSending ? 'Saving...' : '✅ Yes Send — Mark as Done'}
+              {isSending ? 'Saving...' : t('done.send')}
             </button>
             <button className="btn bw" onClick={() => navigate(`/vehicle/${id}`)} disabled={isSending}>
               {t('btn.cancel', 'Cancel')}

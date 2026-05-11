@@ -24,7 +24,7 @@ const Report: React.FC = () => {
 
   return (
     <div className="screen active" id="s-report">
-      <div className="sbar"><span className="t" style={{ color: 'var(--dk)' }}>9:41</span></div>
+      <div className="sbar"></div>
       <div className="hdr">
         <div className="hdr-t">{t('nav.report', 'Business Report')}</div>
         <button className="sm bo" onClick={() => navigate('/intake')}>

@@ -89,7 +89,7 @@ const IntakeForm: React.FC = () => {
 
   return (
     <div className="screen active" id="s-intake">
-      <div className="sbar"><span className="t" style={{ color: 'var(--dk)' }}>9:41</span></div>
+      <div className="sbar"></div>
       <div className="hdr">
         <button className="bk" onClick={() => navigate('/')}>
           <svg width="18" height="18" viewBox="0 0 24 24">
@@ -108,7 +108,7 @@ const IntakeForm: React.FC = () => {
         ))}
       </div>
 
-      <div className="cnt" style={{ paddingBottom: '96px' }}>
+      <div className="cnt" style={{ paddingBottom: '160px' }}>
         <div className="form-section">
           <div className="form-section-title">{t('intake.sec1')}</div>
           <div className="ig">
@@ -224,14 +224,13 @@ const IntakeForm: React.FC = () => {
             />
           </div>
         </div>
-
+ 
         {error && (
           <div id="form-err" style={{ margin: '0 16px 10px', background: 'var(--rdb)', borderRadius: '8px', padding: '10px 12px', fontSize: '12px', color: 'var(--rdt)' }}>
             ⚠️ <span>{error}</span>
           </div>
         )}
       </div>
-
       <div style={{ position: 'absolute', bottom: '80px', left: 0, right: 0, padding: '12px 16px', background: '#fff', borderTop: '1px solid var(--lg)' }}>
         <button className="btn bo" onClick={handleSubmit} disabled={isSaving}>
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none">

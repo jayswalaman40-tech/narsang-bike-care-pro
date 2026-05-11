@@ -34,7 +34,7 @@ const Dashboard: React.FC = () => {
 
   return (
     <div className="screen active" id="s-dashboard">
-      <div className="sbar"><span className="t" style={{ color: 'var(--dk)' }}>9:41</span></div>
+      <div className="sbar"></div>
       
       <div style={{ padding: '12px 16px 4px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexShrink: 0 }}>
         <div>
@@ -74,7 +74,7 @@ const Dashboard: React.FC = () => {
           className={`tab ${activeTab === 'done' ? 'on' : ''}`}
           onClick={() => setActiveTab('done')}
         >
-          ✅ {t('dash.tab.done')} ({doneCount})
+          {t('dash.tab.done')} ({doneCount})
         </button>
       </div>
 

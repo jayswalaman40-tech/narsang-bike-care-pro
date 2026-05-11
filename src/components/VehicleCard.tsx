@@ -34,7 +34,7 @@ const VehicleCard: React.FC<VehicleCardProps> = ({ vehicle, onClick, onAction })
   } else {
     borderColorClass = 'yl';
     badgeClass = 'by';
-    badgeText = 'Ready ✅';
+    badgeText = 'Ready';
   }
 
   const handleAction = (e: React.MouseEvent) => {
@@ -64,7 +64,7 @@ const VehicleCard: React.FC<VehicleCardProps> = ({ vehicle, onClick, onAction })
       <div className="ca">
         {!isDone ? (
           <button className="btn bo" style={{ flex: 1, padding: '10px', fontSize: '13px' }} onClick={handleAction}>
-            {t('btn.markdone')} ✅
+            {t('btn.markdone')}
           </button>
         ) : !isPaid ? (
           <button className="btn bo" style={{ flex: 1, padding: '10px', fontSize: '13px' }} onClick={handleAction}>

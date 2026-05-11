@@ -32,7 +32,7 @@ const CardDetail: React.FC = () => {
 
   return (
     <div className="screen active" id="s-card-detail">
-      <div className="sbar"><span className="t" style={{ color: 'var(--dk)' }}>9:41</span></div>
+      <div className="sbar"></div>
       <div className="hdr">
         <button className="bk" onClick={() => navigate('/dashboard')}>
           <svg width="18" height="18" viewBox="0 0 24 24">
@@ -90,7 +90,7 @@ const CardDetail: React.FC = () => {
       <div style={{ position: 'absolute', bottom: '80px', left: 0, right: 0, padding: '16px', background: '#fff', borderTop: '1px solid var(--lg)' }}>
         {!isDone ? (
           <button className="btn bo" onClick={handleMarkDone}>
-            {t('btn.markdone')} ✅
+            {t('btn.markdone')}
           </button>
         ) : !isPaid ? (
           <button className="btn bo" style={{ background: '#25D366' }} onClick={() => navigate(`/vehicle/${v.id}/payment`)}>
