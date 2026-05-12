@@ -15,9 +15,9 @@ export const triggerN8nWebhook = async (
       return false;
     }
 
-    // 1. Fetch full vehicle details and garage settings
+    // 1. Fetch full vehicle details (from summary view) and garage settings
     const [vehicleRes, settingsRes] = await Promise.all([
-      supabase.from('vehicles').select('*').eq('id', vehicleId).single(),
+      supabase.from('vehicle_payment_summary').select('*').eq('id', vehicleId).single(),
       supabase.from('garage_settings').select('*').single()
     ]);
 
@@ -33,7 +33,10 @@ export const triggerN8nWebhook = async (
     const payload = {
       event: type,
       timestamp: new Date().toISOString(),
-      amount: extraData?.amount || vehicle.estimate || 0,
+      amount_received: extraData?.amount || 0,
+      total_estimate: vehicle.estimate || 0,
+      total_paid: vehicle.total_paid || 0,
+      remaining_amount: vehicle.remaining || 0,
       time_to_done: vehicle.delivery_by || 'Not specified',
       
       vehicle_details: {
