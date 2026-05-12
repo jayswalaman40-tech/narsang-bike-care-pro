@@ -56,7 +56,13 @@ const VehicleCard: React.FC<VehicleCardProps> = ({ vehicle, onClick, onAction })
         <div className="cp">{vehicle.problem}</div>
         <div className="cm">
           <span className="mi">🕒 {vehicle.delivery_by}</span>
-          <span className="mi">₹{vehicle.estimate}</span>
+          <span className="mi">
+            {isPartial ? (
+              <span style={{ color: 'var(--or)' }}>Pending: ₹{vehicle.remaining}</span>
+            ) : (
+              `₹${vehicle.estimate}`
+            )}
+          </span>
           {isPartial && <span className="mi" style={{ color: 'var(--rd)', fontWeight: 600 }}>⚠️ Partial</span>}
         </div>
       </div>

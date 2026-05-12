@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useVehicleStore } from '../store/vehicleStore';
-import { usePaymentStore } from '../store/paymentStore';
 import { sendWhatsAppNotification } from '../utils/whatsapp';
 import BottomNav from '../components/BottomNav';
 
@@ -10,8 +9,7 @@ const AddInstallment: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { t } = useTranslation();
-  const { selectedVehicle, getVehicleById } = useVehicleStore();
-  const { addPayment } = usePaymentStore();
+  const { selectedVehicle, getVehicleById, addPayment } = useVehicleStore();
 
   const [amount, setAmount] = useState('');
   const [method, setMethod] = useState<'cash' | 'bank'>('cash');
@@ -50,7 +48,7 @@ const AddInstallment: React.FC = () => {
         payment_type: val >= remaining ? 'full' : 'partial'
       });
 
-      const paymentEvent = val >= remaining ? 'full_payment' : 'partial_payment';
+      const paymentEvent = val >= remaining ? 'full payment' : 'partial payment';
       await sendWhatsAppNotification(v.id, paymentEvent, { amount: val });
 
       if (val >= remaining) {

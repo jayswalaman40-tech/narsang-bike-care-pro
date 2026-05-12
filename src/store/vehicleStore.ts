@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { vehicleService, paymentService } from '../services/api';
-import type { VehicleWithPayment, Vehicle } from '../types';
+import type { VehicleWithPayment, Vehicle, Payment } from '../types';
 
 interface VehicleState {
   vehicles: VehicleWithPayment[];
@@ -14,7 +14,9 @@ interface VehicleState {
   addVehicle: (vehicle: Omit<Vehicle, 'id' | 'created_at' | 'updated_at' | 'status'>) => Promise<Vehicle>;
   updateVehicle: (id: string, updates: Partial<Vehicle>) => Promise<void>;
   markAsDone: (id: string) => Promise<void>;
+  addPayment: (payment: Omit<Payment, 'id' | 'paid_at'>) => Promise<void>;
   setSelectedVehicle: (vehicle: VehicleWithPayment | null) => void;
+  refreshAll: (id?: string) => Promise<void>;
 }
 
 export const useVehicleStore = create<VehicleState>((set, get) => ({
@@ -22,6 +24,16 @@ export const useVehicleStore = create<VehicleState>((set, get) => ({
   selectedVehicle: null,
   isLoading: false,
   error: null,
+
+  refreshAll: async (id?: string) => {
+    // Helper to refresh everything
+    await get().fetchVehicles();
+    if (id) {
+      await get().getVehicleById(id);
+    } else if (get().selectedVehicle?.id) {
+      await get().getVehicleById(get().selectedVehicle!.id);
+    }
+  },
 
   fetchVehicles: async () => {
     set({ isLoading: true, error: null });
@@ -34,13 +46,15 @@ export const useVehicleStore = create<VehicleState>((set, get) => ({
   },
 
   getVehicleById: async (id: string) => {
-    set({ isLoading: true, error: null });
+    // If we don't have it or it's a different one, show loading
+    if (!get().selectedVehicle || get().selectedVehicle?.id !== id) {
+      set({ isLoading: true, error: null });
+    }
+    
     try {
       const data = await vehicleService.getById(id);
       const payments = await paymentService.getByVehicleId(id);
       
-      // Inject amount/created_at for UI compatibility if needed, 
-      // but better to fix UI. For now, let's just add the array.
       const paymentsWithCompat = payments.map(p => ({
         ...p,
         amount: p.amount_paid,
@@ -60,7 +74,7 @@ export const useVehicleStore = create<VehicleState>((set, get) => ({
     set({ isLoading: true, error: null });
     try {
       const newVehicle = await vehicleService.create(vehicle);
-      await get().fetchVehicles(); // Refresh list to get view data
+      await get().fetchVehicles();
       set({ isLoading: false });
       return newVehicle;
     } catch (error: any) {
@@ -73,8 +87,7 @@ export const useVehicleStore = create<VehicleState>((set, get) => ({
     set({ isLoading: true, error: null });
     try {
       await vehicleService.update(id, updates);
-      await get().getVehicleById(id); // Refresh selected
-      await get().fetchVehicles(); // Refresh list
+      await get().refreshAll(id);
       set({ isLoading: false });
     } catch (error: any) {
       set({ error: error.message, isLoading: false });
@@ -86,8 +99,19 @@ export const useVehicleStore = create<VehicleState>((set, get) => ({
     set({ isLoading: true, error: null });
     try {
       await vehicleService.updateStatus(id, 'done');
-      await get().getVehicleById(id); // Refresh
-      await get().fetchVehicles(); // Refresh list
+      await get().refreshAll(id);
+      set({ isLoading: false });
+    } catch (error: any) {
+      set({ error: error.message, isLoading: false });
+      throw error;
+    }
+  },
+
+  addPayment: async (payment) => {
+    set({ isLoading: true, error: null });
+    try {
+      await paymentService.create(payment);
+      await get().refreshAll(payment.vehicle_id);
       set({ isLoading: false });
     } catch (error: any) {
       set({ error: error.message, isLoading: false });

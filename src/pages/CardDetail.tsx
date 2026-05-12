@@ -69,7 +69,14 @@ const CardDetail: React.FC = () => {
 
         <div className="ir">
           <div className="il">{t('lbl.estimate')}</div>
-          <div className="iv" style={{ fontWeight: 800, fontSize: '16px', color: 'var(--dk)' }}>₹{v.estimate}</div>
+          <div className="iv">
+            <div style={{ fontWeight: 800, fontSize: '16px', color: 'var(--dk)' }}>₹{v.estimate}</div>
+            {v.total_paid > 0 && (
+              <div style={{ fontSize: '12px', color: 'var(--sl)', marginTop: '4px' }}>
+                Paid: ₹{v.total_paid} • <span style={{ color: 'var(--or)', fontWeight: 600 }}>Remaining: ₹{v.remaining}</span>
+              </div>
+            )}
+          </div>
         </div>
 
         <div className="ir">

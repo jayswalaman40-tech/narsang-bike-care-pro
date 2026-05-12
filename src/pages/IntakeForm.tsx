@@ -77,7 +77,7 @@ const IntakeForm: React.FC = () => {
       });
 
       if (newVehicle && newVehicle.id) {
-        await sendWhatsAppNotification(newVehicle.id, 'vehicle_registration');
+        await sendWhatsAppNotification(newVehicle.id, 'vehicle registration');
       }
 
       navigate('/dashboard');

@@ -16,11 +16,13 @@ const Dashboard: React.FC = () => {
   }, [fetchVehicles]);
 
   const filteredVehicles = vehicles.filter(v => 
-    activeTab === 'in_repair' ? v.status === 'in_repair' : v.status === 'done'
+    activeTab === 'in_repair' 
+      ? v.status === 'in_repair' 
+      : (v.status === 'done' || v.status === 'paid')
   );
 
   const repairCount = vehicles.filter(v => v.status === 'in_repair').length;
-  const doneCount = vehicles.filter(v => v.status === 'done').length;
+  const doneCount = vehicles.filter(v => v.status === 'done' || v.status === 'paid').length;
 
   const handleAction = async (e: React.MouseEvent, id: string) => {
     e.stopPropagation();

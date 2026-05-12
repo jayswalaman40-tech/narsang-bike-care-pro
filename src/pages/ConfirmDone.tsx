@@ -33,7 +33,7 @@ const ConfirmDone: React.FC = () => {
     try {
       if (id) {
         await markAsDone(id);
-        await sendWhatsAppNotification(id, 'mark_as_done');
+        await sendWhatsAppNotification(id, 'mark as done');
         navigate('/wa-sent');
       }
     } catch (err) {
