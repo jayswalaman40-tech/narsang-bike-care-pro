@@ -4,7 +4,6 @@ import { useUIStore } from './store/uiStore';
 import Layout from './components/Layout';
 
 // We'll import pages as we build them.
-import Splash from './pages/Splash';
 import Dashboard from './pages/Dashboard';
 import IntakeForm from './pages/IntakeForm';
 import CardDetail from './pages/CardDetail';
@@ -31,7 +30,7 @@ function App() {
   return (
     <Layout>
       <Routes>
-        <Route path="/" element={<Splash />} />
+        <Route path="/" element={<Navigate to="/dashboard" replace />} />
         <Route path="/auth" element={<Auth />} />
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/intake" element={<IntakeForm />} />
