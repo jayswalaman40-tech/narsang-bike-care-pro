@@ -13,6 +13,7 @@ const ConfirmDone: React.FC = () => {
   const navigate = useNavigate();
   const { t } = useTranslation();
   const { selectedVehicle, getVehicleById, markAsDone } = useVehicleStore();
+  const [error, setError] = useState<string | null>(null);
   const [isSending, setIsSending] = useState(false);
 
   useEffect(() => {
@@ -30,14 +31,16 @@ const ConfirmDone: React.FC = () => {
   const handleSendAndMarkDone = async () => {
     if (isSending) return;
     setIsSending(true);
+    setError(null);
     try {
       if (id) {
         await markAsDone(id);
         await sendWhatsAppNotification(id, 'mark as done');
         navigate('/wa-sent');
       }
-    } catch (err) {
+    } catch (err: any) {
       console.error(err);
+      setError(err.message || 'Error marking as done');
     } finally {
       setIsSending(false);
     }
@@ -65,6 +68,13 @@ const ConfirmDone: React.FC = () => {
           <div style={{ fontSize: '12px', color: 'var(--sl)', padding: '0 20px 12px' }}>
              {v.customer_name} ko message jayega: +91 {v.customer_whatsapp}
           </div>
+
+          {error && (
+            <div style={{ margin: '0 20px 10px', background: 'var(--rdb)', borderRadius: '8px', padding: '10px 12px', fontSize: '11px', color: 'var(--rdt)' }}>
+              ⚠️ {error}
+            </div>
+          )}
+
           <div className="wam" style={{ margin: '0 20px 16px' }}>
             <div className="waf">Preview — Shri Narsang Bike Care</div>
             <div className="wab" style={{ whiteSpace: 'pre-wrap' }}>

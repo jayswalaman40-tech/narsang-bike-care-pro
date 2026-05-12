@@ -11,8 +11,8 @@ interface VehicleCardProps {
 const VehicleCard: React.FC<VehicleCardProps> = ({ vehicle, onClick, onAction }) => {
   const { t } = useTranslation();
 
-  const isDone = vehicle.status === 'done';
-  const isPaid = vehicle.total_paid >= (vehicle.estimate || 0);
+  const isDone = vehicle.status === 'done' || vehicle.status === 'paid';
+  const isPaid = vehicle.status === 'paid' || vehicle.total_paid >= (vehicle.estimate || 0);
   const isPartial = vehicle.total_paid > 0 && !isPaid;
 
   let borderColorClass = '';

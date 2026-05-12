@@ -27,9 +27,11 @@ const Dashboard: React.FC = () => {
   const handleAction = async (e: React.MouseEvent, id: string) => {
     e.stopPropagation();
     const vehicle = vehicles.find(v => v.id === id);
-    if (vehicle?.status === 'in_repair') {
+    if (!vehicle) return;
+
+    if (vehicle.status === 'in_repair') {
       navigate(`/confirm-done/${id}`);
-    } else if (vehicle?.status === 'done') {
+    } else if (vehicle.status === 'done' || (vehicle.status === 'paid' && vehicle.remaining > 0)) {
       navigate(`/vehicle/${id}/payment`);
     }
   };
