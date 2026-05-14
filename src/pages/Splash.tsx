@@ -18,18 +18,10 @@ const Splash: React.FC = () => {
   useEffect(() => {
     const timer = setTimeout(() => {
       setLoading(100);
-    }, 200);
+    }, 500);
 
-    // Auto-navigate to dashboard after animation
-    const navTimer = setTimeout(() => {
-      navigate('/dashboard');
-    }, 2000);
-
-    return () => {
-      clearTimeout(timer);
-      clearTimeout(navTimer);
-    };
-  }, [navigate]);
+    return () => clearTimeout(timer);
+  }, []);
 
   return (
     <div className="screen active" id="s-splash" style={{ background: '#0a0a0a', overflow: 'hidden' }}>
@@ -93,6 +85,7 @@ const Splash: React.FC = () => {
 
       {/* CONTENT */}
       <div className="sbar" style={{ background: 'transparent', position: 'relative', zIndex: 2 }}>
+        <span className="t" style={{ color: '#fff' }}>9:41</span>
         <span style={{ fontSize: '12px', color: '#fff' }}>📶 🔋</span>
       </div>
 
