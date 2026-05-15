@@ -6,7 +6,7 @@ import { triggerN8nWebhook } from './n8n';
  */
 export const sendWhatsAppNotification = async (
   vehicleId: string,
-  type: 'vehicle registration' | 'mark as done' | 'partial payment' | 'full payment' | 'reminder',
+  type: 'vehicle registration' | 'mark as done' | 'partial payment' | 'full payment',
   extraData?: any
 ) => {
   console.log(`Triggering notification for ${type} via n8n...`);

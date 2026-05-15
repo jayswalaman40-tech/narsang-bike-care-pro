@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useVehicleStore } from '../store/vehicleStore';
-import { sendWhatsAppNotification } from '../utils/whatsapp';
 import BottomNav from '../components/BottomNav';
 
 const FollowUp: React.FC = () => {
@@ -23,15 +22,9 @@ const FollowUp: React.FC = () => {
     );
   };
 
-  const handleBulkSend = async () => {
+  const handleBulkSend = () => {
     if (selectedIds.length === 0) return;
-    const selectedVehicles = pendingVehicles.filter(v => selectedIds.includes(v.id));
-    let successCount = 0;
-    for (const v of selectedVehicles) {
-      const ok = await sendWhatsAppNotification(v.id, 'reminder');
-      if (ok) successCount++;
-    }
-    alert(`Successfully triggered notifications for ${successCount} out of ${selectedVehicles.length} customers.`);
+    alert(`${selectedIds.length} vehicles selected. Contact them manually for follow-up.`);
     setSelectedIds([]);
   };
 
@@ -77,17 +70,7 @@ const FollowUp: React.FC = () => {
                   <div style={{ textAlign: 'right' }}>
                     <div style={{ fontSize: '14px', fontWeight: 800, color: 'var(--rd)' }}>₹{remaining}</div>
                     <div style={{ fontSize: '10px', fontWeight: 700, color: 'var(--sl)', textTransform: 'uppercase', marginBottom: '6px' }}>pending</div>
-                    <button 
-                      onClick={async (e) => { 
-                        e.stopPropagation(); 
-                        const btn = e.currentTarget;
-                        btn.innerText = '...';
-                        const ok = await sendWhatsAppNotification(v.id, 'reminder'); 
-                        btn.innerText = ok ? '✅ Done' : '❌ Fail';
-                      }} 
-                      style={{ background: '#25D366', color: '#fff', border: 'none', borderRadius: '4px', padding: '4px 8px', fontSize: '11px', fontWeight: 'bold', cursor: 'pointer' }}>
-                      📱 Send
-                    </button>
+                    <div style={{ fontSize: '10px', color: 'var(--sl)', fontWeight: 600 }}>📞 Pending</div>
                   </div>
                 </div>
               );
